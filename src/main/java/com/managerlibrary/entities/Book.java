@@ -11,7 +11,7 @@ public class Book {
     private int id;
     private String title;
     private String author;
-    private int quantity;
+    private String isbn;
 
 
 
@@ -25,13 +25,13 @@ public class Book {
      * @param id       o ID do livro
      * @param title    o título do livro
      * @param author   o autor do livro
-     * @param quantity o ISBN do livro
+     * @param isbn o ISBN do livro
      */
-    public Book(int id, String title, String author, int quantity) {
+    public Book(int id, String title, String author, String isbn) {
         this.id = id;
         this.title = title;
         this.author = author;
-        this.quantity = quantity;
+        this.isbn = isbn;
     }
 
     public int getId() {
@@ -58,12 +58,12 @@ public class Book {
         this.author = author;
     }
 
-    public int getQuantity() {
-        return quantity;
+    public void getIsbn() {
+        this.isbn = isbn;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
     }
 
     @Override
@@ -71,12 +71,12 @@ public class Book {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Book book = (Book) o;
-        return id == book.id && quantity == book.quantity && Objects.equals(title, book.title) && Objects.equals(author, book.author);
+        return id == book.id && isbn == book.isbn && Objects.equals(title, book.title) && Objects.equals(author, book.author);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, author, quantity);
+        return Objects.hash(id, title, author, isbn);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class Book {
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", author='" + author + '\'' +
-                ", quantity=" + quantity +
+                ", quantity=" + isbn +
                 '}';
     }
 }
