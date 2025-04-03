@@ -58,8 +58,9 @@ public class Book {
         this.author = author;
     }
 
-    public void getIsbn() {
+    public String getIsbn() {
         this.isbn = isbn;
+        return null;
     }
 
     public void setIsbn(String isbn) {

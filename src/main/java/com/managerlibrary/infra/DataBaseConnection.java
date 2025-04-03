@@ -13,7 +13,7 @@ import java.util.Properties;
  */
 public class DataBaseConnection {
 
-    private static Connection connection;
+    public static Connection connection;
 
     /**
      * Obtém uma conexão com o banco de dados PostgreSQL.
