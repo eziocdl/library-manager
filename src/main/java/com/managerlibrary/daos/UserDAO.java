@@ -10,7 +10,7 @@ public interface UserDAO {
     /**
      * Insere um novo usuário no banco de dados.
      *
-     * @param usuario O usuário a ser inserido.
+     * @param user O usuário a ser inserido.
      * @throws SQLException Se ocorrer um erro ao inserir o usuário.
      */
     void insertUser(User user) throws SQLException;
