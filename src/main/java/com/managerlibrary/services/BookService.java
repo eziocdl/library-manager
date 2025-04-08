@@ -1,6 +1,6 @@
 package com.managerlibrary.services;
 
-import com.managerlibrary.daos.BookDAO;
+import com.managerlibrary.daos.interfaces.BookDAO;
 import com.managerlibrary.entities.Book;
 
 import java.sql.SQLException;
@@ -10,19 +10,18 @@ public class BookService {
 
     private BookDAO bookDAO;
 
-    public BookService(BookDAO bookDAO) {
+    public BookService() {
         this.bookDAO = bookDAO;
     }
 
     /**
      * Adiciona um novo livro ao banco de dados.
      *
-     * @param book O livro a ser adicionado.
      * @throws SQLException Se ocorrer um erro ao adicionar o livro.
      */
 
-    public void addBook(Book book) throws SQLException {
-        bookDAO.insertBook(book);
+    public void addBook() throws SQLException {
+        bookDAO.insertBook(new Book());
     }
 
     /**

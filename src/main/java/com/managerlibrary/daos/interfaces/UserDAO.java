@@ -1,4 +1,4 @@
-package com.managerlibrary.daos;
+package com.managerlibrary.daos.interfaces;
 
 import com.managerlibrary.entities.User;
 

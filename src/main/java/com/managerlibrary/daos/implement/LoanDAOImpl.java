@@ -1,6 +1,6 @@
 package com.managerlibrary.daos.implement;
 
-import com.managerlibrary.daos.LoanDAO;
+import com.managerlibrary.daos.interfaces.LoanDAO;
 import com.managerlibrary.entities.Loan;
 import com.managerlibrary.infra.DataBaseConnection;
 

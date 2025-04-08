@@ -1,6 +1,6 @@
 package com.managerlibrary.daos.implement;
 
-import com.managerlibrary.daos.UserDAO;
+import com.managerlibrary.daos.interfaces.UserDAO;
 import com.managerlibrary.entities.User;
 import com.managerlibrary.infra.DataBaseConnection;
 

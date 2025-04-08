@@ -1,6 +1,9 @@
 package com.managerlibrary.entities;
 
 
+import javafx.beans.binding.BooleanExpression;
+import javafx.beans.value.ObservableValue;
+
 import java.util.Objects;
 
 /**
@@ -89,4 +92,6 @@ public class Book {
                 ", quantity=" + isbn +
                 '}';
     }
+
+
 }

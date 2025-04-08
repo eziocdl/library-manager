@@ -1,5 +1,10 @@
 package com.managerlibrary.entities;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -8,72 +13,89 @@ import java.util.Objects;
  */
 public class Loan {
 
-    private int id;
-    private int bookId;
-    private int userId;
-    private LocalDate loanDate;
-    private LocalDate returnDate;
+    private IntegerProperty id;
+    private IntegerProperty bookId;
+    private IntegerProperty userId;
+    private ObjectProperty<LocalDate> loanDate;
+    private ObjectProperty returnDate;
 
     public Loan() {
 
+        this.id = new SimpleIntegerProperty();
+        this.bookId = new SimpleIntegerProperty();
+        this.userId = new SimpleIntegerProperty();
+        this.loanDate = new SimpleObjectProperty<>();
+        this.returnDate = new SimpleObjectProperty<>();
+
     }
 
-    /**
-     * Construtor com todos os argumentos.
-     *
-     * @param id         o ID do empréstimo
-     * @param bookId     o ID do livro emprestado
-     * @param userId     o ID do usuário que pegou o livro emprestado
-     * @param loanDate   a data em que o livro foi emprestado
-     * @param returnDate a data de devolução do livro
-     */
 
     public Loan(int id, int bookId, int userId, LocalDate loanDate, LocalDate returnDate) {
-        this.id = id;
-        this.bookId = bookId;
-        this.userId = userId;
-        this.loanDate = loanDate;
-        this.returnDate = returnDate;
+        this.id = new SimpleIntegerProperty(id);
+        this.bookId = new SimpleIntegerProperty(bookId);
+        this.userId = new SimpleIntegerProperty(userId);
+        this.loanDate = new SimpleObjectProperty<>(loanDate);
+        this.returnDate = new SimpleObjectProperty<>(returnDate);
     }
 
-    public int getId() {
+    public IntegerProperty idProperty() {
         return id;
     }
 
+    public int getId() {
+        return id.get();
+    }
+
     public void setId(int id) {
-        this.id = id;
+        this.id.set(id);
     }
 
     public int getBookId() {
+        return bookId.get();
+    }
+
+    public IntegerProperty bookIdProperty() {
         return bookId;
     }
 
     public void setBookId(int bookId) {
-        this.bookId = bookId;
+        this.bookId.set(bookId);
     }
 
     public int getUserId() {
+        return userId.get();
+    }
+
+    public IntegerProperty userIdProperty() {
         return userId;
     }
 
     public void setUserId(int userId) {
-        this.userId = userId;
+        this.userId.set(userId);
     }
 
     public LocalDate getLoanDate() {
+        return loanDate.get();
+    }
+
+    public ObjectProperty<LocalDate> loanDateProperty() {
         return loanDate;
     }
 
     public void setLoanDate(LocalDate loanDate) {
-        this.loanDate = loanDate;
+        this.loanDate.set(loanDate);
     }
 
-    public LocalDate getReturnDate() {
+    public Object getReturnDate() {
+        return returnDate.get();
+    }
+
+    public ObjectProperty returnDateProperty() {
         return returnDate;
     }
 
-    public void setReturnDate(LocalDate returnDate) {
-        this.returnDate = returnDate;
+    public void setReturnDate(Object returnDate) {
+        this.returnDate.set(returnDate);
     }
 
     @Override
@@ -81,7 +103,7 @@ public class Loan {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Loan loan = (Loan) o;
-        return id == loan.id && bookId == loan.bookId && userId == loan.userId && Objects.equals(loanDate, loan.loanDate) && Objects.equals(returnDate, loan.returnDate);
+        return Objects.equals(id, loan.id) && Objects.equals(bookId, loan.bookId) && Objects.equals(userId, loan.userId) && Objects.equals(loanDate, loan.loanDate) && Objects.equals(returnDate, loan.returnDate);
     }
 
     @Override

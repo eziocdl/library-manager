@@ -1,6 +1,6 @@
 package com.managerlibrary.services;
 
-import com.managerlibrary.daos.UserDAO;
+import com.managerlibrary.daos.interfaces.UserDAO;
 import com.managerlibrary.entities.User;
 
 import java.sql.SQLException;

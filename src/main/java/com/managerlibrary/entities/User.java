@@ -1,6 +1,11 @@
 package com.managerlibrary.entities;
 
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 import java.util.Objects;
 
 /**
@@ -8,66 +13,73 @@ import java.util.Objects;
  */
 public class User {
 
-    private int id;
-    private String name;
-    private String address;
-    private String phone;
-
-
+    private IntegerProperty id;
+    private StringProperty name;
+    private StringProperty address;
+    private StringProperty phone;
 
 
     public User() {
+        this.id = new SimpleIntegerProperty();
+        this.name = new SimpleStringProperty();
+        this.address = new SimpleStringProperty();
+        this.phone = new SimpleStringProperty();
 
     }
 
-
-    /**
-     * Construtor com todos os argumentos.
-     *
-     * @param id       o ID do usuário
-     * @param name     o nome do usuário
-     * @param address  o endereço do usuário
-     * @param phone    o telefone do usuário
-     */
-
-    public User(int id, String name, String address, String phone) {
-        this.id = id;
-        this.name = name;
-        this.address = address;
-        this.phone = phone;
+    public int User(int id, String name, String address, String phone) {
+        this.id = new SimpleIntegerProperty(id);
+        this.name = new SimpleStringProperty(name);
+        this.address = new SimpleStringProperty(address);
+        this.phone = new SimpleStringProperty(phone);
     }
 
-
-    public int getId() {
+    public IntegerProperty idProperty() {
         return id;
     }
 
+    public int getId() {
+        return id.get();
+    }
+
     public void setId(int id) {
-        this.id = id;
+        this.id.set(id);
     }
 
     public String getName() {
+        return name.get();
+    }
+
+    public StringProperty nameProperty() {
         return name;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name.set(name);
     }
 
     public String getAddress() {
+        return address.get();
+    }
+
+    public StringProperty addressProperty() {
         return address;
     }
 
     public void setAddress(String address) {
-        this.address = address;
+        this.address.set(address);
     }
 
     public String getPhone() {
+        return phone.get();
+    }
+
+    public StringProperty phoneProperty() {
         return phone;
     }
 
     public void setPhone(String phone) {
-        this.phone = phone;
+        this.phone.set(phone);
     }
 
     @Override
@@ -75,7 +87,7 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return id == user.id && Objects.equals(name, user.name) && Objects.equals(address, user.address) && Objects.equals(phone, user.phone);
+        return Objects.equals(id, user.id) && Objects.equals(name, user.name) && Objects.equals(address, user.address) && Objects.equals(phone, user.phone);
     }
 
     @Override
@@ -87,9 +99,9 @@ public class User {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
-                ", address='" + address + '\'' +
-                ", phone='" + phone + '\'' +
+                ", name=" + name +
+                ", address=" + address +
+                ", phone=" + phone +
                 '}';
     }
 }

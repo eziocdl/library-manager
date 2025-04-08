@@ -1,6 +1,6 @@
 package com.managerlibrary.daos.implement;
 
-import com.managerlibrary.daos.BookDAO;
+import com.managerlibrary.daos.interfaces.BookDAO;
 import com.managerlibrary.entities.Book;
 import com.managerlibrary.infra.DataBaseConnection;
 
