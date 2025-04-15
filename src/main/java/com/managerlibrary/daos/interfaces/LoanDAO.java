@@ -55,4 +55,7 @@ public interface LoanDAO {
     void deleteLoan(int id) throws SQLException;
 
 
+    List<Loan> findAllLoansWithDetails() throws SQLException;
+
+
 }

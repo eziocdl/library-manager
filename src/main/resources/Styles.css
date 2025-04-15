@@ -1,0 +1,29 @@
+/* Estilo para o título principal */
+.label-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px;
+}
+
+/* Estilo para os botões de ação */
+.button-action {
+    -fx-background-color: #4CAF50; /* Verde */
+    -fx-text-fill: white;
+    -fx-padding: 8px 15px;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+}
+
+.button-action:hover {
+    -fx-background-color: #45a049;
+}
+
+/* Estilo para a TableView */
+.table-view {
+    -fx-column-header-background: linear-gradient(#eee, #ddd);
+    -fx-fixed-cell-size: 25px;
+}
+
+.table-column {
+    -fx-alignment: CENTER-LEFT;
+}

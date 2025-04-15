@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.managerlibrary.controllers.LoanController"
+      spacing="10"
+      stylesheets="@/Styles.css">
+    <padding>
+        <Insets top="10" left="10" bottom="10" right="10"/>
+    </padding>
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label text="Gerenciar Empréstimos"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <TextField promptText="Buscar por usuário, livro ou CPF..."/>
+        <Button text="+ Novo Empréstimo" onAction="#showAddLoanView"/>
+    </HBox>
+
+    <HBox spacing="10">
+        <Button text="Todos" onAction="#filterLoansByAll"/>
+        <Button text="Ativos" onAction="#filterLoansByActive"/>
+        <Button text="Devolvidos" onAction="#filterLoansByReturned"/>
+        <Button text="Atrasados" onAction="#filterLoansByOverdue"/>
+    </HBox>
+
+    <ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED">
+        <VBox fx:id="loansVBox" spacing="10">
+        </VBox>
+    </ScrollPane>
+</VBox>

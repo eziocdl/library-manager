@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.managerlibrary.controllers.UserController"
+      stylesheets="@/Styles.css">
+    <Label text="Gerenciamento de Usuários" />
+
+    <GridPane>
+        <Label text="Nome:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+        <TextField fx:id="nameTextField" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+        <Label text="Endereço:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+        <TextField fx:id="addressTextField" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+
+        <Label text="Telefone:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+        <TextField fx:id="phoneTextField" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+    </GridPane>
+
+    <HBox>
+        <Button text="Adicionar" onAction="#addUser" />
+        <Button text="Buscar" onAction="#searchUsers" />
+        <Button text="Atualizar" onAction="#updateUsers" />
+        <Button text="Remover" onAction="#deleteUsers" />
+    </HBox>
+
+    <TableView fx:id="usersTableView">
+        <columns>
+            <TableColumn fx:id="idColumn" text="ID" />
+            <TableColumn fx:id="nameColumn" text="Nome" />
+            <TableColumn fx:id="addressColumn" text="Endereco" />
+            <TableColumn fx:id="phoneColumn" text="Telefone" />
+        </columns>
+    </TableView>
+</VBox>

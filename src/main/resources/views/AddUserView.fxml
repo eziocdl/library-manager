@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.managerlibrary.controllers.UserController" spacing="10"
+      stylesheets="@/Styles.css">
+    <padding>
+        <Insets top="20" left="20" bottom="20" right="20"/>
+    </padding>
+    <Label text="Adicionar Novo Usuário" style="-fx-font-size: 1.5em; -fx-font-weight: bold;"/>
+
+    <GridPane hgap="10" vgap="10" style="-fx-padding: 20 0 0 0;">
+        <Label text="Nome:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="nameTextField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Email:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="emailTextField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="CPF:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <TextField fx:id="cpfTextField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+        <Label text="Telefone:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <TextField fx:id="phoneTextField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+        <Label text="Endereço:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <TextField fx:id="addressTextField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+    </GridPane>
+
+    <HBox spacing="10" alignment="BOTTOM_RIGHT" style="-fx-padding: 20 0 0 0;">
+        <Button text="Salvar" onAction="#saveUser"/>
+        <Button text="Cancelar" onAction="#cancelAddUserView"/>
+    </HBox>
+</VBox>

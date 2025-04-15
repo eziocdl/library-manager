@@ -1,6 +1,5 @@
 package com.managerlibrary.infra;
 
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -20,8 +19,7 @@ public class DataBaseConnection {
      * Se a conexão ainda não existir ou estiver fechada, uma nova conexão é criada.
      * As informações de conexão são lidas do arquivo application.properties.
      *
-     * @return A conexão com o banco de dados.
-     * @throws SQLException Se ocorrer um erro ao conectar ao banco de dados ou ao ler o arquivo de propriedades.
+     * @return A conexão com o banco de dados ou null em caso de erro.
      */
     public static Connection getConnection() throws SQLException {
         if (connection == null || connection.isClosed()) {
@@ -33,7 +31,8 @@ public class DataBaseConnection {
                 if(inputStream != null){
                     properties.load(inputStream);
                 } else{
-                    throw new IOException("application.properties not found");
+                    System.err.println("Erro ao carregar application.properties: application.properties not found");
+                    return null; // Retorna null em caso de erro ao ler o arquivo
                 }
 
                 // Obtém as informações de conexão das propriedades
@@ -49,9 +48,15 @@ public class DataBaseConnection {
 
                 System.out.println("Conexão com o banco de dados estabelecida com sucesso.");
 
-            } catch (ClassNotFoundException | IOException e) {
-                // Lança uma SQLException em caso de erro ao carregar o driver ou ler o arquivo
-                throw new SQLException("Erro ao conectar ao banco de dados: " + e.getMessage());
+            } catch (ClassNotFoundException e) {
+                System.err.println("Erro ao carregar o driver JDBC: " + e.getMessage());
+                return null; // Retorna null em caso de erro
+            } catch (SQLException e) {
+                System.err.println("Erro ao conectar ao banco de dados: " + e.getMessage());
+                return null; // Retorna null em caso de erro
+            } catch (IOException e) {
+                System.err.println("Erro ao carregar application.properties: " + e.getMessage());
+                return null; // Retorna null em caso de erro
             }
         }
         return connection;
@@ -64,8 +69,13 @@ public class DataBaseConnection {
      */
     public static void closeConnection() throws SQLException {
         if (connection != null && !connection.isClosed()) {
-            connection.close();
-            System.out.println("Conexão com o banco de dados fechada.");
+            try {
+                connection.close();
+                connection = null;
+                System.out.println("Conexão com o banco de dados fechada.");
+            } catch (SQLException e) {
+                System.err.println("Erro ao fechar a conexão: " + e.getMessage());
+            }
         }
     }
 }

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.managerlibrary.controllers.BookController" spacing="10"
+      stylesheets="@/Styles.css">
+    <padding>
+        <Insets top="20" left="20" bottom="20" right="20"/>
+    </padding>
+    <Label text="Adicionar Novo Livro" style="-fx-font-size: 1.5em; -fx-font-weight: bold;"/>
+
+    <GridPane hgap="10" vgap="10" style="-fx-padding: 20 0 0 0;">
+        <Label text="Título:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="titleTextField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Autor:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="authorTextField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="ISBN:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <TextField fx:id="isbnTextField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+        <Label text="Editora:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <TextField fx:id="publisherTextField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+        <Label text="Ano:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <TextField fx:id="yearTextField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+        <Label text="Gênero:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+        <TextField fx:id="genreTextField" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
+        <Label text="Número de Cópias:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+        <TextField fx:id="totalCopiesTextField" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+
+        <Label text="Imagem do Livro:" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+        <HBox spacing="5" GridPane.rowIndex="7" GridPane.columnIndex="1">
+            <Button text="Escolher Arquivo" onAction="#chooseCoverImage"/>
+            <Label fx:id="coverFileNameLabel" text="Nenhum arquivo escolhido"/>
+        </HBox>
+    </GridPane>
+
+    <HBox spacing="10" alignment="BOTTOM_RIGHT" style="-fx-padding: 20 0 0 0;">
+        <Button text="Salvar" onAction="#saveBook"/>
+        <Button text="Cancelar" onAction="#cancelAddBookView"/>
+    </HBox>
+</VBox>

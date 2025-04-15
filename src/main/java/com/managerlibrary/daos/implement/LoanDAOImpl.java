@@ -9,6 +9,12 @@ import java.util.List;
 
 
 public class LoanDAOImpl implements LoanDAO {
+    private Connection connection;
+
+    public LoanDAOImpl() throws SQLException {
+        this.connection = DataBaseConnection.getConnection();
+    }
+
 
 
     @Override
@@ -76,6 +82,11 @@ public class LoanDAOImpl implements LoanDAO {
             preparedStatement.executeUpdate();
         }
 
+    }
+
+    @Override
+    public List<Loan> findAllLoansWithDetails() throws SQLException {
+        return null;
     }
 
     /**

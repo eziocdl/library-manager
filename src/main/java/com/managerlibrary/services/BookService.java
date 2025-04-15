@@ -8,67 +8,60 @@ import java.util.List;
 
 public class BookService {
 
-    private BookDAO bookDAO;
 
-    public BookService() {
+    private final BookDAO bookDAO;
+
+    public BookService(BookDAO bookDAO) {
         this.bookDAO = bookDAO;
     }
 
-    /**
-     * Adiciona um novo livro ao banco de dados.
-     *
-     * @throws SQLException Se ocorrer um erro ao adicionar o livro.
-     */
-
-    public void addBook() throws SQLException {
-        bookDAO.insertBook(new Book());
+    public void insertBook(Book book) throws SQLException {
+        bookDAO.insertBook(book);
     }
 
-    /**
-     * Busca um livro pelo ID.
-     *
-     * @param id O ID do livro a ser buscado.
-     * @return O livro encontrado, ou null se não encontrado.
-     * @throws SQLException Se ocorrer um erro ao buscar o livro.
-     */
-    public Book getBookById(int id) throws SQLException {
+    public List<Book> searchBook(Book book) throws SQLException {
+        return bookDAO.searchBook(book);
+    }
+
+    public Book findBookById(int id) throws SQLException {
         return bookDAO.findBookById(id);
     }
 
-    /**
-     * Busca todos os livros no banco de dados.
-     *
-     * @return Uma lista com todos os livros encontrados.
-     * @throws SQLException Se ocorrer um erro ao buscar os livros.
-     */
-
-    public List<Book> getAllBooks() throws SQLException {
+    public List<Book> findAllBooks() throws SQLException {
         return bookDAO.findAllBooks();
-    };
-
-    /**
-     * Atualiza um livro no banco de dados.
-     *
-     * @param book O livro a ser atualizado.
-     * @throws SQLException Se ocorrer um erro ao atualizar o livro.
-     */
+    }
 
     public void updateBook(Book book) throws SQLException {
         bookDAO.updateBook(book);
     }
 
-    /**
-     * Remove um livro pelo ID.
-     *
-     * @param id O ID do livro a ser removido.
-     * @throws SQLException Se ocorrer um erro ao remover o livro.
-     */
-    public void removeBook(int id) throws SQLException {
+    public void deleteBook(int id) throws SQLException {
         bookDAO.deleteBook(id);
     }
 
 
+    public void decrementAvailableCopies(int bookId) throws SQLException {
+        Book book = bookDAO.findBookById(bookId);
+        if (book != null && book.getAvailableCopies() > 0) {
+            book.setAvailableCopies(book.getAvailableCopies() - 1);
+            bookDAO.updateBook(book);
+        }
+    }
 
-
-
+    /**
+     * Incrementa o número de cópias disponíveis de um livro.
+     *
+     * @param bookId O ID do livro a ter suas cópias incrementadas.
+     * @throws SQLException Se ocorrer um erro ao atualizar o livro.
+     */
+    public void incrementAvailableCopies(int bookId) throws SQLException {
+        Book book = bookDAO.findBookById(bookId);
+        if (book != null) {
+            book.setAvailableCopies(book.getAvailableCopies() + 1);
+            bookDAO.updateBook(book);
+        }
+    }
 }
+
+
+

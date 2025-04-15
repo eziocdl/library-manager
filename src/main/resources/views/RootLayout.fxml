@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:id="rootLayout"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.managerlibrary.controllers.RootLayoutController"
+            stylesheets="@/Styles.css">
+
+    <left>
+        <VBox style="-fx-background-color: #f0f0f0;" prefWidth="150">
+            <padding>
+                <Insets top="20" left="10" bottom="20" right="10"/>
+            </padding>
+            <ImageView fitWidth="100" fitHeight="100">
+                <Image url="@/images/library_logo.png"/>
+                <VBox.margin>
+                    <Insets bottom="20" alignment="CENTER" hgrow="ALWAYS"/>
+                </VBox.margin>
+            </ImageView>
+            <Button text="Biblioteca" prefWidth="Infinity" styleClass="sidebar-button"/>
+            <Button text="Gerenciar Livros" prefWidth="Infinity" styleClass="sidebar-button" onAction="#showBookView"/>
+            <Button text="Usuários" prefWidth="Infinity" styleClass="sidebar-button" onAction="#showUserView"/>
+            <Button text="Empréstimos" prefWidth="Infinity" styleClass="sidebar-button" onAction="#showLoanView"/>
+            <VBox alignment="BOTTOM_LEFT" VBox.vgrow="ALWAYS">
+                <padding>
+                    <Insets top="20"/>
+                </padding>
+                <HBox spacing="5" alignment="CENTER_LEFT">
+                    <ImageView fitWidth="20" fitHeight="20">
+                        <Image url="@/images/admin_icon.png"/>
+                    </ImageView>
+                    <VBox>
+                        <Label text="Admin" style="-fx-font-weight: bold;"/>
+                        <Label text="admin@biblioteca.com" style="-fx-font-size: 0.8em;"/>
+                    </VBox>
+                    <padding>
+                        <Insets bottom="10"/>
+                    </padding>
+                </HBox>
+            </VBox>
+        </VBox>
+    </left>
+
+    <top>
+        <HBox style="-fx-background-color: #ddd; -fx-padding: 10;">
+            <TextField promptText="Buscar por título, autor ou ISBN..." HBox.hgrow="ALWAYS"/>
+            <Button text="+ Adicionar Livro" styleClass="primary-button"/>
+        </HBox>
+    </top>
+
+    <center>
+    </center>
+</BorderPane>

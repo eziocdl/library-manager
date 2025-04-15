@@ -17,6 +17,8 @@ public class User {
     private StringProperty name;
     private StringProperty address;
     private StringProperty phone;
+    private StringProperty email; // Adicione este atributo
+    private StringProperty cpf;   // Adicione este atributo
 
 
     public User() {
@@ -24,14 +26,17 @@ public class User {
         this.name = new SimpleStringProperty();
         this.address = new SimpleStringProperty();
         this.phone = new SimpleStringProperty();
-
+        this.email = new SimpleStringProperty(); // Inicialize
+        this.cpf = new SimpleStringProperty();   // Inicialize
     }
 
-    public int User(int id, String name, String address, String phone) {
+    public User(int id, String name, String address, String phone, String email, String cpf) {
         this.id = new SimpleIntegerProperty(id);
         this.name = new SimpleStringProperty(name);
         this.address = new SimpleStringProperty(address);
         this.phone = new SimpleStringProperty(phone);
+        this.email = new SimpleStringProperty(email);
+        this.cpf = new SimpleStringProperty(cpf);
     }
 
     public IntegerProperty idProperty() {
@@ -82,17 +87,43 @@ public class User {
         this.phone.set(phone);
     }
 
+    // Getters e Setters para email
+    public String getEmail() {
+        return email.get();
+    }
+
+    public StringProperty emailProperty() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email.set(email);
+    }
+
+    // Getters e Setters para cpf
+    public String getCpf() {
+        return cpf.get();
+    }
+
+    public StringProperty cpfProperty() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf.set(cpf);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(name, user.name) && Objects.equals(address, user.address) && Objects.equals(phone, user.phone);
+        return Objects.equals(id, user.id) && Objects.equals(name, user.name) && Objects.equals(address, user.address) && Objects.equals(phone, user.phone) && Objects.equals(email, user.email) && Objects.equals(cpf, user.cpf);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, address, phone);
+        return Objects.hash(id, name, address, phone, email, cpf);
     }
 
     @Override
@@ -102,6 +133,8 @@ public class User {
                 ", name=" + name +
                 ", address=" + address +
                 ", phone=" + phone +
+                ", email=" + email +
+                ", cpf=" + cpf +
                 '}';
     }
 }
