@@ -3,13 +3,37 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
 <VBox xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.managerlibrary.controllers.UserController"
-      stylesheets="@/Styles.css">
-    <Label text="Gerenciamento de Usuários" />
+      stylesheets="@/Styles.css" spacing="10">
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
 
-    <GridPane>
+    <Label text="Gerenciamento de Usuários" style="-fx-font-size: 1.2em; -fx-font-weight: bold;" />
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Buscar por:" />
+        <ComboBox fx:id="searchCriteriaComboBox">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Nome" />
+                    <String fx:value="CPF" />
+                </FXCollections>
+            </items>
+            <value>
+                <String fx:value="Nome" />
+            </value>
+        </ComboBox>
+        <TextField fx:id="searchTextField" promptText="Digite o termo de busca" HBox.hgrow="ALWAYS" />
+        <Button text="Buscar" onAction="#handleSearchUser" />
+    </HBox>
+
+    <GridPane vgap="5" hgap="5">
         <Label text="Nome:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
         <TextField fx:id="nameTextField" GridPane.rowIndex="0" GridPane.columnIndex="1" />
 
@@ -20,19 +44,20 @@
         <TextField fx:id="phoneTextField" GridPane.rowIndex="2" GridPane.columnIndex="1" />
     </GridPane>
 
-    <HBox>
+    <HBox spacing="10">
         <Button text="Adicionar" onAction="#addUser" />
-        <Button text="Buscar" onAction="#searchUsers" />
         <Button text="Atualizar" onAction="#updateUsers" />
         <Button text="Remover" onAction="#deleteUsers" />
     </HBox>
 
-    <TableView fx:id="usersTableView">
+    <TableView fx:id="usersTableView" VBox.vgrow="ALWAYS">
         <columns>
             <TableColumn fx:id="idColumn" text="ID" />
             <TableColumn fx:id="nameColumn" text="Nome" />
             <TableColumn fx:id="addressColumn" text="Endereco" />
             <TableColumn fx:id="phoneColumn" text="Telefone" />
+            <TableColumn fx:id="emailColumn" text="Email" />
+            <TableColumn fx:id="cpfColumn" text="CPF" />
         </columns>
     </TableView>
 </VBox>

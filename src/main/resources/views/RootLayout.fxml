@@ -3,12 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -24,12 +19,16 @@
             <padding>
                 <Insets top="20" left="10" bottom="20" right="10"/>
             </padding>
-            <ImageView fitWidth="100" fitHeight="100">
-                <Image url="@/images/library_logo.png"/>
+            <Label text="LOGO AQUI" alignment="CENTER" prefWidth="100" prefHeight="100">
                 <VBox.margin>
-                    <Insets bottom="20" alignment="CENTER" hgrow="ALWAYS"/>
+                    <Insets bottom="20"/>
                 </VBox.margin>
-            </ImageView>
+                <style>
+                    -fx-border-color: gray;
+                    -fx-border-width: 1px;
+                    -fx-alignment: center;
+                </style>
+            </Label>
             <Button text="Biblioteca" prefWidth="Infinity" styleClass="sidebar-button"/>
             <Button text="Gerenciar Livros" prefWidth="Infinity" styleClass="sidebar-button" onAction="#showBookView"/>
             <Button text="Usuários" prefWidth="Infinity" styleClass="sidebar-button" onAction="#showUserView"/>
@@ -39,13 +38,8 @@
                     <Insets top="20"/>
                 </padding>
                 <HBox spacing="5" alignment="CENTER_LEFT">
-                    <ImageView fitWidth="20" fitHeight="20">
-                        <Image url="@/images/admin_icon.png"/>
-                    </ImageView>
-                    <VBox>
-                        <Label text="Admin" style="-fx-font-weight: bold;"/>
-                        <Label text="admin@biblioteca.com" style="-fx-font-size: 0.8em;"/>
-                    </VBox>
+                    <Label text="Admin" style="-fx-font-weight: bold;"/>
+                    <Label text="admin@biblioteca.com" style="-fx-font-size: 0.8em;"/>
                     <padding>
                         <Insets bottom="10"/>
                     </padding>

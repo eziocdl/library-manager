@@ -19,6 +19,8 @@ import javafx.scene.layout.VBox;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import javafx.util.StringConverter;
 
 public class LoanController {
 
@@ -41,6 +43,7 @@ public class LoanController {
     private UserService userService;
     private RootLayoutController rootLayoutController;
     private ObservableList<Loan> allLoans = FXCollections.observableArrayList();
+    private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); // Adicione isto
 
     public LoanController() {
         try {
@@ -109,10 +112,27 @@ public class LoanController {
             bookComboBox.setItems(FXCollections.observableArrayList(bookService.findAllBooks()));
             userComboBox.setItems(FXCollections.observableArrayList(userService.getAllUsers()));
             loanDatePicker.setValue(LocalDate.now());
+            setDatePickerFormat(loanDatePicker); // Adicionar formatação
+            returnDatePicker.setValue(LocalDate.now().plusDays(7)); // Definir um valor inicial para a data de devolução
+            setDatePickerFormat(returnDatePicker); // Adicionar formatação
         } catch (SQLException e) {
             e.printStackTrace();
             // Lidar com o erro
         }
+    }
+
+    private void setDatePickerFormat(DatePicker datePicker) {
+        datePicker.setConverter(new StringConverter<LocalDate>() {
+            @Override
+            public String toString(LocalDate date) {
+                return (date != null) ? dateFormatter.format(date) : "";
+            }
+
+            @Override
+            public LocalDate fromString(String string) {
+                return (string != null && !string.isEmpty()) ? LocalDate.parse(string, dateFormatter) : null;
+            }
+        });
     }
 
     @FXML

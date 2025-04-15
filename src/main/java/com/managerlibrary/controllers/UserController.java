@@ -7,19 +7,46 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 public class UserController {
 
     @FXML
-    private FlowPane usersFlowPane;
+    private TableView<User> usersTableView;
+
+    @FXML
+    private TableColumn<User, Integer> idColumn;
+    @FXML
+    private TableColumn<User, String> nameColumn;
+    @FXML
+    private TableColumn<User, String> addressColumn;
+    @FXML
+    private TableColumn<User, String> phoneColumn;
+    @FXML
+    private TableColumn<User, String> emailColumn;
+    @FXML
+    private TableColumn<User, String> cpfColumn;
+
+    @FXML
+    private ComboBox<String> searchCriteriaComboBox;
+    @FXML
+    private TextField searchTextField;
+
+    @FXML
+    private TextField nameTextField; // Referências para AddUserView
+    @FXML
+    private TextField emailTextField;
+    @FXML
+    private TextField cpfTextField;
+    @FXML
+    private TextField phoneTextField;
+    @FXML
+    private TextField addressTextField;
 
     private UserService userService = new UserService();
     private RootLayoutController rootLayoutController;
@@ -30,6 +57,13 @@ public class UserController {
 
     @FXML
     public void initialize() {
+        idColumn.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
+        nameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
+        addressColumn.setCellValueFactory(cellData -> cellData.getValue().addressProperty());
+        phoneColumn.setCellValueFactory(cellData -> cellData.getValue().phoneProperty());
+        emailColumn.setCellValueFactory(cellData -> cellData.getValue().emailProperty());
+        cpfColumn.setCellValueFactory(cellData -> cellData.getValue().cpfProperty());
+
         try {
             loadingUsers();
         } catch (SQLException e) {
@@ -52,35 +86,33 @@ public class UserController {
 
     @FXML
     public void saveUser() {
+        String name = nameTextField.getText();
+        String email = emailTextField.getText();
+        String cpf = cpfTextField.getText();
+        String phone = phoneTextField.getText();
+        String address = addressTextField.getText();
+
+        User user = new User();
+        user.setName(name);
+        user.setEmail(email);
+        user.setCpf(cpf);
+        user.setPhone(phone);
+        user.setAddress(address);
+
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/AddUserView.fxml"));
-            Pane addUserView = loader.load();
-
-            TextField nameTextField = (TextField) addUserView.lookup("#nameTextField");
-            TextField emailTextField = (TextField) addUserView.lookup("#emailTextField");
-            TextField cpfTextField = (TextField) addUserView.lookup("#cpfTextField");
-            TextField phoneTextField = (TextField) addUserView.lookup("#phoneTextField");
-            TextField addressTextField = (TextField) addUserView.lookup("#addressTextField");
-
-            String name = nameTextField.getText();
-            String email = emailTextField.getText();
-            String cpf = cpfTextField.getText();
-            String phone = phoneTextField.getText();
-            String address = addressTextField.getText();
-
-            User user = new User();
-            user.setName(name);
-            user.setEmail(email);
-            user.setCpf(cpf);
-            user.setPhone(phone);
-            user.setAddress(address);
-
-            userService.addUser(user); // Assumindo que este método existe no seu UserService
+            userService.addUser(user);
             loadingUsers();
             cancelAddUserView();
-
-        } catch (IOException | SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
+            // Lide com erros de banco de dados aqui (exiba mensagem ao usuário)
+        } catch (IllegalArgumentException e) {
+            // Lide com erros de validação aqui (exiba mensagem ao usuário)
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erro de Validação");
+            alert.setHeaderText(null);
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
         }
     }
 
@@ -97,53 +129,65 @@ public class UserController {
         }
     }
 
-    private void loadingUsers() throws SQLException {
-        ObservableList<User> users = FXCollections.observableArrayList(userService.getAllUsers()); // Assumindo este método no seu UserService
-        usersFlowPane.getChildren().clear();
-        for (User user : users) {
-            VBox userCard = createUserCard(user);
-            usersFlowPane.getChildren().add(userCard);
+    @FXML
+    private void handleSearchUser() {
+        String searchTerm = searchTextField.getText();
+        String searchCriteria = searchCriteriaComboBox.getValue();
+
+        if (searchTerm != null && !searchTerm.trim().isEmpty() && searchCriteria != null) {
+            try {
+                List<User> searchResults = null;
+                if (searchCriteria.equals("Nome")) {
+                    searchResults = userService.findUsersByName(searchTerm);
+                } else if (searchCriteria.equals("CPF")) {
+                    User user = userService.findUserByCPF(searchTerm);
+                    if (user != null) {
+                        searchResults = List.of(user);
+                    } else {
+                        searchResults = List.of();
+                    }
+                }
+                updateUserDisplay(searchResults);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                // Lide com erro de busca
+            }
+        } else {
+            try {
+                loadingUsers();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    private VBox createUserCard(User user) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/UserCardView.fxml"));
-            VBox card = loader.load();
-            Label nameLabel = (Label) card.lookup("#nameLabel");
-            Label emailLabel = (Label) card.lookup("#emailLabel");
-            Label cpfLabel = (Label) card.lookup("#cpfLabel");
-            Label phoneLabel = (Label) card.lookup("#phoneLabel");
-            Label addressLabel = (Label) card.lookup("#addressLabel");
-            Button detailsButton = (Button) card.lookup("#detailsButton");
+    private void loadingUsers() throws SQLException {
+        ObservableList<User> users = FXCollections.observableArrayList(userService.getAllUsers());
+        usersTableView.setItems(users);
+    }
 
-            nameLabel.setText(user.getName());
-            emailLabel.setText(user.getEmail());
-            cpfLabel.setText(user.getCpf());
-            phoneLabel.setText(user.getPhone());
-            addressLabel.setText(user.getAddress());
-            detailsButton.setOnAction(event -> showUserDetails(user));
-
-            return card;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+    private void updateUserDisplay(List<User> userList) {
+        ObservableList<User> observableUserList = FXCollections.observableArrayList(userList);
+        usersTableView.setItems(observableUserList);
     }
 
     @FXML
-    public void showUserDetails(ActionEvent event) {
-        if (event.getSource() instanceof Button) {
-            Button detailsButton = (Button) event.getSource();
-            VBox userCard = (VBox) detailsButton.getParent();
-            Label nameLabel = (Label) userCard.lookup("#nameLabel");
-            System.out.println("Detalhes do usuário: " + nameLabel.getText());
-            // Implemente a lógica para exibir os detalhes completos do usuário
-        }
+    public void addUser(ActionEvent event) {
+        showAddUserView();
     }
 
-    public void showUserDetails(User user) {
-        System.out.println("Detalhes do usuário: " + user.getName());
-        // Outra forma de acessar os detalhes, se necessário
+    @FXML
+    public void searchUsers(ActionEvent event) {
+        handleSearchUser();
+    }
+
+    @FXML
+    public void updateUsers(ActionEvent event) {
+        // Implemente a lógica para atualizar um usuário selecionado na TableView
+    }
+
+    @FXML
+    public void deleteUsers(ActionEvent event) {
+        // Implemente a lógica para deletar um usuário selecionado na TableView
     }
 }

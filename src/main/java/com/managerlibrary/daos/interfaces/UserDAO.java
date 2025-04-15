@@ -48,5 +48,21 @@ public interface UserDAO {
      */
     void deleteUser(int id) throws SQLException;
 
+    /**
+     * Busca usuários pelo nome (pode ser uma busca parcial).
+     *
+     * @param name O nome ou parte do nome a ser buscado.
+     * @return Uma lista de usuários que correspondem ao critério de busca.
+     * @throws SQLException Se ocorrer um erro ao buscar os usuários.
+     */
+    List<User> findUsersByName(String name) throws SQLException;
 
+    /**
+     * Busca um usuário pelo CPF (deve ser uma busca exata).
+     *
+     * @param cpf O CPF do usuário a ser buscado.
+     * @return O usuário encontrado, ou null se não encontrado.
+     * @throws SQLException Se ocorrer um erro ao buscar o usuário.
+     */
+    User findUserByCPF(String cpf) throws SQLException;
 }

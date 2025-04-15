@@ -8,7 +8,6 @@ import java.util.List;
 
 public class BookService {
 
-
     private final BookDAO bookDAO;
 
     public BookService(BookDAO bookDAO) {
@@ -19,6 +18,7 @@ public class BookService {
         bookDAO.insertBook(book);
     }
 
+    // Método de busca genérico (pode ser usado para múltiplos critérios)
     public List<Book> searchBook(Book book) throws SQLException {
         return bookDAO.searchBook(book);
     }
@@ -39,7 +39,6 @@ public class BookService {
         bookDAO.deleteBook(id);
     }
 
-
     public void decrementAvailableCopies(int bookId) throws SQLException {
         Book book = bookDAO.findBookById(bookId);
         if (book != null && book.getAvailableCopies() > 0) {
@@ -48,12 +47,6 @@ public class BookService {
         }
     }
 
-    /**
-     * Incrementa o número de cópias disponíveis de um livro.
-     *
-     * @param bookId O ID do livro a ter suas cópias incrementadas.
-     * @throws SQLException Se ocorrer um erro ao atualizar o livro.
-     */
     public void incrementAvailableCopies(int bookId) throws SQLException {
         Book book = bookDAO.findBookById(bookId);
         if (book != null) {
@@ -61,7 +54,21 @@ public class BookService {
             bookDAO.updateBook(book);
         }
     }
+
+    // Métodos específicos de busca (sugestões)
+    public List<Book> findBooksByTitle(String title) throws SQLException {
+        return bookDAO.findBooksByTitle(title);
+    }
+
+    public List<Book> findBooksByAuthor(String author) throws SQLException {
+        return bookDAO.findBooksByAuthor(author);
+    }
+
+    public Book findBookByISBN(String isbn) throws SQLException {
+        return bookDAO.findBookByISBN(isbn);
+    }
+
+    public List<Book> findBooksByGenre(String genre) throws SQLException {
+        return bookDAO.findBooksByGenre(genre);
+    }
 }
-
-
-

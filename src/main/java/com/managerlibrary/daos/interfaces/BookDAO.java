@@ -19,7 +19,12 @@ public interface BookDAO {
 
     void deleteBook(int id) throws SQLException;
 
+    // Novos métodos de busca específicos
+    List<Book> findBooksByTitle(String title) throws SQLException;
 
+    List<Book> findBooksByAuthor(String author) throws SQLException;
 
+    Book findBookByISBN(String isbn) throws SQLException;
 
+    List<Book> findBooksByGenre(String genre) throws SQLException;
 }

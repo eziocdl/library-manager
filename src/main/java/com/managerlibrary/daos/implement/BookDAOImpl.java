@@ -112,10 +112,46 @@ public class BookDAOImpl implements BookDAO {
             params.add("%" + book.getGenre() + "%");
         }
 
+        return executeSearch(sql.toString(), params);
+    }
+
+    @Override
+    public List<Book> findBooksByTitle(String title) throws SQLException {
+        String sql = "SELECT * FROM books WHERE title LIKE ?";
+        return executeSearch(sql, "%" + title + "%");
+    }
+
+    @Override
+    public List<Book> findBooksByAuthor(String author) throws SQLException {
+        String sql = "SELECT * FROM books WHERE author LIKE ?";
+        return executeSearch(sql, "%" + author + "%");
+    }
+
+    @Override
+    public Book findBookByISBN(String isbn) throws SQLException {
+        String sql = "SELECT * FROM books WHERE isbn = ?";
         try (Connection connection = DataBaseConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql.toString())) {
-            for (int i = 0; i < params.size(); i++) {
-                preparedStatement.setObject(i + 1, params.get(i));
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, isbn);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return createBook(resultSet);
+            }
+            return null;
+        }
+    }
+
+    @Override
+    public List<Book> findBooksByGenre(String genre) throws SQLException {
+        String sql = "SELECT * FROM books WHERE genre LIKE ?";
+        return executeSearch(sql, "%" + genre + "%");
+    }
+
+    private List<Book> executeSearch(String sql, Object... params) throws SQLException {
+        try (Connection connection = DataBaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            for (int i = 0; i < params.length; i++) {
+                preparedStatement.setObject(i + 1, params[i]);
             }
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Book> books = new ArrayList<>();

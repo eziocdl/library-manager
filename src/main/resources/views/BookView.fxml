@@ -20,6 +20,11 @@
         <Button text="+ Adicionar Livro" onAction="#showAddBookView"/>
     </HBox>
 
-    <FlowPane fx:id="booksFlowPane" hgap="10" vgap="10" prefWidth="600">
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <TextField fx:id="searchBookTextField" promptText="Buscar por título..." HBox.hgrow="ALWAYS"/>
+        <Button fx:id="searchBookButton" onAction="#handleSearchBook" text="Buscar"/>
+    </HBox>
+
+    <FlowPane fx:id="booksFlowPane" hgap="10" vgap="10" prefWidth="600" VBox.vgrow="ALWAYS">
     </FlowPane>
 </VBox>

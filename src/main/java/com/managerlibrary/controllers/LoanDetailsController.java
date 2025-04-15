@@ -5,9 +5,14 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
+import java.time.format.DateTimeFormatter;
+
 public class LoanDetailsController {
 
     private Loan loan;
+    private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); // Adicione esta linha
+
+
 
     @FXML
     private Label loanIdLabel;
@@ -36,9 +41,9 @@ public class LoanDetailsController {
             loanIdLabel.setText(String.valueOf(loan.getId()));
             bookIdLabel.setText(String.valueOf(loan.getBookId()));
             userIdLabel.setText(String.valueOf(loan.getUserId()));
-            loanDateLabel.setText(loan.getLoanDate().toString());
-            returnDateLabel.setText(loan.getReturnDate().toString());
-            actualReturnDateLabel.setText(loan.getActualReturnDate() != null ? loan.getActualReturnDate().toString() : "Não Devolvido");
+            loanDateLabel.setText(loan.getLoanDate() != null ? loan.getLoanDate().format(dateFormatter) : ""); // Formatar
+            returnDateLabel.setText(loan.getReturnDate() != null ? loan.getReturnDate().format(dateFormatter) : "");   // Formatar
+            actualReturnDateLabel.setText(loan.getActualReturnDate() != null ? loan.getActualReturnDate().format(dateFormatter) : "Não Devolvido"); // Formatar
             statusLabel.setText(loan.getStatus());
             fineLabel.setText(String.format("%.2f", loan.getFine()));
         }
@@ -46,7 +51,6 @@ public class LoanDetailsController {
 
     @FXML
     private void closeLoanDetailsView() {
-        // Obtém a janela atual e a fecha
         Stage stage = (Stage) loanIdLabel.getScene().getWindow();
         stage.close();
     }

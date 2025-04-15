@@ -1,7 +1,9 @@
 package com.managerlibrary;
 
 import com.managerlibrary.controllers.BookController;
+import com.managerlibrary.controllers.LoanController;
 import com.managerlibrary.controllers.RootLayoutController;
+import com.managerlibrary.controllers.UserController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -15,7 +17,7 @@ public class App extends Application {
 
     private Stage primaryStage;
     private BorderPane rootLayout;
-    private RootLayoutController rootController; // Adicione esta linha
+    private RootLayoutController rootController;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -24,16 +26,21 @@ public class App extends Application {
 
         initRootLayout();
 
+        primaryStage.setOnShown(event -> {
+            showBookView();
+        });
+
+        // A Scene já foi criada e definida em initRootLayout()
+        // Não precisamos criar uma nova aqui.
+        primaryStage.show();
     }
+
 
     public void initRootLayout() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/RootLayout.fxml"));
             rootLayout = loader.load();
-
-            // *** CRUCIAL: Obtenha e armazene o Controller ***
             rootController = loader.getController();
-
             Scene scene = new Scene(rootLayout, 800, 600);
             primaryStage.setScene(scene);
             primaryStage.show();
@@ -46,13 +53,8 @@ public class App extends Application {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/BookView.fxml"));
             Pane bookView = loader.load();
-
-            // Obtenha o controlador do BookView
             BookController bookController = loader.getController();
-
-            // Use a instância armazenada do RootLayoutController
             bookController.setRootLayoutController(rootController);
-
             rootLayout.setCenter(bookView);
             primaryStage.setTitle("Manager Library - Livros");
         } catch (IOException e) {
@@ -64,6 +66,8 @@ public class App extends Application {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/LoanView.fxml"));
             Pane loanView = loader.load();
+            LoanController loanController = loader.getController();
+            loanController.setRootLayoutController(rootController);
             rootLayout.setCenter(loanView);
             primaryStage.setTitle("Manager Library - Empréstimos");
         } catch (IOException e) {
@@ -75,6 +79,8 @@ public class App extends Application {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/UserView.fxml"));
             Pane userView = loader.load();
+            UserController userController = loader.getController();
+            userController.setRootLayoutController(rootController);
             rootLayout.setCenter(userView);
             primaryStage.setTitle("Manager Library - Usuários");
         } catch (IOException e) {

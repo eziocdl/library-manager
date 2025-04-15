@@ -7,6 +7,9 @@ import javafx.collections.ObservableList;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class UserService {
     private UserDAO userDAO;
@@ -22,13 +25,10 @@ public class UserService {
         this.userDAO = userDAO;
     }
 
-    /**
-     * Adiciona um novo usuário ao banco de dados (ou à lista em memória na simulação).
-     *
-     * @param user O usuário a ser adicionado.
-     * @throws SQLException Se ocorrer um erro ao adicionar o usuário (na implementação real).
-     */
     public void addUser(User user) throws SQLException {
+        if (!isValidUser(user)) {
+            throw new IllegalArgumentException("Dados do usuário inválidos.");
+        }
         if (userDAO != null) {
             userDAO.insertUser(user);
         } else {
@@ -37,27 +37,14 @@ public class UserService {
         }
     }
 
-    /**
-     * Busca um usuário pelo ID (do banco de dados ou da lista em memória).
-     *
-     * @param id O ID do usuário a ser buscado.
-     * @return O usuário encontrado, ou null se não encontrado.
-     * @throws SQLException Se ocorrer um erro ao buscar o usuário (na implementação real).
-     */
     public User getUserById(int id) throws SQLException {
         if (userDAO != null) {
             return userDAO.findUserById(id);
         } else {
-            return users.stream().filter(user -> user.getId() == id).findFirst().orElse(null);
+            return users.stream().filter(u -> u.getId() == id).findFirst().orElse(null);
         }
     }
 
-    /**
-     * Busca todos os usuários (do banco de dados ou da lista em memória).
-     *
-     * @return Uma lista com todos os usuários encontrados.
-     * @throws SQLException Se ocorrer um erro ao buscar os usuários (na implementação real).
-     */
     public List<User> getAllUsers() throws SQLException {
         if (userDAO != null) {
             return userDAO.findAllUsers();
@@ -66,13 +53,10 @@ public class UserService {
         }
     }
 
-    /**
-     * Atualiza um usuário no banco de dados (ou na lista em memória).
-     *
-     * @param user O usuário a ser atualizado.
-     * @throws SQLException Se ocorrer um erro ao atualizar o usuário (na implementação real).
-     */
     public void updateUser(User user) throws SQLException {
+        if (!isValidUser(user)) {
+            throw new IllegalArgumentException("Dados do usuário inválidos.");
+        }
         if (userDAO != null) {
             userDAO.updateUser(user);
         } else {
@@ -89,17 +73,54 @@ public class UserService {
         }
     }
 
-    /**
-     * Remove um usuário pelo ID (do banco de dados ou da lista em memória).
-     *
-     * @param id O ID do usuário a ser removido.
-     * @throws SQLException Se ocorrer um erro ao remover o usuário (na implementação real).
-     */
     public void removeUser(int id) throws SQLException {
         if (userDAO != null) {
             userDAO.deleteUser(id);
         } else {
             users.removeIf(user -> user.getId() == id);
         }
+    }
+
+    public List<User> findUsersByName(String name) throws SQLException {
+        if (userDAO != null) {
+            return userDAO.findUsersByName(name);
+        } else {
+            return users.stream()
+                    .filter(user -> user.getName().toLowerCase().contains(name.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+    }
+
+    public User findUserByCPF(String cpf) throws SQLException {
+        if (userDAO != null) {
+            return userDAO.findUserByCPF(cpf);
+        } else {
+            return users.stream()
+                    .filter(user -> user.getCpf().equals(cpf))
+                    .findFirst()
+                    .orElse(null);
+        }
+    }
+
+    private boolean isValidUser(User user) {
+        if (user.getName() == null || user.getName().trim().isEmpty()) {
+            return false;
+        }
+        if (user.getEmail() != null && !user.getEmail().isEmpty()) {
+            Pattern pattern = Pattern.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}");
+            if (!pattern.matcher(user.getEmail()).matches()) {
+                return false;
+            }
+        }
+        if (user.getCpf() != null && !user.getCpf().isEmpty() && !user.getCpf().matches("\\d{11}")) {
+            return false;
+        }
+        if (user.getPhone() != null && !user.getPhone().isEmpty() && !user.getPhone().matches("\\d+")) {
+            return false;
+        }
+        if (user.getAddress() == null || user.getAddress().trim().isEmpty()) {
+            return false;
+        }
+        return true;
     }
 }

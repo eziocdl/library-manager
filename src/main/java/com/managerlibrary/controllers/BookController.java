@@ -19,6 +19,7 @@ import javafx.stage.FileChooser;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 public class BookController {
 
@@ -27,6 +28,9 @@ public class BookController {
 
     @FXML
     private Label coverFileNameLabel; // Adicionado para exibir o nome do arquivo
+
+    @FXML
+    private TextField searchBookTextField; // Referência ao TextField de busca (certifique-se de ter este fx:id no seu FXML)
 
     private BookService bookService;
     private RootLayoutController rootLayoutController;
@@ -146,10 +150,35 @@ public class BookController {
         }
     }
 
+    @FXML
+    private void handleSearchBook() { // Adicione este método
+        String searchTerm = searchBookTextField.getText();
+        if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+            try {
+                List<Book> searchResults = bookService.findBooksByTitle(searchTerm); // Busca por título como exemplo
+                updateBookDisplay(searchResults);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                // Lidar com o erro de busca
+            }
+        } else {
+            try {
+                loadingBooks(); // Se o campo de busca estiver vazio, mostrar todos os livros
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void loadingBooks() throws SQLException {
         ObservableList<Book> books = FXCollections.observableArrayList(bookService.findAllBooks());
+        updateBookDisplay(books);
+    }
+
+    private void updateBookDisplay(List<Book> bookList) {
+        ObservableList<Book> observableBookList = FXCollections.observableArrayList(bookList);
         booksFlowPane.getChildren().clear();
-        for (Book book : books) {
+        for (Book book : observableBookList) {
             VBox bookCard = createBookCard(book);
             booksFlowPane.getChildren().add(bookCard);
         }
