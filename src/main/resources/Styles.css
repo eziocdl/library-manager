@@ -47,28 +47,29 @@ body {
     -fx-background-color: #b2ebf2; /* Azul mais claro ao passar o mouse */
 }
 
-/* Logo */
-.logo-image {
-    -fx-fit-width: 100px; /* Ajuste a largura conforme necessário */
-    -fx-fit-height: auto; /* Mantém a proporção da altura */
-    -fx-preserve-ratio: true;
-    -fx-margin-bottom: 30px; /* Ajuste a margem inferior para o espaçamento desejado */
-    -fx-margin-top: 10px; /* Adiciona uma margem superior para afastar do topo */
-    -fx-margin-left: 10px;
+
+
+
+
+.logo-image { /* Estilo para o texto "LOGO AQUI" (se ainda usado em algum lugar) */
+    -fx-pref-width: 100px; /* Define a largura preferencial do ImageView */
+    -fx-pref-height: 100px; /* Define a altura preferencial do ImageView */
+
+    -fx-background-color: #81d4fa; /* Cor de fundo */
+    -fx-border-color: #b2ebf2; /* Cor da borda */
+    -fx-border-width: 1px; /* Largura da borda */
+    -fx-background-radius: 8px; /* Raio dos cantos do fundo */
+    -fx-border-radius: 8px; /* Raio dos cantos da borda */
+    -fx-padding: 16px; /* Espaçamento interno */
+
+    /* Estilos para a imagem DENTRO do ImageView */
+    -fx-image: url("assets/logo.jpeg"); /* Define a imagem (alternativa ao FXML) */
+    -fx-image-preserve-ratio: true; /* Mantém a proporção da imagem */
+    -fx-image-repeat: no-repeat; /* Não repete a imagem */
+    -fx-image-position: center; /* Centraliza a imagem dentro do ImageView */
+    -fx-image-size: contain; /* Garante que a imagem caiba dentro do ImageView sem cortar */
 }
 
-.label-logo { /* Estilo para o texto "LOGO AQUI" (se ainda usado em algum lugar) */
-    -fx-background-color: #81d4fa; /* Azul mais vibrante */
-    -fx-text-fill: #fff; /* Branco */
-    -fx-font-size: 1.3em;
-    -fx-font-weight: bold;
-    -fx-alignment: center;
-    -fx-border-color: #b2ebf2; /* Borda azul mais clara */
-    -fx-border-width: 1px;
-    -fx-background-radius: 8px;
-    -fx-border-radius: 8px;
-    -fx-padding: 16px;
-}
 
 /* Títulos */
 .label-title {
@@ -263,4 +264,27 @@ body {
 
 .label {
     -fx-text-fill: #555; /* Cinza um pouco mais escuro */
+}
+
+.top {
+    -fx-background-color: #e0f2f7;
+    -fx-padding: 12px 16px;
+    -fx-border-bottom: 1px solid #b2ebf2;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 6, 0, 2, 2);
+    -fx-alignment: CENTER_LEFT; /* Alinha verticalmente os itens ao centro */
+    -fx-spacing: 10px; /* Adiciona um pequeno espaço entre os elementos (opcional) */
+}
+
+.top .primary-button {
+    -fx-margin-left: 10px; /* Adiciona espaço à esquerda do botão */
+    /* Outros estilos do botão */
+}
+
+.sidebar-label-title {
+    -fx-text-fill: #2c3e50; /* Cor do texto (um tom mais escuro) */
+    -fx-font-size: 2.0em; /* Tamanho da fonte maior */
+    -fx-font-weight: bold; /* Texto em negrito para destaque */
+    -fx-alignment: CENTER; /* Centralizar o texto horizontalmente */
+    -fx-padding: 20px 0 10px 0; /* Espaçamento superior e inferior para melhor posicionamento vertical */
+    -fx-font-family: "Arial Black"; /* Uma fonte mais marcante (você pode escolher outra) */
 }

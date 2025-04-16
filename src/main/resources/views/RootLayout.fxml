@@ -21,14 +21,18 @@
             <padding>
                 <Insets top="20" left="10" bottom="20" right="10"/>
             </padding>
-            <Label text="LOGO AQUI" alignment="CENTER" prefWidth="100" prefHeight="100" styleClass="label-logo">
+            <ImageView styleClass="logo-image">
                 <VBox.margin>
-                    <Insets bottom="20"/>
+                    <Insets bottom="20.0"/>
                 </VBox.margin>
+            </ImageView>
+
+
+
+            <Label text="Library Manager" prefWidth="Infinity" styleClass="sidebar-label-title">
+                <VBox.margin>
+                    <Insets bottom="20.0"/> </VBox.margin>
             </Label>
-
-
-            <Button text="Biblioteca" prefWidth="Infinity" styleClass="sidebar-button"/>
             <Button text="Gerenciar Livros" prefWidth="Infinity" styleClass="sidebar-button" onAction="#showBookView"/>
             <Button text="Usuários" prefWidth="Infinity" styleClass="sidebar-button" onAction="#showUserView"/>
             <Button text="Empréstimos" prefWidth="Infinity" styleClass="sidebar-button" onAction="#showLoanView"/>
