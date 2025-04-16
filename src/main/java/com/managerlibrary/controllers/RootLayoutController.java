@@ -4,7 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.layout.BorderPane;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node; // Importe a classe Node
+import javafx.scene.Node;
 import java.io.IOException;
 
 public class RootLayoutController {
@@ -12,9 +12,14 @@ public class RootLayoutController {
     @FXML
     private BorderPane rootLayout;
 
+    private BookController bookController; // **Adicionada a declaração da variável bookController**
+
+    public void setBookController(BookController bookController) {
+        this.bookController = bookController;
+    }
+
     @FXML
     public void handleExit(ActionEvent event) {
-        // Lógica para sair da aplicação
         System.exit(0);
     }
 
@@ -31,6 +36,15 @@ public class RootLayoutController {
     @FXML
     public void showUserView(ActionEvent event) {
         loadView("/views/UserView.fxml");
+    }
+
+    @FXML
+    public void handleAddBookClick(ActionEvent event) {
+        if (bookController != null) {
+            bookController.showAddBookView();
+        } else {
+            System.err.println("BookController não foi injetado no RootLayoutController.");
+        }
     }
 
     private void loadView(String fxmlPath) {

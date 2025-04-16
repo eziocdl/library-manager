@@ -55,14 +55,18 @@ public class BookController {
 
     @FXML
     public void showAddBookView() {
+        System.out.println("Método showAddBookView() chamado!"); // Adicionado para depuração
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/AddBookView.fxml"));
             Pane addBookView = loader.load();
             if (rootLayoutController != null) {
                 rootLayoutController.setCenterView(addBookView);
+            } else {
+                System.err.println("rootLayoutController é nulo em showAddBookView()");
             }
         } catch (IOException e) {
             e.printStackTrace();
+            System.err.println("Erro ao carregar AddBookView.fxml: " + e.getMessage()); // Adicionado para depuração
         }
     }
 

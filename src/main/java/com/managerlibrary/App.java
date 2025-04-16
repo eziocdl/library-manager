@@ -18,6 +18,7 @@ public class App extends Application {
     private Stage primaryStage;
     private BorderPane rootLayout;
     private RootLayoutController rootController;
+    private BookController bookController; // Adicionada referência ao BookController no App
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -25,13 +26,7 @@ public class App extends Application {
         this.primaryStage.setTitle("ManagerLibrary");
 
         initRootLayout();
-
-        primaryStage.setOnShown(event -> {
-            showBookView();
-        });
-
-        // A Scene já foi criada e definida em initRootLayout()
-        // Não precisamos criar uma nova aqui.
+        showBookView(); // Garante que a BookView e o BookController sejam inicializados cedo
         primaryStage.show();
     }
 
@@ -43,7 +38,7 @@ public class App extends Application {
             rootController = loader.getController();
             Scene scene = new Scene(rootLayout, 800, 600);
             primaryStage.setScene(scene);
-            primaryStage.show();
+            // primaryStage.show(); // Movido para o final do start()
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -53,8 +48,12 @@ public class App extends Application {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/BookView.fxml"));
             Pane bookView = loader.load();
-            BookController bookController = loader.getController();
+            bookController = loader.getController(); // Inicializa a referência do BookController no App
             bookController.setRootLayoutController(rootController);
+
+            // Injeta o BookController no RootLayoutController
+            rootController.setBookController(bookController);
+
             rootLayout.setCenter(bookView);
             primaryStage.setTitle("Manager Library - Livros");
         } catch (IOException e) {

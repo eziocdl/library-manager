@@ -54,7 +54,7 @@
     <top>
         <HBox styleClass="top">
             <TextField promptText="Buscar por título, autor ou ISBN..." HBox.hgrow="ALWAYS" styleClass="top-search-field rounded-corners"/>
-            <Button text="+ Adicionar Livro" styleClass="primary-button rounded-corners shadow-effect"/>
+            <Button fx:id="addBookButton" text="+ Adicionar Livro" onAction="#handleAddBookClick" styleClass="primary-button rounded-corners shadow-effect"/>
         </HBox>
     </top>
 

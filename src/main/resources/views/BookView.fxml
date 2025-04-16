@@ -13,11 +13,7 @@
     <padding>
         <Insets top="20" left="20" bottom="20" right="20"/>
     </padding>
-    <HBox alignment="CENTER_LEFT" spacing="10">
-        <Label text="Gerenciar Livros" styleClass="label-title"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button text="+ Adicionar Livro" onAction="#showAddBookView" styleClass="primary-button rounded-corners shadow-effect"/>
-    </HBox>
+
 
     <HBox alignment="CENTER_LEFT" spacing="10">
         <TextField fx:id="searchBookTextField" promptText="Buscar por título..." HBox.hgrow="ALWAYS" styleClass="text-field rounded-corners"/>
