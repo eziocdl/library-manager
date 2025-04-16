@@ -8,6 +8,7 @@ import java.sql.SQLException;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 public class LoanService {
@@ -70,12 +71,11 @@ public class LoanService {
     }
 
     public List<Loan> getAllLoansWithDetails() throws SQLException {
-        if (loanDAO != null) {
-            return loanDAO.findAllLoansWithDetails();
-        } else {
-            // Simulação (se necessário)
-            return null; // Ou sua lista simulada
+        List<Loan> loans = loanDAO.getAllLoansWithDetails();
+        if (loans == null) {
+            return new ArrayList<>(); // Retorna uma lista vazia em vez de null
         }
+        return loans;
     }
 
     /**

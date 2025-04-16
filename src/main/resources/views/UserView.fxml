@@ -11,14 +11,14 @@
       fx:controller="com.managerlibrary.controllers.UserController"
       stylesheets="@/Styles.css" spacing="10">
     <padding>
-        <Insets top="10" right="10" bottom="10" left="10"/>
+        <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
-    <Label text="Gerenciamento de Usuários" style="-fx-font-size: 1.2em; -fx-font-weight: bold;" />
+    <Label text="Gerenciamento de Usuários" styleClass="label-title" />
 
     <HBox spacing="10" alignment="CENTER_LEFT">
-        <Label text="Buscar por:" />
-        <ComboBox fx:id="searchCriteriaComboBox">
+        <Label text="Buscar por:" styleClass="label"/>
+        <ComboBox fx:id="searchCriteriaComboBox" styleClass="rounded-corners">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="Nome" />
@@ -29,35 +29,35 @@
                 <String fx:value="Nome" />
             </value>
         </ComboBox>
-        <TextField fx:id="searchTextField" promptText="Digite o termo de busca" HBox.hgrow="ALWAYS" />
-        <Button text="Buscar" onAction="#handleSearchUser" />
+        <TextField fx:id="searchTextField" promptText="Digite o termo de busca" HBox.hgrow="ALWAYS" styleClass="text-field rounded-corners" />
+        <Button text="Buscar" onAction="#handleSearchUser" styleClass="action-button rounded-corners" />
     </HBox>
 
     <GridPane vgap="5" hgap="5">
-        <Label text="Nome:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
-        <TextField fx:id="nameTextField" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+        <Label text="Nome:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="label bold-text"/>
+        <TextField fx:id="nameTextField" GridPane.rowIndex="0" GridPane.columnIndex="1" styleClass="text-field rounded-corners"/>
 
-        <Label text="Endereço:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
-        <TextField fx:id="addressTextField" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+        <Label text="Endereço:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="label bold-text"/>
+        <TextField fx:id="addressTextField" GridPane.rowIndex="1" GridPane.columnIndex="1" styleClass="text-field rounded-corners"/>
 
-        <Label text="Telefone:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
-        <TextField fx:id="phoneTextField" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+        <Label text="Telefone:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="label bold-text"/>
+        <TextField fx:id="phoneTextField" GridPane.rowIndex="2" GridPane.columnIndex="1" styleClass="text-field rounded-corners"/>
     </GridPane>
 
     <HBox spacing="10">
-        <Button text="Adicionar" onAction="#addUser" />
-        <Button text="Atualizar" onAction="#updateUsers" />
-        <Button text="Remover" onAction="#deleteUsers" />
+        <Button text="Adicionar" onAction="#addUser" styleClass="primary-button rounded-corners shadow-effect"/>
+        <Button text="Atualizar" onAction="#updateUsers" styleClass="action-button rounded-corners"/>
+        <Button text="Remover" onAction="#deleteUsers" styleClass="action-button rounded-corners overdue-button"/>
     </HBox>
 
-    <TableView fx:id="usersTableView" VBox.vgrow="ALWAYS">
+    <TableView fx:id="usersTableView" VBox.vgrow="ALWAYS" styleClass="table-view rounded-corners shadow-effect">
         <columns>
-            <TableColumn fx:id="idColumn" text="ID" />
-            <TableColumn fx:id="nameColumn" text="Nome" />
-            <TableColumn fx:id="addressColumn" text="Endereco" />
-            <TableColumn fx:id="phoneColumn" text="Telefone" />
-            <TableColumn fx:id="emailColumn" text="Email" />
-            <TableColumn fx:id="cpfColumn" text="CPF" />
+            <TableColumn fx:id="idColumn" text="ID" styleClass="table-column"/>
+            <TableColumn fx:id="nameColumn" text="Nome" styleClass="table-column"/>
+            <TableColumn fx:id="addressColumn" text="Endereco" styleClass="table-column"/>
+            <TableColumn fx:id="phoneColumn" text="Telefone" styleClass="table-column"/>
+            <TableColumn fx:id="emailColumn" text="Email" styleClass="table-column"/>
+            <TableColumn fx:id="cpfColumn" text="CPF" styleClass="table-column"/>
         </columns>
     </TableView>
 </VBox>

@@ -3,7 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.util.StringConverter?>
+
 
 <VBox xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
@@ -13,24 +13,24 @@
     <padding>
         <Insets top="20" left="20" bottom="20" right="20"/>
     </padding>
-    <Label text="Cadastrar Empréstimo" style="-fx-font-size: 1.5em; -fx-font-weight: bold;"/>
+    <Label text="Cadastrar Empréstimo" styleClass="label-title"/>
 
     <GridPane hgap="10" vgap="10" style="-fx-padding: 20 0 0 0;">
-        <Label text="Livro:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-        <ComboBox fx:id="bookComboBox" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        <Label text="Livro:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="label"/>
+        <ComboBox fx:id="bookComboBox" GridPane.rowIndex="0" GridPane.columnIndex="1" styleClass="combo-box rounded-corners"/>
 
-        <Label text="Usuário:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-        <ComboBox fx:id="userComboBox" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+        <Label text="Usuário:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="label"/>
+        <ComboBox fx:id="userComboBox" GridPane.rowIndex="1" GridPane.columnIndex="1" styleClass="combo-box rounded-corners"/>
 
-        <Label text="Data de Empréstimo:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-        <DatePicker fx:id="loanDatePicker" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+        <Label text="Data de Empréstimo:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="label"/>
+        <DatePicker fx:id="loanDatePicker" GridPane.rowIndex="2" GridPane.columnIndex="1" styleClass="date-picker rounded-corners"/>
 
-        <Label text="Data de Devolução:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-        <DatePicker fx:id="returnDatePicker" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+        <Label text="Data de Devolução:" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="label"/>
+        <DatePicker fx:id="returnDatePicker" GridPane.rowIndex="3" GridPane.columnIndex="1" styleClass="date-picker rounded-corners"/>
     </GridPane>
 
     <HBox spacing="10" alignment="BOTTOM_RIGHT" style="-fx-padding: 20 0 0 0;">
-        <Button text="Salvar Empréstimo" onAction="#saveLoan"/>
-        <Button text="Cancelar" onAction="#cancelAddLoanView"/>
+        <Button text="Salvar Empréstimo" onAction="#saveLoan" styleClass="primary-button rounded-corners shadow-effect"/>
+        <Button text="Cancelar" onAction="#cancelAddLoanView" styleClass="button-action rounded-corners"/>
     </HBox>
 </VBox>

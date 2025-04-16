@@ -8,27 +8,26 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <BorderPane fx:id="rootLayout"
             xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.managerlibrary.controllers.RootLayoutController"
-            stylesheets="@/Styles.css">
+            stylesheets="@/Styles.css" styleClass="root">
 
     <left>
-        <VBox style="-fx-background-color: #f0f0f0;" prefWidth="150">
+        <VBox styleClass="left" prefWidth="150">
             <padding>
                 <Insets top="20" left="10" bottom="20" right="10"/>
             </padding>
-            <Label text="LOGO AQUI" alignment="CENTER" prefWidth="100" prefHeight="100">
+            <Label text="LOGO AQUI" alignment="CENTER" prefWidth="100" prefHeight="100" styleClass="label-logo">
                 <VBox.margin>
                     <Insets bottom="20"/>
                 </VBox.margin>
-                <style>
-                    -fx-border-color: gray;
-                    -fx-border-width: 1px;
-                    -fx-alignment: center;
-                </style>
             </Label>
+
+
             <Button text="Biblioteca" prefWidth="Infinity" styleClass="sidebar-button"/>
             <Button text="Gerenciar Livros" prefWidth="Infinity" styleClass="sidebar-button" onAction="#showBookView"/>
             <Button text="Usuários" prefWidth="Infinity" styleClass="sidebar-button" onAction="#showUserView"/>
@@ -38,8 +37,8 @@
                     <Insets top="20"/>
                 </padding>
                 <HBox spacing="5" alignment="CENTER_LEFT">
-                    <Label text="Admin" style="-fx-font-weight: bold;"/>
-                    <Label text="admin@biblioteca.com" style="-fx-font-size: 0.8em;"/>
+                    <Label text="Admin" style="-fx-font-weight: bold;" styleClass="label bold-text"/>
+                    <Label text="admin@biblioteca.com" style="-fx-font-size: 0.8em;" styleClass="label light-text"/>
                     <padding>
                         <Insets bottom="10"/>
                     </padding>
@@ -49,9 +48,9 @@
     </left>
 
     <top>
-        <HBox style="-fx-background-color: #ddd; -fx-padding: 10;">
-            <TextField promptText="Buscar por título, autor ou ISBN..." HBox.hgrow="ALWAYS"/>
-            <Button text="+ Adicionar Livro" styleClass="primary-button"/>
+        <HBox styleClass="top">
+            <TextField promptText="Buscar por título, autor ou ISBN..." HBox.hgrow="ALWAYS" styleClass="top-search-field rounded-corners"/>
+            <Button text="+ Adicionar Livro" styleClass="primary-button rounded-corners shadow-effect"/>
         </HBox>
     </top>
 

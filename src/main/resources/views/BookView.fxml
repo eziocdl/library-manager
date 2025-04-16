@@ -3,8 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.image.Image?>
+
 
 <VBox xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
@@ -12,17 +11,17 @@
       spacing="10"
       stylesheets="@/Styles.css">
     <padding>
-        <Insets top="10" left="10" bottom="10" right="10"/>
+        <Insets top="20" left="20" bottom="20" right="20"/>
     </padding>
     <HBox alignment="CENTER_LEFT" spacing="10">
-        <Label text="Gerenciar Livros"/>
+        <Label text="Gerenciar Livros" styleClass="label-title"/>
         <Region HBox.hgrow="ALWAYS"/>
-        <Button text="+ Adicionar Livro" onAction="#showAddBookView"/>
+        <Button text="+ Adicionar Livro" onAction="#showAddBookView" styleClass="primary-button rounded-corners shadow-effect"/>
     </HBox>
 
     <HBox alignment="CENTER_LEFT" spacing="10">
-        <TextField fx:id="searchBookTextField" promptText="Buscar por título..." HBox.hgrow="ALWAYS"/>
-        <Button fx:id="searchBookButton" onAction="#handleSearchBook" text="Buscar"/>
+        <TextField fx:id="searchBookTextField" promptText="Buscar por título..." HBox.hgrow="ALWAYS" styleClass="text-field rounded-corners"/>
+        <Button fx:id="searchBookButton" onAction="#handleSearchBook" text="Buscar" styleClass="action-button rounded-corners"/>
     </HBox>
 
     <FlowPane fx:id="booksFlowPane" hgap="10" vgap="10" prefWidth="600" VBox.vgrow="ALWAYS">

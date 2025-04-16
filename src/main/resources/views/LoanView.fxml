@@ -10,20 +10,20 @@
       spacing="10"
       stylesheets="@/Styles.css">
     <padding>
-        <Insets top="10" left="10" bottom="10" right="10"/>
+        <Insets top="20" left="20" bottom="20" right="20"/>
     </padding>
     <HBox alignment="CENTER_LEFT" spacing="10">
-        <Label text="Gerenciar Empréstimos"/>
+        <Label text="Gerenciar Empréstimos" styleClass="label-title"/>
         <Region HBox.hgrow="ALWAYS"/>
-        <TextField promptText="Buscar por usuário, livro ou CPF..."/>
-        <Button text="+ Novo Empréstimo" onAction="#showAddLoanView"/>
+        <TextField promptText="Buscar por usuário, livro ou CPF..." HBox.hgrow="ALWAYS" styleClass="text-field rounded-corners"/>
+        <Button text="+ Novo Empréstimo" onAction="#showAddLoanView" styleClass="primary-button rounded-corners shadow-effect"/>
     </HBox>
 
     <HBox spacing="10">
-        <Button text="Todos" onAction="#filterLoansByAll"/>
-        <Button text="Ativos" onAction="#filterLoansByActive"/>
-        <Button text="Devolvidos" onAction="#filterLoansByReturned"/>
-        <Button text="Atrasados" onAction="#filterLoansByOverdue"/>
+        <Button text="Todos" onAction="#filterLoansByAll" styleClass="action-button rounded-corners"/>
+        <Button text="Ativos" onAction="#filterLoansByActive" styleClass="action-button rounded-corners"/>
+        <Button text="Devolvidos" onAction="#filterLoansByReturned" styleClass="action-button rounded-corners"/>
+        <Button text="Atrasados" onAction="#filterLoansByOverdue" styleClass="action-button rounded-corners overdue-button"/>
     </HBox>
 
     <ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED">
