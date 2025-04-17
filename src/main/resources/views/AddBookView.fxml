@@ -6,44 +6,49 @@
 
 <VBox xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.managerlibrary.controllers.BookController" spacing="10"
-      stylesheets="@/Styles.css">
+      fx:controller="com.managerlibrary.controllers.AddBookViewController"
+      spacing="15.0"
+      styleClass="add-book-view">
     <padding>
-        <Insets top="20" left="20" bottom="20" right="20"/>
+        <Insets top="20.0" left="20.0" bottom="20.0" right="20.0"/>
     </padding>
-    <Label text="Adicionar Novo Livro" styleClass="label-title"/>
+    <HBox alignment="CENTER_LEFT">
+        <Label text="Adicionar Novo Livro" styleClass="title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="closeButton" text="X" onAction="#cancelAddBookView" styleClass="close-button"/>
+    </HBox>
+    <GridPane hgap="10.0" vgap="10.0" styleClass="form-grid">
+        <Label text="Título:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <TextField fx:id="titleField" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
 
-    <GridPane hgap="10" vgap="10" style="-fx-padding: 20 0 0 0;">
-        <Label text="Título:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="label"/>
-        <TextField fx:id="titleTextField" GridPane.rowIndex="0" GridPane.columnIndex="1" styleClass="text-field rounded-corners"/>
+        <Label text="Autor:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <TextField fx:id="authorField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
-        <Label text="Autor:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="label"/>
-        <TextField fx:id="authorTextField" GridPane.rowIndex="1" GridPane.columnIndex="1" styleClass="text-field rounded-corners"/>
+        <Label text="ISBN:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <TextField fx:id="isbnField" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
 
-        <Label text="ISBN:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="label"/>
-        <TextField fx:id="isbnTextField" GridPane.rowIndex="2" GridPane.columnIndex="1" styleClass="text-field rounded-corners"/>
+        <Label text="Editora:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+        <TextField fx:id="publisherField" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
-        <Label text="Editora:" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="label"/>
-        <TextField fx:id="publisherTextField" GridPane.rowIndex="3" GridPane.columnIndex="1" styleClass="text-field rounded-corners"/>
+        <Label text="Ano:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+        <TextField fx:id="yearField" text="2025" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
 
-        <Label text="Ano:" GridPane.rowIndex="4" GridPane.columnIndex="0" styleClass="label"/>
-        <TextField fx:id="yearTextField" GridPane.rowIndex="4" GridPane.columnIndex="1" styleClass="text-field rounded-corners"/>
+        <Label text="Gênero:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+        <TextField fx:id="genreField" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
 
-        <Label text="Gênero:" GridPane.rowIndex="5" GridPane.columnIndex="0" styleClass="label"/>
-        <TextField fx:id="genreTextField" GridPane.rowIndex="5" GridPane.columnIndex="1" styleClass="text-field rounded-corners"/>
+        <Label text="Quantidade:" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+        <TextField fx:id="quantityField" text="1" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
 
-        <Label text="Número de Cópias:" GridPane.rowIndex="6" GridPane.columnIndex="0" styleClass="label"/>
-        <TextField fx:id="totalCopiesTextField" GridPane.rowIndex="6" GridPane.columnIndex="1" styleClass="text-field rounded-corners"/>
+        <Label text="URL da Imagem:" GridPane.columnIndex="0" GridPane.rowIndex="7" GridPane.columnSpan="2"/>
+        <TextField fx:id="imageUrlField" GridPane.columnIndex="0" GridPane.rowIndex="8" GridPane.columnSpan="2"/>
 
-        <Label text="Imagem do Livro:" GridPane.rowIndex="7" GridPane.columnIndex="0" styleClass="label"/>
-        <HBox spacing="5" GridPane.rowIndex="7" GridPane.columnIndex="1">
+        <Label text="Imagem do Livro:" GridPane.columnIndex="0" GridPane.rowIndex="9" GridPane.columnSpan="2"/>
+        <HBox GridPane.columnIndex="0" GridPane.rowIndex="10" GridPane.columnSpan="2" spacing="5">
             <Button text="Escolher Arquivo" onAction="#chooseCoverImage" styleClass="button-action rounded-corners"/>
             <Label fx:id="coverFileNameLabel" text="Nenhum arquivo escolhido" styleClass="label"/>
         </HBox>
     </GridPane>
-
-    <HBox spacing="10" alignment="BOTTOM_RIGHT" style="-fx-padding: 20 0 0 0;">
-        <Button text="Salvar" onAction="#saveBook" styleClass="primary-button rounded-corners shadow-effect"/>
-        <Button text="Cancelar" onAction="#cancelAddBookView" styleClass="button-action rounded-corners"/>
+    <HBox alignment="BOTTOM_RIGHT" spacing="10.0">
+        <Button fx:id="saveBookButton" text="Salvar Livro" onAction="#saveBook" styleClass="primary-button"/>
     </HBox>
 </VBox>

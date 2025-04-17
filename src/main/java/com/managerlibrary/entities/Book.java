@@ -18,13 +18,14 @@ public class Book {
     private final StringProperty genre = new SimpleStringProperty();
     private final IntegerProperty totalCopies = new SimpleIntegerProperty();
     private final IntegerProperty availableCopies = new SimpleIntegerProperty();
-    private final StringProperty coverImagePath = new SimpleStringProperty(); // Adicione esta linha
+    private final StringProperty coverImagePath = new SimpleStringProperty();
+    private final StringProperty imageUrl = new SimpleStringProperty(); // Adicionado
 
     public Book() {
     }
 
-    // Construtor com argumentos (adicione coverImagePath se necessário)
-    public Book(int id, String title, String author, String isbn, String publisher, String year, String genre, int totalCopies, int availableCopies, String coverImagePath) {
+    // Construtor com argumentos (adicione imageUrl se necessário)
+    public Book(int id, String title, String author, String isbn, String publisher, String year, String genre, int totalCopies, int availableCopies, String coverImagePath, String imageUrl) {
         this.id.set(id);
         this.title.set(title);
         this.author.set(author);
@@ -34,7 +35,11 @@ public class Book {
         this.genre.set(genre);
         this.totalCopies.set(totalCopies);
         this.availableCopies.set(availableCopies);
-        this.coverImagePath.set(coverImagePath); // Inicialize no construtor
+        this.coverImagePath.set(coverImagePath);
+        this.imageUrl.set(imageUrl); // Inicialize no construtor
+    }
+
+    public Book(String orgulhoEPreconceito, String janeAusten, String s, String penguinClassics, String number, String romance, int i, int i1) {
     }
 
     public IntegerProperty idProperty() {
@@ -145,7 +150,6 @@ public class Book {
         this.availableCopies.set(availableCopies);
     }
 
-    // Getter e Setter para coverImagePath
     public StringProperty coverImagePathProperty() {
         return coverImagePath;
     }
@@ -158,17 +162,30 @@ public class Book {
         this.coverImagePath.set(coverImagePath);
     }
 
+    // Getter e Setter para imageUrl
+    public StringProperty imageUrlProperty() {
+        return imageUrl;
+    }
+
+    public String getImageUrl() {
+        return imageUrl.get();
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl.set(imageUrl);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Book book = (Book) o;
-        return Objects.equals(id, book.id) && Objects.equals(title, book.title) && Objects.equals(author, book.author) && Objects.equals(isbn, book.isbn) && Objects.equals(publisher, book.publisher) && Objects.equals(year, book.year) && Objects.equals(genre, book.genre) && Objects.equals(totalCopies, book.totalCopies) && Objects.equals(availableCopies, book.availableCopies) && Objects.equals(coverImagePath, book.coverImagePath);
+        return Objects.equals(id, book.id) && Objects.equals(title, book.title) && Objects.equals(author, book.author) && Objects.equals(isbn, book.isbn) && Objects.equals(publisher, book.publisher) && Objects.equals(year, book.year) && Objects.equals(genre, book.genre) && Objects.equals(totalCopies, book.totalCopies) && Objects.equals(availableCopies, book.availableCopies) && Objects.equals(coverImagePath, book.coverImagePath) && Objects.equals(imageUrl, book.imageUrl);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, author, isbn, publisher, year, genre, totalCopies, availableCopies, coverImagePath);
+        return Objects.hash(id, title, author, isbn, publisher, year, genre, totalCopies, availableCopies, coverImagePath, imageUrl);
     }
 
     @Override
@@ -184,6 +201,7 @@ public class Book {
                 ", totalCopies=" + totalCopies +
                 ", availableCopies=" + availableCopies +
                 ", coverImagePath=" + coverImagePath +
+                ", imageUrl=" + imageUrl +
                 '}';
     }
 }

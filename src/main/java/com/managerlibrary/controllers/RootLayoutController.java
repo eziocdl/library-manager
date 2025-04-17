@@ -25,7 +25,19 @@ public class RootLayoutController {
 
     @FXML
     public void showBookView(ActionEvent event) {
-        loadView("/views/BookView.fxml");
+        System.out.println("RootLayoutController: Método showBookView() chamado.");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/BookView.fxml"));
+            javafx.scene.layout.Pane bookView = loader.load();
+            BookController bookController = loader.getController();
+            bookController.setRootLayoutController(this);
+            rootLayout.setCenter(bookView);
+            this.bookController = bookController;
+            System.out.println("RootLayoutController: BookView.fxml carregado com sucesso.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("RootLayoutController: Erro ao carregar BookView.fxml: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -41,7 +53,7 @@ public class RootLayoutController {
     @FXML
     public void handleAddBookClick(ActionEvent event) {
         if (bookController != null) {
-            bookController.showAddBookView();
+            bookController.showAddBookView(); // **Remova o 'event' daqui**
         } else {
             System.err.println("BookController não foi injetado no RootLayoutController.");
         }

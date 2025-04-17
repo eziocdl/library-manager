@@ -288,3 +288,43 @@ body {
     -fx-padding: 20px 0 10px 0; /* Espaçamento superior e inferior para melhor posicionamento vertical */
     -fx-font-family: "Arial Black"; /* Uma fonte mais marcante (você pode escolher outra) */
 }
+
+
+.bottom-margin {
+    -fx-margin-bottom: 6px; /* Ou qualquer valor desejado */
+}
+
+.app-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2563EB; /* Cor azul primária */
+}
+
+.top-bar {
+    -fx-padding: 10px; /* Adiciona um pouco de espaço ao redor da barra superior */
+    -fx-background-color: #F9FAFB; /* Cor de fundo clara */
+    -fx-border-bottom: 1px solid #E5E7EB; /* Adiciona uma linha divisória na parte inferior */
+}
+
+/* Estilos para os botões dentro do card de livro */
+.book-card-action-button {
+    -fx-pref-width: 60px;
+    -fx-min-width: 60px;
+    -fx-max-width: 60px;
+    -fx-font-size: 0.9em;
+    -fx-padding: 5px;
+    -fx-background-color: #f9f9f9; /* Cor de fundo clara */
+    -fx-text-fill: #333;
+    -fx-border-color: #ddd;
+    -fx-border-radius: 5px;
+    -fx-cursor: hand;
+    -fx-alignment: center; /* Centralizar o texto dentro do botão */
+}
+
+.book-card-action-button:hover {
+    -fx-background-color: #eee;
+}
+
+.book-card-action-button:pressed {
+    -fx-background-color: #ddd;
+}

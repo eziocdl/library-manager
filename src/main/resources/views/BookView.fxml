@@ -4,22 +4,21 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
 <VBox xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.managerlibrary.controllers.BookController"
-      spacing="10"
+      spacing="10.0"
       stylesheets="@/Styles.css">
     <padding>
-        <Insets top="20" left="20" bottom="20" right="20"/>
+        <Insets top="20.0" left="20.0" bottom="20.0" right="20.0"/>
     </padding>
-
-
-    <HBox alignment="CENTER_LEFT" spacing="10">
-        <TextField fx:id="searchBookTextField" promptText="Buscar por título..." HBox.hgrow="ALWAYS" styleClass="text-field rounded-corners"/>
+    <Label text="Gerenciar Livros" styleClass="label-title"/>
+    <HBox spacing="10.0" alignment="CENTER_LEFT" styleClass="bottom-spacing">
+        <TextField fx:id="searchBookTextField" promptText="Buscar por título, autor ou ISBN..." HBox.hgrow="ALWAYS" styleClass="text-field rounded-corners"/>
         <Button fx:id="searchBookButton" onAction="#handleSearchBook" text="Buscar" styleClass="action-button rounded-corners"/>
+        <Region HBox.hgrow="ALWAYS" />
+        <Button text="+ Adicionar Livro" onAction="#showAddBookView" styleClass="primary-button rounded-corners shadow-effect"/>
     </HBox>
-
-    <FlowPane fx:id="booksFlowPane" hgap="10" vgap="10" prefWidth="600" VBox.vgrow="ALWAYS">
+    <FlowPane fx:id="booksFlowPane" hgap="10.0" vgap="10.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
     </FlowPane>
 </VBox>
