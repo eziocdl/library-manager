@@ -7,7 +7,6 @@ import javafx.collections.ObservableList;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -73,7 +72,7 @@ public class UserService {
         }
     }
 
-    public void removeUser(int id) throws SQLException {
+    public void deleteUser(int id) throws SQLException {
         if (userDAO != null) {
             userDAO.deleteUser(id);
         } else {
@@ -122,5 +121,10 @@ public class UserService {
             return false;
         }
         return true;
+    }
+
+    // Alias para consistência com o nome usado no UserController
+    public void removeUser(int id) throws SQLException {
+        deleteUser(id);
     }
 }

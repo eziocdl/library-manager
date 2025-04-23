@@ -1,37 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
 <VBox xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.managerlibrary.controllers.UserController" spacing="10"
+      fx:controller="com.managerlibrary.controllers.AddUserController"
+      spacing="20.0"
       stylesheets="@/Styles.css">
     <padding>
-        <Insets top="20" left="20" bottom="20" right="20"/>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
+
     <Label text="Adicionar Novo Usuário" styleClass="label-title"/>
 
-    <GridPane hgap="10" vgap="10" style="-fx-padding: 20 0 0 0;">
-        <Label text="Nome:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="label"/>
-        <TextField fx:id="nameTextField" GridPane.rowIndex="0" GridPane.columnIndex="1" styleClass="text-field rounded-corners"/>
+    <VBox spacing="10.0">
+        <Label text="Nome:" styleClass="label"/>
+        <TextField fx:id="nameTextField" styleClass="text-field rounded-corners"/>
 
-        <Label text="Email:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="label"/>
-        <TextField fx:id="emailTextField" GridPane.rowIndex="1" GridPane.columnIndex="1" styleClass="text-field rounded-corners"/>
+        <Label text="CPF:" styleClass="label"/>
+        <TextField fx:id="cpfTextField" promptText="000.000.000-00" styleClass="text-field rounded-corners"/>
 
-        <Label text="CPF:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="label"/>
-        <TextField fx:id="cpfTextField" GridPane.rowIndex="2" GridPane.columnIndex="1" styleClass="text-field rounded-corners"/>
+        <Label text="Telefone:" styleClass="label"/>
+        <TextField fx:id="phoneTextField" promptText="(00) 00000-0000" styleClass="text-field rounded-corners"/>
 
-        <Label text="Telefone:" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="label"/>
-        <TextField fx:id="phoneTextField" GridPane.rowIndex="3" GridPane.columnIndex="1" styleClass="text-field rounded-corners"/>
+        <Label text="Email:" styleClass="label"/>
+        <TextField fx:id="emailTextField" styleClass="text-field rounded-corners"/>
 
-        <Label text="Endereço:" GridPane.rowIndex="4" GridPane.columnIndex="0" styleClass="label"/>
-        <TextField fx:id="addressTextField" GridPane.rowIndex="4" GridPane.columnIndex="1" styleClass="text-field rounded-corners"/>
-    </GridPane>
+        <Label text="Endereço:" styleClass="label"/>
+        <TextField fx:id="addressTextField" styleClass="text-field rounded-corners"/>
+    </VBox>
 
-    <HBox spacing="10" alignment="BOTTOM_RIGHT" style="-fx-padding: 20 0 0 0;">
+    <HBox alignment="BOTTOM_RIGHT" spacing="10.0">
         <Button text="Salvar" onAction="#saveUser" styleClass="primary-button rounded-corners shadow-effect"/>
-        <Button text="Cancelar" onAction="#cancelAddUserView" styleClass="button-action rounded-corners"/>
+        <Button text="Cancelar" onAction="#cancelAddUserView" styleClass="secondary-button rounded-corners shadow-effect"/>
     </HBox>
+
 </VBox>

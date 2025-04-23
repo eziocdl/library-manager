@@ -19,6 +19,7 @@ public class App extends Application {
     private BorderPane rootLayout;
     private RootLayoutController rootController;
     private BookController bookController; // Adicionada referência ao BookController no App
+    private UserController userController; // Adicionada referência ao UserController no App
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -78,7 +79,7 @@ public class App extends Application {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/UserView.fxml"));
             Pane userView = loader.load();
-            UserController userController = loader.getController();
+            userController = loader.getController(); // Inicializa a referência do UserController no App
             userController.setRootLayoutController(rootController);
             rootLayout.setCenter(userView);
             primaryStage.setTitle("Manager Library - Usuários");

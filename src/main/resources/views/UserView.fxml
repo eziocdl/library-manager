@@ -1,63 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
-<?import javafx.collections.FXCollections?>
-<?import java.lang.String?>
 <?import javafx.geometry.Insets?>
-<VBox xmlns="http://javafx.com/javafx/21"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.managerlibrary.controllers.UserController"
-      stylesheets="@/Styles.css" spacing="10">
-    <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
-    </padding>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-    <Label text="Gerenciamento de Usuários" styleClass="label-title" />
-
-    <HBox spacing="10" alignment="CENTER_LEFT">
-        <Label text="Buscar por:" styleClass="label"/>
-        <ComboBox fx:id="searchCriteriaComboBox" styleClass="rounded-corners">
-            <items>
-                <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="Nome" />
-                    <String fx:value="CPF" />
-                </FXCollections>
-            </items>
-            <value>
-                <String fx:value="Nome" />
-            </value>
-        </ComboBox>
-        <TextField fx:id="searchTextField" promptText="Digite o termo de busca" HBox.hgrow="ALWAYS" styleClass="text-field rounded-corners" />
-        <Button text="Buscar" onAction="#handleSearchUser" styleClass="action-button rounded-corners" />
-    </HBox>
-
-    <GridPane vgap="5" hgap="5">
-        <Label text="Nome:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="label bold-text"/>
-        <TextField fx:id="nameTextField" GridPane.rowIndex="0" GridPane.columnIndex="1" styleClass="text-field rounded-corners"/>
-
-        <Label text="Endereço:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="label bold-text"/>
-        <TextField fx:id="addressTextField" GridPane.rowIndex="1" GridPane.columnIndex="1" styleClass="text-field rounded-corners"/>
-
-        <Label text="Telefone:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="label bold-text"/>
-        <TextField fx:id="phoneTextField" GridPane.rowIndex="2" GridPane.columnIndex="1" styleClass="text-field rounded-corners"/>
-    </GridPane>
-
-    <HBox spacing="10">
-        <Button text="Adicionar" onAction="#addUser" styleClass="primary-button rounded-corners shadow-effect"/>
-        <Button text="Atualizar" onAction="#updateUsers" styleClass="action-button rounded-corners"/>
-        <Button text="Remover" onAction="#deleteUsers" styleClass="action-button rounded-corners overdue-button"/>
-    </HBox>
-
-    <TableView fx:id="usersTableView" VBox.vgrow="ALWAYS" styleClass="table-view rounded-corners shadow-effect">
-        <columns>
-            <TableColumn fx:id="idColumn" text="ID" styleClass="table-column"/>
-            <TableColumn fx:id="nameColumn" text="Nome" styleClass="table-column"/>
-            <TableColumn fx:id="addressColumn" text="Endereco" styleClass="table-column"/>
-            <TableColumn fx:id="phoneColumn" text="Telefone" styleClass="table-column"/>
-            <TableColumn fx:id="emailColumn" text="Email" styleClass="table-column"/>
-            <TableColumn fx:id="cpfColumn" text="CPF" styleClass="table-column"/>
-        </columns>
-    </TableView>
-</VBox>
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.managerlibrary.controllers.UserController"
+            stylesheets="@/Styles.css">
+    <top>
+        <VBox spacing="10.0" styleClass="padded-container">
+            <Label text="Gerenciamento de Usuários" styleClass="label-title"/>
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <Label text="Buscar por:" styleClass="label"/>
+                <ComboBox fx:id="searchCriteriaComboBox" styleClass="rounded-corners"/>
+                <TextField fx:id="searchTextField" promptText="Digite o termo de busca" styleClass="text-field rounded-corners"/>
+                <Button text="Buscar" onAction="#searchUsers" styleClass="primary-button rounded-corners shadow-effect"/>
+                <Button text="Novo Usuário" onAction="#addUser" styleClass="primary-button rounded-corners shadow-effect"/>
+            </HBox>
+        </VBox>
+    </top>
+    <center>
+        <FlowPane fx:id="usersCardFlowPane" hgap="15.0" vgap="15.0" styleClass="padded-container"/>
+    </center>
+</BorderPane>

@@ -175,6 +175,10 @@ public class BookController {
             confirmation.setHeaderText("Remover o livro: " + book.getTitle());
             confirmation.setContentText("Tem certeza que deseja remover este livro?");
 
+            // Obtenha a janela principal a partir do botão
+            Window mainWindow = removeButton.getScene().getWindow();
+            confirmation.initOwner(mainWindow); // Define a janela principal como proprietária
+
             Optional<javafx.scene.control.ButtonType> result = confirmation.showAndWait();
             if (result.isPresent() && result.get() == javafx.scene.control.ButtonType.OK) {
                 try {
