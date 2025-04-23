@@ -36,7 +36,7 @@
     </VBox>
 
     <HBox alignment="BOTTOM_RIGHT" spacing="10.0">
-        <Button text="Salvar" onAction="#saveUser" styleClass="primary-button rounded-corners shadow-effect"/>
+        <Button fx:id="saveButton" text="Salvar" onAction="#saveUser" styleClass="primary-button rounded-corners shadow-effect"/>
         <Button text="Cancelar" onAction="#cancelAddUserView" styleClass="secondary-button rounded-corners shadow-effect"/>
     </HBox>
 

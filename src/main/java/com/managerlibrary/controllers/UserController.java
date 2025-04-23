@@ -55,15 +55,15 @@ public class UserController {
     private TextField searchTextField;
 
     @FXML
-    private TextField nameTextField; // Referências para os campos de entrada
+    private Label nameDetailLabel; // Elementos para exibir detalhes na UserView
     @FXML
-    private TextField emailTextField;
+    private Label cpfDetailLabel;
     @FXML
-    private TextField cpfTextField;
+    private Label phoneDetailLabel;
     @FXML
-    private TextField phoneTextField;
+    private Label emailDetailLabel;
     @FXML
-    private TextField addressTextField;
+    private Label addressDetailLabel;
 
     private UserService userService = new UserService();
     private RootLayoutController rootLayoutController;
@@ -84,6 +84,10 @@ public class UserController {
         if (rootLayoutController != null) {
             rootLayoutController.setCenterView(centerView);
         }
+    }
+
+    public UserService getUserService() {
+        return userService;
     }
 
     @FXML
@@ -126,12 +130,16 @@ public class UserController {
         nameLabel.getStyleClass().add("font-bold");
         Label emailLabel = new Label(user.getEmail());
         emailLabel.getStyleClass().addAll("text-sm", "text-gray-500");
-        Label cpfLabel = new Label("CPF: " + user.getCpf());
+
+        Label cpfLabel = new Label("CPF: " + formatCpf(user.getCpf()));
         cpfLabel.getStyleClass().addAll("text-sm", "text-gray-900");
-        Label phoneLabel = new Label("Telefone: " + user.getPhone());
+
+        Label phoneLabel = new Label("Telefone: " + formatPhone(user.getPhone()));
         phoneLabel.getStyleClass().addAll("text-sm", "text-gray-900");
-        Label addressLabel = new Label("Render: " + user.getAddress());
+
+        Label addressLabel = new Label("Endereço: " + user.getAddress());
         addressLabel.getStyleClass().addAll("text-sm", "text-gray-900");
+
         infoBox.getChildren().addAll(nameLabel, emailLabel, cpfLabel, phoneLabel, addressLabel);
 
         HBox userDetails = new HBox(10);
@@ -158,6 +166,24 @@ public class UserController {
         return card;
     }
 
+    private String formatCpf(String cpf) {
+        if (cpf != null && cpf.matches("\\d{11}")) {
+            return cpf.substring(0, 3) + "." + cpf.substring(3, 6) + "." + cpf.substring(6, 9) + "-" + cpf.substring(9);
+        }
+        return cpf;
+    }
+
+    private String formatPhone(String phone) {
+        if (phone != null && phone.matches("\\d{10,11}")) {
+            if (phone.length() == 10) {
+                return "(" + phone.substring(0, 2) + ") " + phone.substring(2, 6) + "-" + phone.substring(6);
+            } else if (phone.length() == 11) {
+                return "(" + phone.substring(0, 2) + ") " + phone.substring(2, 7) + "-" + phone.substring(7);
+            }
+        }
+        return phone;
+    }
+
     public void showUserCardsView() {
         if (usersCardFlowPane != null) {
             usersCardFlowPane.getChildren().clear();
@@ -168,19 +194,70 @@ public class UserController {
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
-                // Lide com erro ao carregar usuários
             }
         }
     }
 
     public void handleUserDetails(User user) {
-        System.out.println("Detalhes do usuário: " + user.getName());
-        // Implemente a lógica para exibir os detalhes do usuário (pode ser um novo modal)
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/UserView.fxml"));
+            Parent root = loader.load();
+
+            // Obtenha o próprio UserController
+            UserController controller = loader.getController();
+
+            // Preencha os campos de detalhes
+            controller.displayUserDetails(user);
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Detalhes do Usuário");
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Erro ao carregar UserView.fxml para detalhes: " + e.getMessage());
+        }
+    }
+
+    public void displayUserDetails(User user) {
+        if (nameDetailLabel != null) {
+            nameDetailLabel.setText("Nome: " + user.getName());
+        }
+        if (cpfDetailLabel != null) {
+            cpfDetailLabel.setText("CPF: " + formatCpf(user.getCpf()));
+        }
+        if (phoneDetailLabel != null) {
+            phoneDetailLabel.setText("Telefone: " + formatPhone(user.getPhone()));
+        }
+        if (emailDetailLabel != null) {
+            emailDetailLabel.setText("Email: " + user.getEmail());
+        }
+        if (addressDetailLabel != null) { // Use addressDetailLabel aqui
+            addressDetailLabel.setText("Endereço: " + user.getAddress());
+        }
     }
 
     public void handleEditUser(User user) {
         System.out.println("Editar usuário: " + user.getName());
         loadEditUserView(user);
+    }
+
+    public void loadEditUserView(User user) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/EditUserView.fxml"));
+            Pane editUserView = loader.load();
+            EditUserController editUserController = loader.getController();
+            editUserController.setUser(user);
+            editUserController.setUserController(this);
+            editUserController.setService(this.getUserService());
+            if (rootLayoutController != null) {
+                rootLayoutController.setCenterView(editUserView);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void handleDeleteUser(User user) {
@@ -192,7 +269,7 @@ public class UserController {
         confirmation.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 try {
-                    userService.deleteUser(user.getId()); // Assumindo que UserService tem o método deleteUser(int id)
+                    userService.deleteUser(user.getId());
                     showUserCardsView();
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -212,33 +289,17 @@ public class UserController {
             Parent root = loader.load();
 
             AddUserController addUserController = loader.getController();
-            addUserController.setUserController(this); // Passa referência
+            addUserController.setUserController(this);
 
             Stage stage = new Stage();
-
-            stage.initModality(Modality.APPLICATION_MODAL); // Bloqueia interação com a janela principal
+            stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Adicionar Novo Usuário");
             stage.setScene(new Scene(root));
-            stage.showAndWait(); // Exibe a janela e aguarda até que seja fechada
+            stage.showAndWait();
 
         } catch (IOException e) {
             e.printStackTrace();
             System.err.println("Erro ao carregar AddUserView.fxml: " + e.getMessage());
-        }
-    }
-
-    public void loadEditUserView(User user) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/EditUserView.fxml"));
-            Pane editUserView = loader.load();
-            EditUserController editUserController = loader.getController();
-            editUserController.setUser(user); // Passa o usuário
-            editUserController.setUserController(this); // Passa referência
-            if (rootLayoutController != null) {
-                rootLayoutController.setCenterView(editUserView);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -261,7 +322,6 @@ public class UserController {
                 updateUserCardDisplay(searchResults);
             } catch (SQLException e) {
                 e.printStackTrace();
-                // Lide com erro de busca
             }
         } else {
             showUserCardsView();
@@ -338,7 +398,7 @@ public class UserController {
             UserController controller = loader.getController();
             controller.setRootLayoutController(this.rootLayoutController);
             rootLayoutController.setCenterView(userView);
-            controller.initialize(); // Recarrega a TableView
+            controller.initialize();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -351,52 +411,9 @@ public class UserController {
             UserController controller = loader.getController();
             controller.setRootLayoutController(this.rootLayoutController);
             rootLayoutController.setCenterView(userView);
-            showUserCardsView(); // Garante que a visualização em cards seja mostrada
+            showUserCardsView();
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void saveUser() {
-        String name = nameTextField.getText();
-        String email = emailTextField.getText();
-        String cpf = cpfTextField.getText();
-        String phone = phoneTextField.getText();
-        String address = addressTextField.getText();
-
-        User user = new User();
-        user.setName(name);
-        user.setEmail(email);
-        user.setCpf(cpf);
-        user.setPhone(phone);
-        user.setAddress(address);
-
-        try {
-            userService.addUser(user);
-            showUserCardsView(); // Atualiza a lista de usuários
-            clearInputFields(); // Limpa os campos do formulário
-            showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Usuário adicionado com sucesso!");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erro ao Salvar", "Erro ao adicionar o usuário: " + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            showAlert(Alert.AlertType.ERROR, "Erro de Validação", e.getMessage());
-        }
-    }
-
-    private void clearInputFields() {
-        nameTextField.clear();
-        emailTextField.clear();
-        cpfTextField.clear();
-        phoneTextField.clear();
-        addressTextField.clear();
-    }
-
-    private void showAlert(Alert.AlertType alertType, String title, String content) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
     }
 }

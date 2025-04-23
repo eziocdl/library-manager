@@ -34,7 +34,7 @@ public class EditUserController {
 
     private User currentUser;
     private UserController userController;
-    private UserService userService = new UserService();
+    private UserService userService; // Removi a inicialização aqui
 
     public void setUser(User user) {
         this.currentUser = user;
@@ -45,6 +45,11 @@ public class EditUserController {
 
     public void setUserController(UserController userController) {
         this.userController = userController;
+    }
+
+    // Novo método para receber a instância do UserService
+    public void setService(UserService userService) {
+        this.userService = userService;
     }
 
     private void populateFields() {
@@ -65,7 +70,7 @@ public class EditUserController {
             currentUser.setAddress(addressTextField.getText());
 
             try {
-                userService.updateUser(currentUser); // Assumindo que você tem um método updateUser no UserService
+                userService.updateUser(currentUser);
                 showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Usuário atualizado com sucesso!");
                 if (userController != null) {
                     userController.showUserCardsView(); // Atualiza a visualização
