@@ -65,4 +65,13 @@ public interface UserDAO {
      * @throws SQLException Se ocorrer um erro ao buscar o usuário.
      */
     User findUserByCPF(String cpf) throws SQLException;
+
+    /**
+     * Busca usuários pelo nome, CPF ou email (pode ser uma busca parcial no nome e email, exata no CPF).
+     *
+     * @param searchTerm O termo de busca.
+     * @return Uma lista de usuários que correspondem ao critério de busca.
+     * @throws SQLException Se ocorrer um erro ao buscar os usuários.
+     */
+    List<User> findUsersByNameOrCPFOrEmail(String searchTerm) throws SQLException;
 }

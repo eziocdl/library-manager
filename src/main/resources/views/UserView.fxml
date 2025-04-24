@@ -2,31 +2,31 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 
+<?import javafx.scene.layout.Region?>
 <BorderPane xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.managerlibrary.controllers.UserController"
             stylesheets="@/Styles.css">
     <top>
-        <VBox spacing="10.0" styleClass="padded-container">
-            <Label text="Gerenciamento de Usuários" styleClass="label-title"/>
-            <HBox spacing="10.0" alignment="CENTER_LEFT">
-                <Label text="Buscar por:" styleClass="label"/>
-                <ComboBox fx:id="searchCriteriaComboBox" styleClass="rounded-corners"/>
-                <TextField fx:id="searchTextField" promptText="Digite o termo de busca" styleClass="text-field rounded-corners"/>
+        <HBox spacing="15.0" styleClass="padded-container" alignment="CENTER_LEFT">
+            <HBox spacing="5.0" alignment="CENTER_LEFT">
+                <TextField fx:id="searchTextField" promptText="Buscar por nome, CPF ou email..." styleClass="text-field rounded-corners"/>
                 <Button text="Buscar" onAction="#searchUsers" styleClass="primary-button rounded-corners shadow-effect"/>
-                <Button text="Novo Usuário" onAction="#addUser" styleClass="primary-button rounded-corners shadow-effect"/>
             </HBox>
-        </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Adicionar Usuário" onAction="#addUser" styleClass="primary-button rounded-corners shadow-effect">
+            </Button>
+        </HBox>
     </top>
     <center>
-        <FlowPane fx:id="usersCardFlowPane" hgap="15.0" vgap="15.0" styleClass="padded-container"/>
+        <FlowPane fx:id="usersCardFlowPane" hgap="15.0" vgap="15.0" styleClass="padded-container" alignment="TOP_LEFT"/>
     </center>
 </BorderPane>

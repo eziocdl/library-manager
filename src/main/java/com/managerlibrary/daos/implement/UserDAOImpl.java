@@ -18,8 +18,8 @@ public class UserDAOImpl implements UserDAO {
             preparedStatement.setString(1, user.getName());
             preparedStatement.setString(2, user.getAddress());
             preparedStatement.setString(3, user.getPhone());
-            preparedStatement.setString(4, user.getEmail()); // Adicionado email
-            preparedStatement.setString(5, user.getCpf());   // Adicionado cpf
+            preparedStatement.setString(4, user.getEmail());
+            preparedStatement.setString(5, user.getCpf());
             preparedStatement.executeUpdate();
         }
     }
@@ -60,8 +60,8 @@ public class UserDAOImpl implements UserDAO {
             preparedStatement.setString(1, user.getName());
             preparedStatement.setString(2, user.getAddress());
             preparedStatement.setString(3, user.getPhone());
-            preparedStatement.setString(4, user.getEmail()); // Adicionado email
-            preparedStatement.setString(5, user.getCpf());   // Adicionado cpf
+            preparedStatement.setString(4, user.getEmail());
+            preparedStatement.setString(5, user.getCpf());
             preparedStatement.setInt(6, user.getId());
             preparedStatement.executeUpdate();
         }
@@ -106,6 +106,24 @@ public class UserDAOImpl implements UserDAO {
         }
     }
 
+    @Override
+    public List<User> findUsersByNameOrCPFOrEmail(String searchTerm) throws SQLException {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT * FROM Usuario WHERE LOWER(nome) LIKE ? OR cpf LIKE ? OR LOWER(email) LIKE ?";
+        try (Connection connection = DataBaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            String likeTerm = "%" + searchTerm.toLowerCase() + "%";
+            preparedStatement.setString(1, likeTerm);
+            preparedStatement.setString(2, searchTerm); // Busca exata para CPF
+            preparedStatement.setString(3, likeTerm);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                users.add(createUser(resultSet));
+            }
+            return users;
+        }
+    }
+
     /**
      * Cria um objeto Usuario a partir de um ResultSet.
      *
@@ -119,8 +137,8 @@ public class UserDAOImpl implements UserDAO {
         user.setName(resultSet.getString("nome"));
         user.setAddress(resultSet.getString("endereco"));
         user.setPhone(resultSet.getString("telefone"));
-        user.setEmail(resultSet.getString("email")); // Mapeando email
-        user.setCpf(resultSet.getString("cpf"));     // Mapeando cpf
+        user.setEmail(resultSet.getString("email"));
+        user.setCpf(resultSet.getString("cpf"));
         return user;
     }
 }

@@ -4,12 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fd3267b2-b4d9-4f03-86e7-0c79657ef842" name="Changes" comment="fix(user): Adiciona controller da tela de edição de usuários&#10;&#10;Adiciona o arquivo `EditUserController.java` que foi esquecido no commit anterior.">
+    <list default="true" id="fd3267b2-b4d9-4f03-86e7-0c79657ef842" name="Changes" comment="feat: Implementa funcionalidade de detalhes e edição de usuários&#10;&#10;Implementa a funcionalidade de visualizar detalhes dos usuários em uma nova janela modal ao clicar no botão &quot;Detalhes&quot; nos cards da listagem.&#10;&#10;Adiciona a capacidade de editar as informações dos usuários ao clicar no botão &quot;Editar&quot;, carregando os dados em uma tela de edição e persistindo as alterações ao salvar.&#10;&#10;**Mudanças:**&#10;&#10;- Adicionado método `handleUserDetails` no `UserController` para carregar a `UserView` como modal de detalhes.&#10;- Adicionado método `displayUserDetails` no `UserController` para preencher os campos de detalhe na `UserView`.&#10;- Declaradas variáveis `@FXML` para os elementos de detalhe no `UserController`.&#10;- Ajustado o método `loadEditUserView` no `UserController` para passar a instância do `UserService` para o `EditUserController`.&#10;- Ajustado o `EditUserController` para receber a instância do `UserService` através do método `setService`.&#10;- Correção de erro de nome de variável (`addressLabel` para `addressDetailLabel`) no `UserController`.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/controllers/AddUserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/controllers/AddUserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/controllers/EditUserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/controllers/EditUserController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/controllers/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/controllers/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/views/AddUserView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/views/AddUserView.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/daos/implement/UserDAOImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/daos/implement/UserDAOImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/daos/interfaces/UserDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/daos/interfaces/UserDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/services/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/services/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/Styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/Styles.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/views/UserView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/views/UserView.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,6 +89,7 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/resources/icons" />
       <recent name="$PROJECT_DIR$/src/main/resources/assets" />
       <recent name="$PROJECT_DIR$/src/main/resources/@/assets" />
       <recent name="$PROJECT_DIR$/src/main/java/com/managerlibrary" />
@@ -229,7 +232,9 @@
       <workItem from="1744919462193" duration="602000" />
       <workItem from="1745346526206" duration="7084000" />
       <workItem from="1745368258066" duration="936000" />
-      <workItem from="1745431650147" duration="5980000" />
+      <workItem from="1745431650147" duration="6180000" />
+      <workItem from="1745502005359" duration="2434000" />
+      <workItem from="1745522543263" duration="3465000" />
     </task>
     <task id="LOCAL-00001" summary="fix: Corrige erro de conexão com o banco de dados na classe DataBaseConnection&#10;&#10;Este commit corrige um erro que impedia a classe DataBaseConnection de estabelecer uma conexão bem-sucedida com o banco de dados.&#10;&#10;As seguintes alterações foram feitas:&#10;&#10;* Corrigido um problema com as configurações de conexão que causava falha na conexão.&#10;* Adicionado tratamento de exceção para lidar com erros de conexão.&#10;&#10;Este commit garante que a classe DataBaseConnection possa se conectar ao banco de dados sem problemas.">
       <option name="closed" value="true" />
@@ -343,7 +348,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745369163899</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="feat: Implementa funcionalidade de detalhes e edição de usuários&#10;&#10;Implementa a funcionalidade de visualizar detalhes dos usuários em uma nova janela modal ao clicar no botão &quot;Detalhes&quot; nos cards da listagem.&#10;&#10;Adiciona a capacidade de editar as informações dos usuários ao clicar no botão &quot;Editar&quot;, carregando os dados em uma tela de edição e persistindo as alterações ao salvar.&#10;&#10;**Mudanças:**&#10;&#10;- Adicionado método `handleUserDetails` no `UserController` para carregar a `UserView` como modal de detalhes.&#10;- Adicionado método `displayUserDetails` no `UserController` para preencher os campos de detalhe na `UserView`.&#10;- Declaradas variáveis `@FXML` para os elementos de detalhe no `UserController`.&#10;- Ajustado o método `loadEditUserView` no `UserController` para passar a instância do `UserService` para o `EditUserController`.&#10;- Ajustado o `EditUserController` para receber a instância do `UserService` através do método `setService`.&#10;- Correção de erro de nome de variável (`addressLabel` para `addressDetailLabel`) no `UserController`.">
+      <option name="closed" value="true" />
+      <created>1745439738394</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1745439738394</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -364,7 +377,8 @@
     <MESSAGE value="fix: Melhorias e correções na funcionalidade de livros&#10;&#10;Este commit engloba diversas alterações e correções implementadas ao longo do dia na funcionalidade de livros. As principais incluem:&#10;&#10;- Reutilização da AddBookView para a edição de livros.&#10;- Ajustes no layout dos botões nos cards de livros para exibição correta do texto.&#10;- Correções de possíveis erros e melhorias gerais na manipulação de livros." />
     <MESSAGE value="feat: Implementa funcionalidade de gerenciamento de usuários com tela de cadastro modal&#10;&#10;Implementa a funcionalidade completa de gerenciamento de usuários, incluindo a listagem, adição (com janela modal), edição e remoção de usuários.&#10;&#10;As seguintes alterações foram realizadas:&#10;- Criação e design da tela de cadastro de usuários (`AddUserView.fxml`).&#10;- Implementação do controller para a tela de cadastro (`AddUserController.java`) com lógica para salvar e cancelar.&#10;- Modificação do `UserController` para exibir a tela de cadastro como uma janela modal (`showAddUserView()`).&#10;- Ajustes no `UserController` para listar, editar e remover usuários (lógica existente).&#10;- Criação e design da tela de edição de usuários (`EditUserView.fxml`) (presumido pela inclusão do `EditUserController.java`).&#10;- Implementação do controller para a tela de edição (`EditUserController.java`) (presumido).&#10;- Possíveis ajustes no `UserService` para suportar as operações de adição, edição e remoção de usuários.&#10;- Pequenas alterações na estrutura principal (`App.java` e `RootLayoutController.java`) para integrar a nova funcionalidade de usuários.&#10;- Ajustes na tela de listagem de usuários (`UserView.fxml`) para acionar as ações de adicionar, editar e remover.&#10;- Alterações no arquivo de workspace do IntelliJ (`workspace.xml`) relacionadas às modificações realizadas.&#10;- (Possíveis outras alterações em `BookController.java`, caso tenha havido alguma interação indireta ou preparação para futuras funcionalidades relacionadas a usuários)." />
     <MESSAGE value="fix(user): Adiciona controller da tela de edição de usuários&#10;&#10;Adiciona o arquivo `EditUserController.java` que foi esquecido no commit anterior." />
-    <option name="LAST_COMMIT_MESSAGE" value="fix(user): Adiciona controller da tela de edição de usuários&#10;&#10;Adiciona o arquivo `EditUserController.java` que foi esquecido no commit anterior." />
+    <MESSAGE value="feat: Implementa funcionalidade de detalhes e edição de usuários&#10;&#10;Implementa a funcionalidade de visualizar detalhes dos usuários em uma nova janela modal ao clicar no botão &quot;Detalhes&quot; nos cards da listagem.&#10;&#10;Adiciona a capacidade de editar as informações dos usuários ao clicar no botão &quot;Editar&quot;, carregando os dados em uma tela de edição e persistindo as alterações ao salvar.&#10;&#10;**Mudanças:**&#10;&#10;- Adicionado método `handleUserDetails` no `UserController` para carregar a `UserView` como modal de detalhes.&#10;- Adicionado método `displayUserDetails` no `UserController` para preencher os campos de detalhe na `UserView`.&#10;- Declaradas variáveis `@FXML` para os elementos de detalhe no `UserController`.&#10;- Ajustado o método `loadEditUserView` no `UserController` para passar a instância do `UserService` para o `EditUserController`.&#10;- Ajustado o `EditUserController` para receber a instância do `UserService` através do método `setService`.&#10;- Correção de erro de nome de variável (`addressLabel` para `addressDetailLabel`) no `UserController`." />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: Implementa funcionalidade de detalhes e edição de usuários&#10;&#10;Implementa a funcionalidade de visualizar detalhes dos usuários em uma nova janela modal ao clicar no botão &quot;Detalhes&quot; nos cards da listagem.&#10;&#10;Adiciona a capacidade de editar as informações dos usuários ao clicar no botão &quot;Editar&quot;, carregando os dados em uma tela de edição e persistindo as alterações ao salvar.&#10;&#10;**Mudanças:**&#10;&#10;- Adicionado método `handleUserDetails` no `UserController` para carregar a `UserView` como modal de detalhes.&#10;- Adicionado método `displayUserDetails` no `UserController` para preencher os campos de detalhe na `UserView`.&#10;- Declaradas variáveis `@FXML` para os elementos de detalhe no `UserController`.&#10;- Ajustado o método `loadEditUserView` no `UserController` para passar a instância do `UserService` para o `EditUserController`.&#10;- Ajustado o `EditUserController` para receber a instância do `UserService` através do método `setService`.&#10;- Correção de erro de nome de variável (`addressLabel` para `addressDetailLabel`) no `UserController`." />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

@@ -6,26 +6,18 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
-import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 
 public class UserController {
@@ -50,20 +42,9 @@ public class UserController {
     private TableColumn<User, String> cpfColumn;
 
     @FXML
-    private ComboBox<String> searchCriteriaComboBox;
+    private ComboBox<String> searchCriteriaComboBox; // Removido do FXML, manter aqui se usar em outra parte
     @FXML
     private TextField searchTextField;
-
-    @FXML
-    private Label nameDetailLabel; // Elementos para exibir detalhes na UserView
-    @FXML
-    private Label cpfDetailLabel;
-    @FXML
-    private Label phoneDetailLabel;
-    @FXML
-    private Label emailDetailLabel;
-    @FXML
-    private Label addressDetailLabel;
 
     private UserService userService = new UserService();
     private RootLayoutController rootLayoutController;
@@ -78,12 +59,6 @@ public class UserController {
 
     public FlowPane getUsersCardFlowPane() {
         return usersCardFlowPane;
-    }
-
-    public void setCenterView(Pane centerView) {
-        if (rootLayoutController != null) {
-            rootLayoutController.setCenterView(centerView);
-        }
     }
 
     public UserService getUserService() {
@@ -115,15 +90,15 @@ public class UserController {
         card.getStyleClass().addAll("gap-4", "p-5", "border", "border-gray-200", "rounded-lg", "shadow-sm", "max-w-md");
         card.setUserData(user);
 
-        Label userIcon = new Label();
-        userIcon.getStyleClass().addAll("items-center", "justify-center", "w-12", "h-12", "rounded-full", "bg-blue-100", "text-blue-700", "font-semibold");
-        userIcon.setText("\uf007");
-        userIcon.setFont(Font.font("Font Awesome 5 Free", FontWeight.NORMAL, 16));
+        ImageView userIconImageView = new ImageView();
+        userIconImageView.setFitWidth(32);
+        userIconImageView.setFitHeight(32);
 
-        StackPane iconContainer = new StackPane(userIcon);
+        StackPane iconContainer = new StackPane(userIconImageView);
         iconContainer.setAlignment(Pos.CENTER);
         iconContainer.setPrefWidth(48);
         iconContainer.setPrefHeight(48);
+        iconContainer.setStyle("-fx-background-color: #e0f2f7; -fx-background-radius: 50%;");
 
         VBox infoBox = new VBox(2);
         Label nameLabel = new Label(user.getName());
@@ -145,25 +120,64 @@ public class UserController {
         HBox userDetails = new HBox(10);
         userDetails.getChildren().addAll(iconContainer, infoBox);
 
-        Button detailsButton = new Button("Detalhes");
-        detailsButton.getStyleClass().addAll("px-4", "py-2", "border", "border-gray-300", "rounded-md", "text-gray-900", "font-semibold", "hover:bg-gray-100", "focus:outline-none", "focus:ring-2", "focus:ring-blue-600");
-        detailsButton.setOnAction(event -> handleUserDetails(user));
-
         Button editButton = new Button("Editar");
         editButton.getStyleClass().addAll("px-4", "py-2", "border", "border-yellow-300", "rounded-md", "text-yellow-700", "font-semibold", "hover:bg-yellow-100", "focus:outline-none", "focus:ring-2", "focus:ring-yellow-600");
-        editButton.setOnAction(event -> handleEditUser(user));
+        editButton.setOnAction(event -> handleEditUser(user, card));
 
         Button removeButton = new Button("Remover");
         removeButton.getStyleClass().addAll("px-4", "py-2", "border", "border-red-300", "rounded-md", "text-red-700", "font-semibold", "hover:bg-red-100", "focus:outline-none", "focus:ring-2", "focus:ring-red-600");
         removeButton.setOnAction(event -> handleDeleteUser(user));
 
         HBox actionsBox = new HBox(8);
-        actionsBox.getChildren().addAll(detailsButton, editButton, removeButton);
+        actionsBox.getChildren().addAll(editButton, removeButton);
         actionsBox.setAlignment(Pos.CENTER_LEFT);
         VBox.setMargin(actionsBox, new Insets(8, 0, 0, 0));
 
         card.getChildren().addAll(userDetails, actionsBox);
         return card;
+    }
+
+    public void handleEditUser(User user, VBox card) {
+        System.out.println("Editar usuário: " + user.getName());
+
+        VBox infoBox = (VBox) ((HBox) card.getChildren().get(0)).getChildren().get(1);
+        infoBox.getChildren().clear();
+
+        TextField nameTextField = new TextField(user.getName());
+        TextField emailTextField = new TextField(user.getEmail());
+        TextField cpfTextField = new TextField(user.getCpf());
+        TextField phoneTextField = new TextField(user.getPhone());
+        TextField addressTextField = new TextField(user.getAddress());
+
+        infoBox.getChildren().addAll(nameTextField, emailTextField, cpfTextField, phoneTextField, addressTextField);
+
+        Button saveButton = new Button("Salvar");
+        saveButton.getStyleClass().addAll("px-4", "py-2", "border", "border-green-300", "rounded-md", "text-green-700", "font-semibold", "hover:bg-green-100", "focus:outline-none", "focus:ring-2", "focus:ring-green-600");
+        saveButton.setOnAction(event -> handleSave(user, card, nameTextField, emailTextField, cpfTextField, phoneTextField, addressTextField));
+
+        HBox actionsBox = (HBox) card.getChildren().get(1);
+        actionsBox.getChildren().clear();
+        actionsBox.getChildren().add(saveButton);
+    }
+
+    private void handleSave(User user, VBox card, TextField nameTextField, TextField emailTextField, TextField cpfTextField, TextField phoneTextField, TextField addressTextField) {
+        user.setName(nameTextField.getText());
+        user.setEmail(emailTextField.getText());
+        user.setCpf(cpfTextField.getText());
+        user.setPhone(phoneTextField.getText());
+        user.setAddress(addressTextField.getText());
+
+        try {
+            userService.updateUser(user);
+            showUserCardsView();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+            errorAlert.setTitle("Erro");
+            errorAlert.setHeaderText("Erro ao atualizar usuário");
+            errorAlert.setContentText(e.getMessage());
+            errorAlert.showAndWait();
+        }
     }
 
     private String formatCpf(String cpf) {
@@ -198,68 +212,6 @@ public class UserController {
         }
     }
 
-    public void handleUserDetails(User user) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/UserView.fxml"));
-            Parent root = loader.load();
-
-            // Obtenha o próprio UserController
-            UserController controller = loader.getController();
-
-            // Preencha os campos de detalhes
-            controller.displayUserDetails(user);
-
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle("Detalhes do Usuário");
-            stage.setScene(new Scene(root));
-            stage.showAndWait();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Erro ao carregar UserView.fxml para detalhes: " + e.getMessage());
-        }
-    }
-
-    public void displayUserDetails(User user) {
-        if (nameDetailLabel != null) {
-            nameDetailLabel.setText("Nome: " + user.getName());
-        }
-        if (cpfDetailLabel != null) {
-            cpfDetailLabel.setText("CPF: " + formatCpf(user.getCpf()));
-        }
-        if (phoneDetailLabel != null) {
-            phoneDetailLabel.setText("Telefone: " + formatPhone(user.getPhone()));
-        }
-        if (emailDetailLabel != null) {
-            emailDetailLabel.setText("Email: " + user.getEmail());
-        }
-        if (addressDetailLabel != null) { // Use addressDetailLabel aqui
-            addressDetailLabel.setText("Endereço: " + user.getAddress());
-        }
-    }
-
-    public void handleEditUser(User user) {
-        System.out.println("Editar usuário: " + user.getName());
-        loadEditUserView(user);
-    }
-
-    public void loadEditUserView(User user) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/EditUserView.fxml"));
-            Pane editUserView = loader.load();
-            EditUserController editUserController = loader.getController();
-            editUserController.setUser(user);
-            editUserController.setUserController(this);
-            editUserController.setService(this.getUserService());
-            if (rootLayoutController != null) {
-                rootLayoutController.setCenterView(editUserView);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void handleDeleteUser(User user) {
         Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
         confirmation.setTitle("Confirmar Remoção");
@@ -285,19 +237,16 @@ public class UserController {
 
     public void showAddUserView() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/AddUserView.fxml"));
-            Parent root = loader.load();
-
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/views/AddUserView.fxml"));
+            javafx.scene.Parent root = loader.load();
             AddUserController addUserController = loader.getController();
             addUserController.setUserController(this);
-
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
+            javafx.stage.Stage stage = new javafx.stage.Stage();
+            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
             stage.setTitle("Adicionar Novo Usuário");
-            stage.setScene(new Scene(root));
+            stage.setScene(new javafx.scene.Scene(root));
             stage.showAndWait();
-
-        } catch (IOException e) {
+        } catch (java.io.IOException e) {
             e.printStackTrace();
             System.err.println("Erro ao carregar AddUserView.fxml: " + e.getMessage());
         }
@@ -306,19 +255,10 @@ public class UserController {
     @FXML
     private void handleSearchUser() {
         String searchTerm = searchTextField.getText();
-        String searchCriteria = searchCriteriaComboBox.getValue();
-
-        if (searchTerm != null && !searchTerm.trim().isEmpty() && searchCriteria != null) {
+        // A busca agora será feita com base no texto digitado, sem critério de ComboBox
+        if (searchTerm != null && !searchTerm.trim().isEmpty()) {
             try {
-                List<User> searchResults = Collections.emptyList();
-                if (searchCriteria.equals("Nome")) {
-                    searchResults = userService.findUsersByName(searchTerm);
-                } else if (searchCriteria.equals("CPF")) {
-                    User user = userService.findUserByCPF(searchTerm);
-                    if (user != null) {
-                        searchResults = List.of(user);
-                    }
-                }
+                List<User> searchResults = userService.findUsersByNameOrCPFOrEmail(searchTerm); // Adapte seu serviço para buscar por múltiplos campos
                 updateUserCardDisplay(searchResults);
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -359,29 +299,37 @@ public class UserController {
 
     @FXML
     public void updateUsers(ActionEvent event) {
-        User selectedUser = usersTableView.getSelectionModel().getSelectedItem();
-        if (selectedUser != null) {
-            loadEditUserView(selectedUser);
-        } else {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Aviso");
-            alert.setHeaderText(null);
-            alert.setContentText("Selecione um usuário para editar.");
-            alert.showAndWait();
+        if (usersTableView != null) {
+            User selectedUser = usersTableView.getSelectionModel().getSelectedItem();
+            if (selectedUser != null) {
+                // Lógica para editar usuário na TableView, se necessário
+            } else {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Aviso");
+                alert.setHeaderText(null);
+                alert.setContentText("Selecione um usuário para editar.");
+                alert.showAndWait();
+            }
+        } else if (usersCardFlowPane != null) {
+            // A lógica de edição nos cards já está implementada no handleEditUser
         }
     }
 
     @FXML
     public void deleteUsers(ActionEvent event) {
-        User selectedUser = usersTableView.getSelectionModel().getSelectedItem();
-        if (selectedUser != null) {
-            handleDeleteUser(selectedUser);
-        } else {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Aviso");
-            alert.setHeaderText(null);
-            alert.setContentText("Selecione um usuário para remover.");
-            alert.showAndWait();
+        if (usersTableView != null) {
+            User selectedUser = usersTableView.getSelectionModel().getSelectedItem();
+            if (selectedUser != null) {
+                handleDeleteUser(selectedUser);
+            } else {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Aviso");
+                alert.setHeaderText(null);
+                alert.setContentText("Selecione um usuário para remover.");
+                alert.showAndWait();
+            }
+        } else if (usersCardFlowPane != null) {
+            // A lógica de remoção já está implementada no botão de cada card
         }
     }
 
@@ -393,26 +341,26 @@ public class UserController {
     @FXML
     public void switchToTableView(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/UserView.fxml"));
-            Pane userView = loader.load();
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/views/UserView.fxml"));
+            javafx.scene.layout.Pane userView = loader.load();
             UserController controller = loader.getController();
             controller.setRootLayoutController(this.rootLayoutController);
             rootLayoutController.setCenterView(userView);
             controller.initialize();
-        } catch (IOException e) {
+        } catch (java.io.IOException e) {
             e.printStackTrace();
         }
     }
 
     public void cancelAddUserView() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/UserView.fxml"));
-            Pane userView = loader.load();
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/views/UserView.fxml"));
+            javafx.scene.layout.Pane userView = loader.load();
             UserController controller = loader.getController();
             controller.setRootLayoutController(this.rootLayoutController);
             rootLayoutController.setCenterView(userView);
             showUserCardsView();
-        } catch (IOException e) {
+        } catch (java.io.IOException e) {
             e.printStackTrace();
         }
     }

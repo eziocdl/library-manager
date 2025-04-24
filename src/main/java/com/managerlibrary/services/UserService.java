@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 public class UserService {
     private UserDAO userDAO;
@@ -98,6 +99,23 @@ public class UserService {
                     .filter(user -> user.getCpf().equals(cpf))
                     .findFirst()
                     .orElse(null);
+        }
+    }
+
+    public List<User> findUsersByNameOrCPFOrEmail(String searchTerm) throws SQLException {
+        if (userDAO != null) {
+            return userDAO.findUsersByNameOrCPFOrEmail(searchTerm); // Assumindo que seu DAO tem este método
+        } else {
+            String lowerSearchTerm = searchTerm.toLowerCase();
+            List<User> results = new ArrayList<>();
+            for (User user : users) {
+                if (user.getName().toLowerCase().contains(lowerSearchTerm) ||
+                        user.getCpf().contains(searchTerm) ||
+                        user.getEmail().toLowerCase().contains(lowerSearchTerm)) {
+                    results.add(user);
+                }
+            }
+            return results;
         }
     }
 

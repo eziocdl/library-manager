@@ -17,6 +17,8 @@ body {
     -fx-padding: 12px 16px;
     -fx-border-bottom: 1px solid #b2ebf2; /* Borda azul mais clara */
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 6, 0, 2, 2);
+    -fx-alignment: CENTER_LEFT; /* Alinha verticalmente os itens ao centro */
+    -fx-spacing: 10px; /* Adiciona um pequeno espaço entre os elementos (opcional) */
 }
 
 .top-search-field {
@@ -47,21 +49,15 @@ body {
     -fx-background-color: #b2ebf2; /* Azul mais claro ao passar o mouse */
 }
 
-
-
-
-
 .logo-image { /* Estilo para o texto "LOGO AQUI" (se ainda usado em algum lugar) */
     -fx-pref-width: 100px; /* Define a largura preferencial do ImageView */
     -fx-pref-height: 100px; /* Define a altura preferencial do ImageView */
-
     -fx-background-color: #81d4fa; /* Cor de fundo */
     -fx-border-color: #b2ebf2; /* Cor da borda */
     -fx-border-width: 1px; /* Largura da borda */
     -fx-background-radius: 8px; /* Raio dos cantos do fundo */
     -fx-border-radius: 8px; /* Raio dos cantos da borda */
     -fx-padding: 16px; /* Espaçamento interno */
-
     /* Estilos para a imagem DENTRO do ImageView */
     -fx-image: url("assets/logo.jpeg"); /* Define a imagem (alternativa ao FXML) */
     -fx-image-preserve-ratio: true; /* Mantém a proporção da imagem */
@@ -69,7 +65,6 @@ body {
     -fx-image-position: center; /* Centraliza a imagem dentro do ImageView */
     -fx-image-size: contain; /* Garante que a imagem caiba dentro do ImageView sem cortar */
 }
-
 
 /* Títulos */
 .label-title {
@@ -289,7 +284,6 @@ body {
     -fx-font-family: "Arial Black"; /* Uma fonte mais marcante (você pode escolher outra) */
 }
 
-
 .bottom-margin {
     -fx-margin-bottom: 6px; /* Ou qualquer valor desejado */
 }
@@ -327,4 +321,15 @@ body {
 
 .book-card-action-button:pressed {
     -fx-background-color: #ddd;
+}
+
+/* Estilos para os ícones de busca e adicionar usuário */
+.search-icon {
+    -fx-fit-width: 24px; /* Ajuste o valor conforme desejado */
+    -fx-fit-height: 24px; /* Ajuste o valor conforme desejado */
+}
+
+.add-icon {
+    -fx-fit-width: 24px; /* Ajuste o valor conforme desejado */
+    -fx-fit-height: 24px; /* Ajuste o valor conforme desejado */
 }
