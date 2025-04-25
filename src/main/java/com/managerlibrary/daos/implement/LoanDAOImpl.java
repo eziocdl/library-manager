@@ -1,10 +1,12 @@
 package com.managerlibrary.daos.implement;
 
-import com.managerlibrary.daos.interfaces.LoanDAO; // Importe a interface correta
+import com.managerlibrary.daos.interfaces.BookDAO;
+import com.managerlibrary.daos.interfaces.LoanDAO;
+import com.managerlibrary.daos.interfaces.UserDAO;
 import com.managerlibrary.entities.Book;
 import com.managerlibrary.entities.Loan;
 import com.managerlibrary.entities.User;
-import com.managerlibrary.infra.DataBaseConnection; // Use o nome correto da classe de conexão
+import com.managerlibrary.infra.DataBaseConnection;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -13,22 +15,20 @@ import java.util.List;
 
 public class LoanDAOImpl implements LoanDAO {
     private Connection connection;
+    private final BookDAO bookDAO;
+    private final UserDAO userDAO;
 
     public LoanDAOImpl() throws SQLException {
         this.connection = DataBaseConnection.getConnection();
+        this.bookDAO = new BookDAOImpl(); // Inicialize o BookDAOImpl
+        this.userDAO = new UserDAOImpl(); // Inicialize o UserDAOImpl
     }
+
+    // ... (seu método insertLoan está correto) ...
 
     @Override
     public void insertLoan(Loan loan) throws SQLException {
-        String sql = "INSERT INTO emprestimo (id_livro, id_usuario, data_emprestimo, data_devolucao) VALUES (?, ?, ?, ?)";
-        try (Connection connection = DataBaseConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, loan.getBookId());
-            preparedStatement.setInt(2, loan.getUserId());
-            preparedStatement.setDate(3, Date.valueOf(loan.getLoanDate()));
-            preparedStatement.setDate(4, Date.valueOf(loan.getReturnDate()));
-            preparedStatement.executeUpdate();
-        }
+
     }
 
     @Override
@@ -39,7 +39,7 @@ public class LoanDAOImpl implements LoanDAO {
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                return createLoan(resultSet);
+                return createLoanWithDetails(resultSet); // Use o método que busca os detalhes
             }
             return null;
         }
@@ -53,7 +53,7 @@ public class LoanDAOImpl implements LoanDAO {
              ResultSet resultSet = statement.executeQuery(sql)) {
             List<Loan> loans = new ArrayList<>();
             while (resultSet.next()) {
-                loans.add(createLoan(resultSet));
+                loans.add(createLoanWithDetails(resultSet)); // Use o método que busca os detalhes
             }
             return loans;
         }
@@ -61,27 +61,16 @@ public class LoanDAOImpl implements LoanDAO {
 
     @Override
     public void updateLoan(Loan loan) throws SQLException {
-        String sql = "UPDATE emprestimo SET id_livro = ?, id_usuario = ?, data_emprestimo = ?, data_devolucao = ? WHERE id = ?";
-        try (Connection connection = DataBaseConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, loan.getBookId());
-            preparedStatement.setInt(2, loan.getUserId());
-            preparedStatement.setDate(3, Date.valueOf(loan.getLoanDate()));
-            preparedStatement.setDate(4, Date.valueOf(loan.getReturnDate()));
-            preparedStatement.setInt(5, loan.getId());
-            preparedStatement.executeUpdate();
-        }
+
     }
 
     @Override
     public void deleteLoan(int id) throws SQLException {
-        String sql = "DELETE FROM emprestimo WHERE id = ?";
-        try (Connection connection = DataBaseConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, id);
-            preparedStatement.executeUpdate();
-        }
+
     }
+
+    // ... (seu método updateLoan está correto) ...
+    // ... (seu método deleteLoan está correto) ...
 
     @Override
     public List<Loan> getAllLoansWithDetails() throws SQLException {
@@ -105,27 +94,20 @@ public class LoanDAOImpl implements LoanDAO {
             while (resultSet.next()) {
                 Loan loan = new Loan();
                 loan.setId(resultSet.getInt("loan_id"));
-                loan.setBookId(resultSet.getInt("id_livro"));
-                loan.setUserId(resultSet.getInt("id_usuario"));
                 loan.setLoanDate(resultSet.getDate("data_emprestimo").toLocalDate());
                 loan.setReturnDate(resultSet.getDate("data_devolucao").toLocalDate());
                 loan.setActualReturnDate(resultSet.getObject("data_devolucao_real", LocalDate.class));
                 loan.setStatus(resultSet.getString("status"));
                 loan.setFine(resultSet.getDouble("multa"));
 
-                // Adicionando detalhes do Livro
-                Book book = new Book();
-                book.setId(resultSet.getInt("id_livro"));
-                book.setTitle(resultSet.getString("book_title"));
-                book.setAuthor(resultSet.getString("book_author"));
-                book.setIsbn(resultSet.getString("book_isbn"));
+                // Buscando e associando o Livro
+                int bookId = resultSet.getInt("id_livro");
+                Book book = bookDAO.findBookById(bookId);
                 loan.setBook(book);
 
-                // Adicionando detalhes do Usuário
-                User user = new User();
-                user.setId(resultSet.getInt("id_usuario"));
-                user.setName(resultSet.getString("user_name"));
-                user.setEmail(resultSet.getString("user_email"));
+                // Buscando e associando o Usuário
+                int userId = resultSet.getInt("id_usuario");
+                User user = userDAO.findUserById(userId);
                 loan.setUser(user);
 
                 loans.add(loan);
@@ -139,19 +121,26 @@ public class LoanDAOImpl implements LoanDAO {
     }
 
     /**
-     * Cria um objeto Loan a partir de um ResultSet.
+     * Cria um objeto Loan com detalhes de Book e User a partir de um ResultSet.
      *
      * @param resultSet O ResultSet contendo os dados do empréstimo.
-     * @return O objeto Loan criado.
+     * @return O objeto Loan criado com os detalhes de Book e User.
      * @throws SQLException Se ocorrer um erro ao acessar os dados do ResultSet.
      */
-    private Loan createLoan(ResultSet resultSet) throws SQLException {
+    private Loan createLoanWithDetails(ResultSet resultSet) throws SQLException {
         Loan loan = new Loan();
         loan.setId(resultSet.getInt("id"));
-        loan.setBookId(resultSet.getInt("id_livro"));
-        loan.setUserId(resultSet.getInt("id_usuario"));
         loan.setLoanDate(resultSet.getDate("data_emprestimo").toLocalDate());
         loan.setReturnDate(resultSet.getDate("data_devolucao").toLocalDate());
+
+        int bookId = resultSet.getInt("id_livro");
+        Book book = bookDAO.findBookById(bookId);
+        loan.setBook(book);
+
+        int userId = resultSet.getInt("id_usuario");
+        User user = userDAO.findUserById(userId);
+        loan.setUser(user);
+
         return loan;
     }
 }

@@ -1,38 +1,52 @@
-/* Cores Primárias e Secundárias (REVISADAS) */
-
+/* Cores Primárias e Secundárias */
 /* Estilos Globais */
 body {
     font-family: sans-serif;
-    background-color: #f0f8ff; /* Azul bem claro (AliceBlue) - Mais suave que o cinza */
+    background-color: #f0f8ff; /* Azul bem claro (AliceBlue) */
     color: #333; /* Texto primário mais escuro */
 }
 
 .root { /* Contêiner principal */
-    -fx-background-color: #f0f8ff; /* Acompanha o body */
+    -fx-background-color: #f0f8ff;
 }
 
-/* Barra Superior */
-.top {
-    -fx-background-color: #e0f2f7; /* Azul bem claro (Light Cyan) - Mais cor */
+/* Barra Superior (Top Bar) */
+.top-bar {
+    -fx-padding: 10px;
+    -fx-background-color: #F9FAFB; /* Cor de fundo clara */
+    -fx-border-bottom: 1px solid #E5E7EB; /* Linha divisória inferior */
+}
+
+.top { /* Contêiner da barra superior (pode ser removido se usar .top-bar) */
+    -fx-background-color: #e0f2f7; /* Azul bem claro (Light Cyan) */
     -fx-padding: 12px 16px;
     -fx-border-bottom: 1px solid #b2ebf2; /* Borda azul mais clara */
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 6, 0, 2, 2);
-    -fx-alignment: CENTER_LEFT; /* Alinha verticalmente os itens ao centro */
-    -fx-spacing: 10px; /* Adiciona um pequeno espaço entre os elementos (opcional) */
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 10px;
 }
 
 .top-search-field {
     -fx-padding: 10px;
     -fx-border-color: #b2ebf2; /* Borda azul mais clara */
     -fx-border-radius: 8px;
-    -fx-background-color: #f0f8ff; /* Acompanha o body */
+    -fx-background-color: #f0f8ff;
 }
 
-/* Barra Lateral */
+/* Barra Lateral (Sidebar) */
 .left {
-    -fx-background-color: #e0f2f7; /* Azul bem claro (Light Cyan) - Mais cor */
+    -fx-background-color: #e0f2f7; /* Azul bem claro (Light Cyan) */
     -fx-padding: 16px;
-    -fx-alignment: top-left; /* Centraliza os elementos verticalmente e horizontalmente no topo */
+    -fx-alignment: top-left;
+}
+
+.sidebar-label-title {
+    -fx-text-fill: #2c3e50; /* Tom mais escuro */
+    -fx-font-size: 2.0em;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
+    -fx-padding: 20px 0 10px 0;
+    -fx-font-family: "Arial Black";
 }
 
 .sidebar-button {
@@ -49,21 +63,21 @@ body {
     -fx-background-color: #b2ebf2; /* Azul mais claro ao passar o mouse */
 }
 
-.logo-image { /* Estilo para o texto "LOGO AQUI" (se ainda usado em algum lugar) */
-    -fx-pref-width: 100px; /* Define a largura preferencial do ImageView */
-    -fx-pref-height: 100px; /* Define a altura preferencial do ImageView */
-    -fx-background-color: #81d4fa; /* Cor de fundo */
-    -fx-border-color: #b2ebf2; /* Cor da borda */
-    -fx-border-width: 1px; /* Largura da borda */
-    -fx-background-radius: 8px; /* Raio dos cantos do fundo */
-    -fx-border-radius: 8px; /* Raio dos cantos da borda */
-    -fx-padding: 16px; /* Espaçamento interno */
-    /* Estilos para a imagem DENTRO do ImageView */
-    -fx-image: url("assets/logo.jpeg"); /* Define a imagem (alternativa ao FXML) */
-    -fx-image-preserve-ratio: true; /* Mantém a proporção da imagem */
-    -fx-image-repeat: no-repeat; /* Não repete a imagem */
-    -fx-image-position: center; /* Centraliza a imagem dentro do ImageView */
-    -fx-image-size: contain; /* Garante que a imagem caiba dentro do ImageView sem cortar */
+/* Logo */
+.logo-image {
+    -fx-pref-width: 100px;
+    -fx-pref-height: 100px;
+    -fx-background-color: #81d4fa;
+    -fx-border-color: #b2ebf2;
+    -fx-border-width: 1px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-padding: 16px;
+    -fx-image: url("assets/logo.jpeg"); /* Caminho da imagem */
+    -fx-image-preserve-ratio: true;
+    -fx-image-repeat: no-repeat;
+    -fx-image-position: center;
+    -fx-image-size: contain;
 }
 
 /* Títulos */
@@ -71,13 +85,19 @@ body {
     -fx-font-size: 2em;
     -fx-font-weight: 500;
     -fx-padding: 16px 0;
-    -fx-text-fill: #2979ff; /* Azul mais intenso para títulos */
+    -fx-text-fill: #2979ff; /* Azul mais intenso */
+}
+
+.app-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2563EB; /* Azul primária */
 }
 
 /* Botões */
 .primary-button {
     -fx-background-color: #4caf50; /* Verde mais vivo */
-    -fx-text-fill: #fff; /* Branco */
+    -fx-text-fill: #fff;
     -fx-padding: 12px 24px;
     -fx-border-color: transparent;
     -fx-border-radius: 8px;
@@ -88,12 +108,12 @@ body {
 }
 
 .primary-button:hover {
-    -fx-background-color: #388e3c; /* Verde um pouco mais escuro ao passar o mouse */
+    -fx-background-color: #388e3c; /* Verde mais escuro ao passar o mouse */
 }
 
-.button-action {
-    -fx-background-color: #fff; /* Branco */
-    -fx-text-fill: #2979ff; /* Azul mais intenso para ações secundárias */
+.button-action { /* Renomeado de .action-button para consistência */
+    -fx-background-color: #fff;
+    -fx-text-fill: #2979ff; /* Azul mais intenso */
     -fx-padding: 10px 16px;
     -fx-font-size: 1em;
     -fx-cursor: hand;
@@ -121,7 +141,7 @@ body {
     -fx-fixed-cell-size: 36px;
     -fx-border-color: #b2ebf2; /* Borda azul mais clara */
     -fx-border-width: 1px;
-    -fx-background-color: #fff; /* Branco */
+    -fx-background-color: #fff;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 4, 0, 2, 2);
     -fx-background-radius: 8px;
     -fx-border-radius: 8px;
@@ -164,7 +184,7 @@ body {
     -fx-padding: 12px;
     -fx-border-color: #b2ebf2; /* Borda azul mais clara */
     -fx-border-radius: 8px;
-    -fx-background-color: #fff; /* Branco */
+    -fx-background-color: #fff;
 }
 
 /* ComboBox */
@@ -237,17 +257,17 @@ body {
     -fx-fill: #777; /* Cor da seta um pouco mais escura */
 }
 
-/* Classes de Utilidade */
-.rounded-corners {
-    -fx-background-radius: 8px;
-    -fx-border-radius: 8px;
+/* Cards */
+.user-card {
+    -fx-background-color: #fff; /* Cor de fundo do card (branco) */
+    -fx-border-color: #ddd; /* Cor da borda (cinza claro) */
+    -fx-border-width: 1px; /* Largura da borda */
+    -fx-border-radius: 8px; /* Cantos arredondados */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 4, 0, 2, 2); /* Sombra suave */
+    -fx-padding: 10px; /* Espaçamento interno dentro do card */
+    -fx-max-width: 300px; /* Largura máxima do card */
 }
 
-.shadow-effect {
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 5, 0, 0, 2);
-}
-
-/* Estilo para o card de empréstimo */
 .loan-card {
     -fx-background-color: #fff;
     -fx-border-color: #b2ebf2; /* Borda azul mais clara */
@@ -257,50 +277,7 @@ body {
     -fx-padding: 16px;
 }
 
-.label {
-    -fx-text-fill: #555; /* Cinza um pouco mais escuro */
-}
-
-.top {
-    -fx-background-color: #e0f2f7;
-    -fx-padding: 12px 16px;
-    -fx-border-bottom: 1px solid #b2ebf2;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 6, 0, 2, 2);
-    -fx-alignment: CENTER_LEFT; /* Alinha verticalmente os itens ao centro */
-    -fx-spacing: 10px; /* Adiciona um pequeno espaço entre os elementos (opcional) */
-}
-
-.top .primary-button {
-    -fx-margin-left: 10px; /* Adiciona espaço à esquerda do botão */
-    /* Outros estilos do botão */
-}
-
-.sidebar-label-title {
-    -fx-text-fill: #2c3e50; /* Cor do texto (um tom mais escuro) */
-    -fx-font-size: 2.0em; /* Tamanho da fonte maior */
-    -fx-font-weight: bold; /* Texto em negrito para destaque */
-    -fx-alignment: CENTER; /* Centralizar o texto horizontalmente */
-    -fx-padding: 20px 0 10px 0; /* Espaçamento superior e inferior para melhor posicionamento vertical */
-    -fx-font-family: "Arial Black"; /* Uma fonte mais marcante (você pode escolher outra) */
-}
-
-.bottom-margin {
-    -fx-margin-bottom: 6px; /* Ou qualquer valor desejado */
-}
-
-.app-title {
-    -fx-font-size: 20px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #2563EB; /* Cor azul primária */
-}
-
-.top-bar {
-    -fx-padding: 10px; /* Adiciona um pouco de espaço ao redor da barra superior */
-    -fx-background-color: #F9FAFB; /* Cor de fundo clara */
-    -fx-border-bottom: 1px solid #E5E7EB; /* Adiciona uma linha divisória na parte inferior */
-}
-
-/* Estilos para os botões dentro do card de livro */
+/* Botões dentro de Cards */
 .book-card-action-button {
     -fx-pref-width: 60px;
     -fx-min-width: 60px;
@@ -312,7 +289,7 @@ body {
     -fx-border-color: #ddd;
     -fx-border-radius: 5px;
     -fx-cursor: hand;
-    -fx-alignment: center; /* Centralizar o texto dentro do botão */
+    -fx-alignment: center; /* Centralizar o texto */
 }
 
 .book-card-action-button:hover {
@@ -323,13 +300,35 @@ body {
     -fx-background-color: #ddd;
 }
 
-/* Estilos para os ícones de busca e adicionar usuário */
+/* Ícones */
 .search-icon {
-    -fx-fit-width: 24px; /* Ajuste o valor conforme desejado */
-    -fx-fit-height: 24px; /* Ajuste o valor conforme desejado */
+    -fx-fit-width: 24px;
+    -fx-fit-height: 24px;
 }
 
 .add-icon {
-    -fx-fit-width: 24px; /* Ajuste o valor conforme desejado */
-    -fx-fit-height: 24px; /* Ajuste o valor conforme desejado */
+    -fx-fit-width: 24px;
+    -fx-fit-height: 24px;
+}
+
+/* Classes de Utilidade */
+.rounded-corners {
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+}
+
+.shadow-effect {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 5, 0, 0, 2);
+}
+
+.bottom-margin {
+    -fx-margin-bottom: 6px;
+}
+
+.label {
+    -fx-text-fill: #555; /* Cinza um pouco mais escuro */
+}
+
+.top .primary-button {
+    -fx-margin-left: 10px; /* Espaço à esquerda do botão no .top */
 }

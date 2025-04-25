@@ -1,32 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.FlowPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.image.Image?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<?import javafx.scene.layout.Region?>
-<BorderPane xmlns="http://javafx.com/javafx/21"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.managerlibrary.controllers.UserController"
-            stylesheets="@/Styles.css">
-    <top>
-        <HBox spacing="15.0" styleClass="padded-container" alignment="CENTER_LEFT">
-            <HBox spacing="5.0" alignment="CENTER_LEFT">
-                <TextField fx:id="searchTextField" promptText="Buscar por nome, CPF ou email..." styleClass="text-field rounded-corners"/>
-                <Button text="Buscar" onAction="#searchUsers" styleClass="primary-button rounded-corners shadow-effect"/>
-            </HBox>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Button text="Adicionar Usuário" onAction="#addUser" styleClass="primary-button rounded-corners shadow-effect">
-            </Button>
-        </HBox>
-    </top>
-    <center>
-        <FlowPane fx:id="usersCardFlowPane" hgap="15.0" vgap="15.0" styleClass="padded-container" alignment="TOP_LEFT"/>
-    </center>
-</BorderPane>
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.managerlibrary.controllers.UserController"
+      spacing="10.0"
+      stylesheets="@/Styles.css">
+    <padding>
+        <Insets top="20.0" left="20.0" bottom="20.0" right="20.0"/>
+    </padding>
+    <Label text="Gerenciar Usuários" styleClass="label-title"/>
+    <HBox spacing="10.0" alignment="CENTER_LEFT" styleClass="bottom-spacing">
+        <TextField fx:id="searchTextField" promptText="Buscar por nome, CPF ou email..." HBox.hgrow="ALWAYS" styleClass="text-field rounded-corners"/>
+        <Button text="Buscar" onAction="#searchUsers" styleClass="action-button rounded-corners"/>
+        <Region HBox.hgrow="ALWAYS" />
+        <Button text="+ Adicionar Usuário" onAction="#addUser" styleClass="primary-button rounded-corners shadow-effect"/>
+    </HBox>
+    <FlowPane fx:id="usersCardFlowPane" hgap="10.0" vgap="10.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
+    </FlowPane>
+</VBox>

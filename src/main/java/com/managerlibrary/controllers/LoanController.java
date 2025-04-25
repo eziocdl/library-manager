@@ -148,8 +148,8 @@ public class LoanController {
         }
 
         Loan loan = new Loan();
-        loan.setBookId(selectedBook.getId());
-        loan.setUserId(selectedUser.getId());
+        loan.setBook(selectedBook); // Usa o objeto Book diretamente
+        loan.setUser(selectedUser); // Usa o objeto User diretamente
         loan.setLoanDate(loanDate);
         loan.setReturnDate(returnDate);
         loan.setStatus("Ativo");
@@ -206,7 +206,7 @@ public class LoanController {
         try {
             LocalDate now = LocalDate.now();
             loanService.markAsReturned(loan.getId(), now);
-            Book book = bookService.findBookById(loan.getBookId());
+            Book book = loan.getBook(); // Obtém o objeto Book diretamente
             if (book != null) {
                 bookService.incrementAvailableCopies(book.getId());
             }

@@ -4,7 +4,10 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox xmlns="http://javafx.com/javafx/21"
@@ -18,22 +21,34 @@
 
     <Label text="Adicionar Novo Usuário" styleClass="label-title"/>
 
-    <VBox spacing="10.0">
-        <Label text="Nome:" styleClass="label"/>
-        <TextField fx:id="nameTextField" styleClass="text-field rounded-corners"/>
+    <GridPane vgap="10.0" hgap="10.0">
+        <columnConstraints>
+            <ColumnConstraints prefWidth="100.0" hgrow="NEVER"/>
+            <ColumnConstraints hgrow="ALWAYS" maxWidth="Infinity" minWidth="200.0" prefWidth="300.0"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints vgrow="NEVER"/>
+            <RowConstraints vgrow="NEVER"/>
+            <RowConstraints vgrow="NEVER"/>
+            <RowConstraints vgrow="NEVER"/>
+            <RowConstraints vgrow="ALWAYS"/>
+        </rowConstraints>
 
-        <Label text="CPF:" styleClass="label"/>
-        <TextField fx:id="cpfTextField" promptText="000.000.000-00" styleClass="text-field rounded-corners"/>
+        <Label text="Nome:" styleClass="label" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="nameTextField" styleClass="text-field rounded-corners" GridPane.rowIndex="0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS"/>
 
-        <Label text="Telefone:" styleClass="label"/>
-        <TextField fx:id="phoneTextField" promptText="(00) 00000-0000" styleClass="text-field rounded-corners"/>
+        <Label text="CPF:" styleClass="label" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="cpfTextField" promptText="000.000.000-00" styleClass="text-field rounded-corners" GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS"/>
 
-        <Label text="Email:" styleClass="label"/>
-        <TextField fx:id="emailTextField" styleClass="text-field rounded-corners"/>
+        <Label text="Telefone:" styleClass="label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <TextField fx:id="phoneTextField" promptText="(00) 00000-0000" styleClass="text-field rounded-corners" GridPane.rowIndex="2" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS"/>
 
-        <Label text="Endereço:" styleClass="label"/>
-        <TextField fx:id="addressTextField" styleClass="text-field rounded-corners"/>
-    </VBox>
+        <Label text="Email:" styleClass="label" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <TextField fx:id="emailTextField" styleClass="text-field rounded-corners" GridPane.rowIndex="3" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS"/>
+
+        <Label text="Endereço:" styleClass="label" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <TextField fx:id="addressTextField" styleClass="text-field rounded-corners" GridPane.rowIndex="4" GridPane.columnIndex="1" GridPane.vgrow="ALWAYS" GridPane.hgrow="ALWAYS"/>
+    </GridPane>
 
     <HBox alignment="BOTTOM_RIGHT" spacing="10.0">
         <Button fx:id="saveButton" text="Salvar" onAction="#saveUser" styleClass="primary-button rounded-corners shadow-effect"/>

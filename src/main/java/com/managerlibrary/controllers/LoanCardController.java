@@ -44,14 +44,23 @@ public class LoanCardController {
 
     public void displayLoanDetails() {
         if (loan != null) {
-            // Supondo que você tenha acesso ao nome e CPF do usuário e título do livro
-            // Isso pode exigir que você carregue esses detalhes no LoanController ou
-            // adicione esses atributos à entidade Loan (como discutimos antes).
-            userNameLabel.setText("Nome do Usuário (ID: " + loan.getUserId() + ")"); // Placeholder
-            userCpfLabel.setText("CPF do Usuário (Simulado)"); // Placeholder
-            bookTitleLabel.setText("Título do Livro (ID: " + loan.getBookId() + ")"); // Placeholder
-            loanDateLabel.setText(loan.getLoanDate().format(dateFormatter));
-            returnDateLabel.setText(loan.getReturnDate().format(dateFormatter));
+            // Agora acessamos os detalhes do Usuário e do Livro diretamente do objeto Loan
+            if (loan.getUser() != null) {
+                userNameLabel.setText("Nome do Usuário (ID: " + loan.getUser().getId() + ")");
+                userCpfLabel.setText("CPF do Usuário (Simulado)"); // Você pode precisar buscar o CPF do objeto User
+            } else {
+                userNameLabel.setText("Nome do Usuário (ID: N/A)");
+                userCpfLabel.setText("CPF do Usuário (N/A)");
+            }
+
+            if (loan.getBook() != null) {
+                bookTitleLabel.setText("Título do Livro (ID: " + loan.getBook().getId() + ")");
+            } else {
+                bookTitleLabel.setText("Título do Livro (ID: N/A)");
+            }
+
+            loanDateLabel.setText(loan.getLoanDate() != null ? loan.getLoanDate().format(dateFormatter) : "N/A");
+            returnDateLabel.setText(loan.getReturnDate() != null ? loan.getReturnDate().format(dateFormatter) : "N/A");
 
             if (loan.getActualReturnDate() != null) {
                 actualReturnDateLabel.setText("Devolvido em: " + loan.getActualReturnDate().format(dateFormatter));

@@ -2,21 +2,22 @@ package com.managerlibrary.controllers;
 
 import com.managerlibrary.entities.User;
 import com.managerlibrary.services.UserService;
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
+import javafx.scene.layout.*;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -42,17 +43,17 @@ public class UserController {
     private TableColumn<User, String> cpfColumn;
 
     @FXML
-    private ComboBox<String> searchCriteriaComboBox; // Removido do FXML, manter aqui se usar em outra parte
-    @FXML
     private TextField searchTextField;
 
     private UserService userService = new UserService();
     private RootLayoutController rootLayoutController;
 
+    // Injeção do RootLayoutController
     public void setRootLayoutController(RootLayoutController rootLayoutController) {
         this.rootLayoutController = rootLayoutController;
     }
 
+    // Métodos Getters (podem ser úteis em outras partes do código)
     public RootLayoutController getRootLayoutController() {
         return rootLayoutController;
     }
@@ -65,8 +66,10 @@ public class UserController {
         return userService;
     }
 
+    // Inicialização do Controller
     @FXML
     public void initialize() {
+        // Configuração da TableView, se presente na view
         if (usersTableView != null) {
             idColumn.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
             nameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
@@ -80,14 +83,17 @@ public class UserController {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-        } else if (usersCardFlowPane != null) {
+        }
+        // Exibição dos cards, se o FlowPane estiver presente na view
+        else if (usersCardFlowPane != null) {
             showUserCardsView();
         }
     }
 
+    // Cria um card visual para exibir as informações do usuário
     private VBox createUserCard(User user) {
         VBox card = new VBox(10);
-        card.getStyleClass().addAll("gap-4", "p-5", "border", "border-gray-200", "rounded-lg", "shadow-sm", "max-w-md");
+        card.getStyleClass().addAll("user-card", "gap-4", "p-5", "border", "border-gray-200", "rounded-lg", "shadow-sm", "max-w-md");
         card.setUserData(user);
 
         ImageView userIconImageView = new ImageView();
@@ -120,23 +126,25 @@ public class UserController {
         HBox userDetails = new HBox(10);
         userDetails.getChildren().addAll(iconContainer, infoBox);
 
+        HBox actionsBox = new HBox(8);
+        actionsBox.setAlignment(Pos.CENTER_LEFT);
+        VBox.setMargin(actionsBox, new Insets(8, 0, 0, 0));
+
         Button editButton = new Button("Editar");
         editButton.getStyleClass().addAll("px-4", "py-2", "border", "border-yellow-300", "rounded-md", "text-yellow-700", "font-semibold", "hover:bg-yellow-100", "focus:outline-none", "focus:ring-2", "focus:ring-yellow-600");
         editButton.setOnAction(event -> handleEditUser(user, card));
+        actionsBox.getChildren().add(editButton);
 
         Button removeButton = new Button("Remover");
         removeButton.getStyleClass().addAll("px-4", "py-2", "border", "border-red-300", "rounded-md", "text-red-700", "font-semibold", "hover:bg-red-100", "focus:outline-none", "focus:ring-2", "focus:ring-red-600");
         removeButton.setOnAction(event -> handleDeleteUser(user));
-
-        HBox actionsBox = new HBox(8);
-        actionsBox.getChildren().addAll(editButton, removeButton);
-        actionsBox.setAlignment(Pos.CENTER_LEFT);
-        VBox.setMargin(actionsBox, new Insets(8, 0, 0, 0));
+        actionsBox.getChildren().add(removeButton);
 
         card.getChildren().addAll(userDetails, actionsBox);
         return card;
     }
 
+    // Lógica para editar um usuário existente (exibe campos de texto para edição)
     public void handleEditUser(User user, VBox card) {
         System.out.println("Editar usuário: " + user.getName());
 
@@ -151,15 +159,16 @@ public class UserController {
 
         infoBox.getChildren().addAll(nameTextField, emailTextField, cpfTextField, phoneTextField, addressTextField);
 
+        HBox actionsBox = (HBox) card.getChildren().get(1);
+        actionsBox.getChildren().clear();
+
         Button saveButton = new Button("Salvar");
         saveButton.getStyleClass().addAll("px-4", "py-2", "border", "border-green-300", "rounded-md", "text-green-700", "font-semibold", "hover:bg-green-100", "focus:outline-none", "focus:ring-2", "focus:ring-green-600");
         saveButton.setOnAction(event -> handleSave(user, card, nameTextField, emailTextField, cpfTextField, phoneTextField, addressTextField));
-
-        HBox actionsBox = (HBox) card.getChildren().get(1);
-        actionsBox.getChildren().clear();
         actionsBox.getChildren().add(saveButton);
     }
 
+    // Salva as alterações feitas na edição do usuário
     private void handleSave(User user, VBox card, TextField nameTextField, TextField emailTextField, TextField cpfTextField, TextField phoneTextField, TextField addressTextField) {
         user.setName(nameTextField.getText());
         user.setEmail(emailTextField.getText());
@@ -180,6 +189,7 @@ public class UserController {
         }
     }
 
+    // Formata o CPF para exibição
     private String formatCpf(String cpf) {
         if (cpf != null && cpf.matches("\\d{11}")) {
             return cpf.substring(0, 3) + "." + cpf.substring(3, 6) + "." + cpf.substring(6, 9) + "-" + cpf.substring(9);
@@ -187,6 +197,7 @@ public class UserController {
         return cpf;
     }
 
+    // Formata o Telefone para exibição
     private String formatPhone(String phone) {
         if (phone != null && phone.matches("\\d{10,11}")) {
             if (phone.length() == 10) {
@@ -198,6 +209,7 @@ public class UserController {
         return phone;
     }
 
+    // Exibe os usuários em formato de cards no FlowPane
     public void showUserCardsView() {
         if (usersCardFlowPane != null) {
             usersCardFlowPane.getChildren().clear();
@@ -212,6 +224,7 @@ public class UserController {
         }
     }
 
+    // Lógica para excluir um usuário
     public void handleDeleteUser(User user) {
         Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
         confirmation.setTitle("Confirmar Remoção");
@@ -235,30 +248,50 @@ public class UserController {
         });
     }
 
+    // Exibe a tela para adicionar um novo usuário (modal)
+
+
     public void showAddUserView() {
         try {
-            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/views/AddUserView.fxml"));
-            javafx.scene.Parent root = loader.load();
-            AddUserController addUserController = loader.getController();
+            FXMLLoader loaderAddUser = new FXMLLoader(getClass().getResource("/views/AddUserView.fxml"));
+            Pane addUserView = loaderAddUser.load();
+            AddUserController addUserController = loaderAddUser.getController();
             addUserController.setUserController(this);
-            javafx.stage.Stage stage = new javafx.stage.Stage();
-            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+
+            Stage stage = new Stage();
+            stage.initModality(javafx.stage.Modality.WINDOW_MODAL);
+            stage.initOwner(usersCardFlowPane.getScene().getWindow());
             stage.setTitle("Adicionar Novo Usuário");
-            stage.setScene(new javafx.scene.Scene(root));
+            stage.setScene(new javafx.scene.Scene(addUserView));
             stage.showAndWait();
-        } catch (java.io.IOException e) {
+
+            // Após a janela modal ser fechada, recarregue a UserView
+            FXMLLoader loaderUser = new FXMLLoader(getClass().getResource("/views/UserView.fxml"));
+            Pane userView = loaderUser.load();
+            UserController controller = loaderUser.getController();
+            controller.setRootLayoutController(this.rootLayoutController);
+            rootLayoutController.setCenterView(userView);
+
+            // Garanta que a view seja exibida e os cards carregados
+            Platform.runLater(() -> {
+                Stage primaryStage = (Stage) usersCardFlowPane.getScene().getWindow();
+                if (primaryStage != null) {
+                    primaryStage.show();
+                }
+            });
+
+        } catch (IOException e) {
             e.printStackTrace();
-            System.err.println("Erro ao carregar AddUserView.fxml: " + e.getMessage());
+            System.err.println("Erro ao carregar views: " + e.getMessage());
         }
     }
-
+    // Lógica para buscar usuários
     @FXML
     private void handleSearchUser() {
         String searchTerm = searchTextField.getText();
-        // A busca agora será feita com base no texto digitado, sem critério de ComboBox
         if (searchTerm != null && !searchTerm.trim().isEmpty()) {
             try {
-                List<User> searchResults = userService.findUsersByNameOrCPFOrEmail(searchTerm); // Adapte seu serviço para buscar por múltiplos campos
+                List<User> searchResults = userService.findUsersByNameOrCPFOrEmail(searchTerm);
                 updateUserCardDisplay(searchResults);
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -268,16 +301,19 @@ public class UserController {
         }
     }
 
+    // Carrega os usuários para a TableView
     private void loadingUsersForTable() throws SQLException {
         ObservableList<User> users = FXCollections.observableArrayList(userService.getAllUsers());
         usersTableView.setItems(users);
     }
 
+    // Atualiza a TableView com uma nova lista de usuários
     private void updateUserTableDisplay(List<User> userList) {
         ObservableList<User> observableUserList = FXCollections.observableArrayList(userList);
         usersTableView.setItems(observableUserList);
     }
 
+    // Atualiza a exibição dos cards com uma nova lista de usuários
     private void updateUserCardDisplay(List<User> userList) {
         if (usersCardFlowPane != null) {
             usersCardFlowPane.getChildren().clear();
@@ -287,6 +323,7 @@ public class UserController {
         }
     }
 
+    // Ações dos botões na interface
     @FXML
     public void addUser(ActionEvent event) {
         showAddUserView();
@@ -310,9 +347,8 @@ public class UserController {
                 alert.setContentText("Selecione um usuário para editar.");
                 alert.showAndWait();
             }
-        } else if (usersCardFlowPane != null) {
-            // A lógica de edição nos cards já está implementada no handleEditUser
         }
+        // A lógica de edição nos cards já está implementada no handleEditUser
     }
 
     @FXML
@@ -328,9 +364,8 @@ public class UserController {
                 alert.setContentText("Selecione um usuário para remover.");
                 alert.showAndWait();
             }
-        } else if (usersCardFlowPane != null) {
-            // A lógica de remoção já está implementada no botão de cada card
         }
+        // A lógica de remoção já está implementada no botão de cada card
     }
 
     @FXML
@@ -352,6 +387,7 @@ public class UserController {
         }
     }
 
+    // Método chamado ao cancelar a tela de adicionar usuário
     public void cancelAddUserView() {
         try {
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/views/UserView.fxml"));
@@ -359,7 +395,7 @@ public class UserController {
             UserController controller = loader.getController();
             controller.setRootLayoutController(this.rootLayoutController);
             rootLayoutController.setCenterView(userView);
-            showUserCardsView();
+            Platform.runLater(() -> showUserCardsView()); // Atualizar a visualização
         } catch (java.io.IOException e) {
             e.printStackTrace();
         }

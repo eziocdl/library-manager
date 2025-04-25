@@ -15,53 +15,49 @@ public class RootLayoutController {
     private BorderPane rootLayout;
 
     private BookController bookController;
-    private UserController userController; // Adicionada referência ao UserController
+    private UserController userController;
 
+    // Injeção do BookController
     public void setBookController(BookController bookController) {
         this.bookController = bookController;
     }
 
+    // Injeção do UserController
     public void setUserController(UserController userController) {
         this.userController = userController;
     }
 
+    // Ação para o menu "Sair"
     @FXML
     public void handleExit(ActionEvent event) {
         System.exit(0);
     }
 
+    // Ação para exibir a view de livros
     @FXML
     public void showBookView(ActionEvent event) {
-        loadView("/views/BookView.fxml");
-        // Garante que o BookController seja definido após o carregamento da view
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/BookView.fxml"));
-        try {
-            loader.load();
+        loadView("/views/BookView.fxml", (loader) -> {
             bookController = loader.getController();
             bookController.setRootLayoutController(this);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        });
     }
 
+    // Ação para exibir a view de empréstimos
     @FXML
     public void showLoanView(ActionEvent event) {
-        loadView("/views/LoanView.fxml");
+        loadView("/views/LoanView.fxml", null); // Não precisa de controller específico aqui, por enquanto
     }
 
+    // Ação para exibir a view de usuários
     @FXML
     public void showUserView(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/UserView.fxml"));
-            Pane userView = loader.load();
+        loadView("/views/UserView.fxml", (loader) -> {
             userController = loader.getController();
             userController.setRootLayoutController(this);
-            rootLayout.setCenter(userView);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        });
     }
 
+    // Ação para o botão de adicionar livro
     @FXML
     public void handleAddBookClick(ActionEvent event) {
         if (bookController != null) {
@@ -71,6 +67,7 @@ public class RootLayoutController {
         }
     }
 
+    // Ação para o botão de adicionar usuário
     @FXML
     public void handleAddUserClick(ActionEvent event) {
         if (userController != null) {
@@ -80,18 +77,28 @@ public class RootLayoutController {
         }
     }
 
-    private void loadView(String fxmlPath) {
+    // Método genérico para carregar views e executar uma ação no controller (opcional)
+    private void loadView(String fxmlPath, ControllerCallback callback) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            javafx.scene.layout.Pane view = loader.load();
+            Pane view = loader.load();
             rootLayout.setCenter(view);
+            if (callback != null) {
+                callback.process(loader);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    // Novo método para definir a view central
+    // Novo método para definir a view central diretamente
     public void setCenterView(Node node) {
         rootLayout.setCenter(node);
+    }
+
+    // Interface funcional para o callback do controller
+    @FunctionalInterface
+    private interface ControllerCallback {
+        void process(FXMLLoader loader);
     }
 }

@@ -71,4 +71,18 @@ public class BookService {
     public List<Book> findBooksByGenre(String genre) throws SQLException {
         return bookDAO.findBooksByGenre(genre);
     }
+
+    // Novo método para buscar todos os livros disponíveis
+    public List<Book> getAllAvailableBooks() throws SQLException {
+        return bookDAO.findAllAvailable(); // Assumindo que seu BookDAO tem um método findAllAvailable
+    }
+
+    // Novo método para marcar um livro como emprestado
+    public void markBookAsBorrowed(int bookId) throws SQLException {
+        Book book = bookDAO.findBookById(bookId);
+        if (book != null && book.getAvailableCopies() > 0) {
+            book.setAvailableCopies(book.getAvailableCopies() - 1); // Decrementa as cópias disponíveis
+            bookDAO.updateBook(book);
+        }
+    }
 }

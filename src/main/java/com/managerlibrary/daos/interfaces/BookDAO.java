@@ -27,4 +27,6 @@ public interface BookDAO {
     Book findBookByISBN(String isbn) throws SQLException;
 
     List<Book> findBooksByGenre(String genre) throws SQLException;
+
+    List<Book> findAllAvailable() throws SQLException;
 }
