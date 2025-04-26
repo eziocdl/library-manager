@@ -18,8 +18,9 @@ public class App extends Application {
     private Stage primaryStage;
     private BorderPane rootLayout;
     private RootLayoutController rootController;
-    private BookController bookController; // Adicionada referência ao BookController no App
-    private UserController userController; // Adicionada referência ao UserController no App
+    private BookController bookController;
+    private UserController userController;
+    private LoanController loanController; // Adicionada referência ao LoanController no App
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -27,7 +28,7 @@ public class App extends Application {
         this.primaryStage.setTitle("ManagerLibrary");
 
         initRootLayout();
-        showBookView(); // Garante que a BookView e o BookController sejam inicializados cedo
+        showBookView(); // Exibe a tela de livros inicialmente
         primaryStage.show();
     }
 
@@ -37,9 +38,20 @@ public class App extends Application {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/RootLayout.fxml"));
             rootLayout = loader.load();
             rootController = loader.getController();
+
+            // Carrega e instancia o LoanController
+            FXMLLoader loanLoader = new FXMLLoader(getClass().getResource("/views/LoanView.fxml"));
+            Pane loanView = loanLoader.load();
+            loanController = loanLoader.getController();
+
+            // Injeta o RootLayoutController no LoanController
+            loanController.setRootLayoutController(rootController);
+
+            // Injeta o LoanController no RootLayoutController
+            rootController.setLoanController(loanController);
+
             Scene scene = new Scene(rootLayout, 800, 600);
             primaryStage.setScene(scene);
-            // primaryStage.show(); // Movido para o final do start()
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -49,12 +61,8 @@ public class App extends Application {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/BookView.fxml"));
             Pane bookView = loader.load();
-            bookController = loader.getController(); // Inicializa a referência do BookController no App
+            bookController = loader.getController();
             bookController.setRootLayoutController(rootController);
-
-            // Injeta o BookController no RootLayoutController
-            rootController.setBookController(bookController);
-
             rootLayout.setCenter(bookView);
             primaryStage.setTitle("Manager Library - Livros");
         } catch (IOException e) {
@@ -79,7 +87,7 @@ public class App extends Application {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/UserView.fxml"));
             Pane userView = loader.load();
-            userController = loader.getController(); // Inicializa a referência do UserController no App
+            userController = loader.getController();
             userController.setRootLayoutController(rootController);
             rootLayout.setCenter(userView);
             primaryStage.setTitle("Manager Library - Usuários");

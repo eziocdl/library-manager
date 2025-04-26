@@ -1,53 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/21"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.managerlibrary.controllers.NewLoanController">
-    <top>
-        <HBox alignment="CENTER_LEFT" spacing="10" styleClass="p-6">
-            <Label text="Registrar Novo Empréstimo" styleClass="label-title"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Button onAction="#closeNewLoanView" styleClass="close-button">
-                <graphic>
-                    <Label styleClass="icon-close"/>
-                </graphic>
-            </Button>
-        </HBox>
-    </top>
-    <center>
-        <VBox spacing="15" styleClass="p-6">
-            <VBox spacing="5">
-                <Label text="Usuário" styleClass="label-semibold"/>
-                <ComboBox fx:id="userComboBox" promptText="Selecione um usuário" styleClass="rounded-corners"/>
-            </VBox>
-            <VBox spacing="5">
-                <Label text="Livro" styleClass="label-semibold"/>
-                <ComboBox fx:id="bookComboBox" promptText="Selecione um livro" styleClass="rounded-corners"/>
-            </VBox>
-            <HBox spacing="15">
-                <VBox spacing="5">
-                    <Label text="Data de Empréstimo" styleClass="label-semibold"/>
-                    <DatePicker fx:id="loanDatePicker" styleClass="rounded-corners"/>
-                </VBox>
-                <VBox spacing="5">
-                    <Label text="Data de Devolução" styleClass="label-semibold"/>
-                    <DatePicker fx:id="returnDatePicker" styleClass="rounded-corners"/>
-                </VBox>
-            </HBox>
-        </VBox>
-    </center>
-    <bottom>
-        <HBox alignment="CENTER_RIGHT" spacing="10" styleClass="p-6">
-            <Button text="Cancelar" onAction="#closeNewLoanView" styleClass="secondary-button rounded-corners shadow-effect"/>
-            <Button text="Registrar Empréstimo" onAction="#registerNewLoan" styleClass="primary-button rounded-corners shadow-effect"/>
-        </HBox>
-    </bottom>
-</BorderPane>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.managerlibrary.controllers.NewLoanController"
+      spacing="10"
+      stylesheets="@/Styles.css">
+    <padding>
+        <Insets top="20" left="20" bottom="20" right="20"/>
+    </padding>
+    <Label text="Cadastrar Empréstimo" styleClass="label-title"/>
+
+    <GridPane hgap="10" vgap="10" style="-fx-padding: 20 0 0 0;">
+        <Label text="Livro:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="label"/>
+        <ComboBox fx:id="bookComboBox" GridPane.rowIndex="0" GridPane.columnIndex="1" styleClass="combo-box rounded-corners"/>
+
+        <Label text="Usuário:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="label"/>
+        <ComboBox fx:id="userComboBox" GridPane.rowIndex="1" GridPane.columnIndex="1" styleClass="combo-box rounded-corners"/>
+
+        <Label text="Data de Empréstimo:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="label"/>
+        <DatePicker fx:id="loanDatePicker" GridPane.rowIndex="2" GridPane.columnIndex="1" styleClass="date-picker rounded-corners"/>
+
+        <Label text="Data de Devolução:" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="label"/>
+        <DatePicker fx:id="returnDatePicker" GridPane.rowIndex="3" GridPane.columnIndex="1" styleClass="date-picker rounded-corners"/>
+    </GridPane>
+
+    <HBox spacing="10" alignment="BOTTOM_RIGHT" style="-fx-padding: 20 0 0 0;">
+        <Button text="Salvar Empréstimo" onAction="#registerNewLoan" styleClass="primary-button rounded-corners shadow-effect"/>
+        <Button text="Cancelar" onAction="#closeNewLoanView" styleClass="button-action rounded-corners"/>
+    </HBox>
+</VBox>

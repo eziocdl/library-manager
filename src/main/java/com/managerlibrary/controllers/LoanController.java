@@ -1,3 +1,4 @@
+// com/managerlibrary/controllers/LoanController.java
 package com.managerlibrary.controllers;
 
 import com.managerlibrary.entities.Book;
@@ -28,22 +29,13 @@ public class LoanController {
     private VBox loansVBox;
     @FXML
     private TextField searchTextField;
-    // Tela AddLoanView
-    @FXML
-    private ComboBox<Book> bookComboBox;
-    @FXML
-    private ComboBox<User> userComboBox;
-    @FXML
-    private DatePicker loanDatePicker;
-    @FXML
-    private DatePicker returnDatePicker;
 
     private LoanService loanService;
     private BookService bookService;
     private UserService userService;
     private RootLayoutController rootLayoutController;
     private ObservableList<Loan> allLoans = FXCollections.observableArrayList();
-    private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); // Adicione isto
+    private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public LoanController() {
         try {
@@ -69,7 +61,7 @@ public class LoanController {
     private void loadAllLoans() {
         try {
             allLoans.clear();
-            allLoans.addAll(loanService.getAllLoansWithDetails()); // Precisa implementar este método no LoanService
+            allLoans.addAll(loanService.getAllLoansWithDetails());
         } catch (SQLException e) {
             e.printStackTrace();
             // Lidar com o erro
@@ -77,103 +69,35 @@ public class LoanController {
     }
 
     private void displayLoans(ObservableList<Loan> loans) {
-        loansVBox.getChildren().clear();
-        for (Loan loan : loans) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/LoanCardView.fxml"));
-                VBox loanCard = loader.load();
-                LoanCardController controller = loader.getController();
-                controller.setLoan(loan);
-                controller.setLoanController(this); // Passa referência para o LoanController
-                controller.displayLoanDetails();
-                loansVBox.getChildren().add(loanCard);
-            } catch (IOException e) {
-                e.printStackTrace();
+        if (loansVBox != null) { // Adicionada verificação de null
+            loansVBox.getChildren().clear();
+            for (Loan loan : loans) {
+                try {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/LoanCardView.fxml"));
+                    VBox loanCard = loader.load();
+                    LoanCardController controller = loader.getController();
+                    controller.setLoan(loan);
+                    controller.setLoanController(this);
+                    controller.displayLoanDetails();
+                    loansVBox.getChildren().add(loanCard);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
+        } else {
+            System.err.println("Erro: loansVBox não foi inicializado (é null).");
+            // Lidar com o erro onde o VBox não está injetado
         }
     }
 
     @FXML
     public void showAddLoanView() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/AddLoanView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/NewLoanView.fxml"));
             Pane addLoanView = loader.load();
-            LoanController addLoanController = loader.getController();
+            NewLoanController addLoanController = loader.getController();
             addLoanController.setRootLayoutController(this.rootLayoutController);
-            addLoanController.initializeAddLoanView();
             rootLayoutController.setCenterView(addLoanView);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void initializeAddLoanView() {
-        try {
-            bookComboBox.setItems(FXCollections.observableArrayList(bookService.findAllBooks()));
-            userComboBox.setItems(FXCollections.observableArrayList(userService.getAllUsers()));
-            loanDatePicker.setValue(LocalDate.now());
-            setDatePickerFormat(loanDatePicker); // Adicionar formatação
-            returnDatePicker.setValue(LocalDate.now().plusDays(7)); // Definir um valor inicial para a data de devolução
-            setDatePickerFormat(returnDatePicker); // Adicionar formatação
-        } catch (SQLException e) {
-            e.printStackTrace();
-            // Lidar com o erro
-        }
-    }
-
-    private void setDatePickerFormat(DatePicker datePicker) {
-        datePicker.setConverter(new StringConverter<LocalDate>() {
-            @Override
-            public String toString(LocalDate date) {
-                return (date != null) ? dateFormatter.format(date) : "";
-            }
-
-            @Override
-            public LocalDate fromString(String string) {
-                return (string != null && !string.isEmpty()) ? LocalDate.parse(string, dateFormatter) : null;
-            }
-        });
-    }
-
-    @FXML
-    public void saveLoan(ActionEvent event) {
-        Book selectedBook = bookComboBox.getValue();
-        User selectedUser = userComboBox.getValue();
-        LocalDate loanDate = loanDatePicker.getValue();
-        LocalDate returnDate = returnDatePicker.getValue();
-
-        if (selectedBook == null || selectedUser == null || loanDate == null || returnDate == null) {
-            // Mostrar erro
-            return;
-        }
-
-        Loan loan = new Loan();
-        loan.setBook(selectedBook); // Usa o objeto Book diretamente
-        loan.setUser(selectedUser); // Usa o objeto User diretamente
-        loan.setLoanDate(loanDate);
-        loan.setReturnDate(returnDate);
-        loan.setStatus("Ativo");
-        loan.setFine(0.0);
-
-        try {
-            loanService.addLoan(loan);
-            bookService.decrementAvailableCopies(selectedBook.getId());
-            loadAllLoans();
-            cancelAddLoanView(event);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            // Lidar com o erro
-        }
-    }
-
-    @FXML
-    public void cancelAddLoanView(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/LoanView.fxml"));
-            Pane loanView = loader.load();
-            LoanController controller = loader.getController();
-            controller.setRootLayoutController(this.rootLayoutController);
-            rootLayoutController.setCenterView(loanView);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -206,7 +130,7 @@ public class LoanController {
         try {
             LocalDate now = LocalDate.now();
             loanService.markAsReturned(loan.getId(), now);
-            Book book = loan.getBook(); // Obtém o objeto Book diretamente
+            Book book = loan.getBook();
             if (book != null) {
                 bookService.incrementAvailableCopies(book.getId());
             }

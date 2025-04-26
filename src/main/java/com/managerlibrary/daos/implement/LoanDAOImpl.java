@@ -20,26 +20,35 @@ public class LoanDAOImpl implements LoanDAO {
 
     public LoanDAOImpl() throws SQLException {
         this.connection = DataBaseConnection.getConnection();
-        this.bookDAO = new BookDAOImpl(); // Inicialize o BookDAOImpl
-        this.userDAO = new UserDAOImpl(); // Inicialize o UserDAOImpl
+        this.bookDAO = new BookDAOImpl();
+        this.userDAO = new UserDAOImpl();
     }
-
-    // ... (seu método insertLoan está correto) ...
 
     @Override
     public void insertLoan(Loan loan) throws SQLException {
-
+        String sql = "INSERT INTO emprestimo (book_id, user_id, loan_date, return_date, actual_return_date, status, fine) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (Connection connection = DataBaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, loan.getBook().getId());
+            preparedStatement.setInt(2, loan.getUser().getId());
+            preparedStatement.setDate(3, Date.valueOf(loan.getLoanDate()));
+            preparedStatement.setDate(4, Date.valueOf(loan.getReturnDate()));
+            preparedStatement.setDate(5, loan.getActualReturnDate() != null ? Date.valueOf(loan.getActualReturnDate()) : null);
+            preparedStatement.setString(6, loan.getStatus());
+            preparedStatement.setDouble(7, loan.getFine());
+            preparedStatement.executeUpdate();
+        }
     }
 
     @Override
     public Loan findLoanById(int id) throws SQLException {
-        String sql = "SELECT * FROM emprestimo WHERE id = ?";
+        String sql = "SELECT id, book_id, user_id, loan_date, return_date, actual_return_date, status, fine FROM emprestimo WHERE id = ?";
         try (Connection connection = DataBaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                return createLoanWithDetails(resultSet); // Use o método que busca os detalhes
+                return createLoanWithDetails(resultSet);
             }
             return null;
         }
@@ -47,13 +56,13 @@ public class LoanDAOImpl implements LoanDAO {
 
     @Override
     public List<Loan> findAllLoans() throws SQLException {
-        String sql = "SELECT * FROM emprestimo";
+        String sql = "SELECT id, book_id, user_id, loan_date, return_date, actual_return_date, status, fine FROM emprestimo";
         try (Connection connection = DataBaseConnection.getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
             List<Loan> loans = new ArrayList<>();
             while (resultSet.next()) {
-                loans.add(createLoanWithDetails(resultSet)); // Use o método que busca os detalhes
+                loans.add(createLoanWithDetails(resultSet));
             }
             return loans;
         }
@@ -61,16 +70,30 @@ public class LoanDAOImpl implements LoanDAO {
 
     @Override
     public void updateLoan(Loan loan) throws SQLException {
-
+        String sql = "UPDATE emprestimo SET book_id = ?, user_id = ?, loan_date = ?, return_date = ?, actual_return_date = ?, status = ?, fine = ? WHERE id = ?";
+        try (Connection connection = DataBaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, loan.getBook().getId());
+            preparedStatement.setInt(2, loan.getUser().getId());
+            preparedStatement.setDate(3, Date.valueOf(loan.getLoanDate()));
+            preparedStatement.setDate(4, Date.valueOf(loan.getReturnDate()));
+            preparedStatement.setDate(5, loan.getActualReturnDate() != null ? Date.valueOf(loan.getActualReturnDate()) : null);
+            preparedStatement.setString(6, loan.getStatus());
+            preparedStatement.setDouble(7, loan.getFine());
+            preparedStatement.setInt(8, loan.getId());
+            preparedStatement.executeUpdate();
+        }
     }
 
     @Override
     public void deleteLoan(int id) throws SQLException {
-
+        String sql = "DELETE FROM emprestimo WHERE id = ?";
+        try (Connection connection = DataBaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, id);
+            preparedStatement.executeUpdate();
+        }
     }
-
-    // ... (seu método updateLoan está correto) ...
-    // ... (seu método deleteLoan está correto) ...
 
     @Override
     public List<Loan> getAllLoansWithDetails() throws SQLException {
@@ -82,32 +105,33 @@ public class LoanDAOImpl implements LoanDAO {
         try {
             connection = DataBaseConnection.getConnection();
             String sql = "SELECT " +
-                    "l.id AS loan_id, l.id_livro, l.id_usuario, l.data_emprestimo, l.data_devolucao, l.data_devolucao_real, l.status, l.multa, " +
-                    "b.titulo AS book_title, b.autor AS book_author, b.isbn AS book_isbn, " +
+                    "l.id AS loan_id, l.book_id, l.user_id, l.loan_date, l.return_date, l.actual_return_date, l.status, l.fine, " +
+                    "b.title AS book_title, b.author AS book_author, b.isbn AS book_isbn, " +
                     "u.nome AS user_name, u.email AS user_email " +
                     "FROM emprestimo l " +
-                    "JOIN livro b ON l.id_livro = b.id " +
-                    "JOIN usuario u ON l.id_usuario = u.id";
+                    "JOIN books b ON l.book_id = b.id " +
+                    "JOIN usuario u ON l.user_id = u.id";
             preparedStatement = connection.prepareStatement(sql);
             resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
                 Loan loan = new Loan();
                 loan.setId(resultSet.getInt("loan_id"));
-                loan.setLoanDate(resultSet.getDate("data_emprestimo").toLocalDate());
-                loan.setReturnDate(resultSet.getDate("data_devolucao").toLocalDate());
-                loan.setActualReturnDate(resultSet.getObject("data_devolucao_real", LocalDate.class));
+                loan.setLoanDate(resultSet.getDate("loan_date").toLocalDate());
+                loan.setReturnDate(resultSet.getDate("return_date").toLocalDate());
+                loan.setActualReturnDate(resultSet.getObject("actual_return_date", LocalDate.class));
                 loan.setStatus(resultSet.getString("status"));
-                loan.setFine(resultSet.getDouble("multa"));
+                loan.setFine(resultSet.getDouble("fine"));
 
-                // Buscando e associando o Livro
-                int bookId = resultSet.getInt("id_livro");
-                Book book = bookDAO.findBookById(bookId);
+                Book book = new Book();
+                book.setTitle(resultSet.getString("book_title"));
+                book.setAuthor(resultSet.getString("book_author"));
+                book.setIsbn(resultSet.getString("book_isbn"));
                 loan.setBook(book);
 
-                // Buscando e associando o Usuário
-                int userId = resultSet.getInt("id_usuario");
-                User user = userDAO.findUserById(userId);
+                User user = new User();
+                user.setName(resultSet.getString("user_name"));
+                user.setEmail(resultSet.getString("user_email"));
                 loan.setUser(user);
 
                 loans.add(loan);
@@ -120,6 +144,17 @@ public class LoanDAOImpl implements LoanDAO {
         return loans;
     }
 
+    @Override
+    public void markAsReturned(int loanId, LocalDate returnDate) throws SQLException {
+        String sql = "UPDATE emprestimo SET actual_return_date = ?, status = 'Devolvido' WHERE id = ?";
+        try (Connection connection = DataBaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setDate(1, Date.valueOf(returnDate));
+            preparedStatement.setInt(2, loanId);
+            preparedStatement.executeUpdate();
+        }
+    }
+
     /**
      * Cria um objeto Loan com detalhes de Book e User a partir de um ResultSet.
      *
@@ -130,14 +165,17 @@ public class LoanDAOImpl implements LoanDAO {
     private Loan createLoanWithDetails(ResultSet resultSet) throws SQLException {
         Loan loan = new Loan();
         loan.setId(resultSet.getInt("id"));
-        loan.setLoanDate(resultSet.getDate("data_emprestimo").toLocalDate());
-        loan.setReturnDate(resultSet.getDate("data_devolucao").toLocalDate());
+        loan.setLoanDate(resultSet.getDate("loan_date").toLocalDate());
+        loan.setReturnDate(resultSet.getDate("return_date").toLocalDate());
+        loan.setActualReturnDate(resultSet.getObject("actual_return_date", LocalDate.class));
+        loan.setStatus(resultSet.getString("status"));
+        loan.setFine(resultSet.getDouble("fine"));
 
-        int bookId = resultSet.getInt("id_livro");
+        int bookId = resultSet.getInt("book_id");
         Book book = bookDAO.findBookById(bookId);
         loan.setBook(book);
 
-        int userId = resultSet.getInt("id_usuario");
+        int userId = resultSet.getInt("user_id");
         User user = userDAO.findUserById(userId);
         loan.setUser(user);
 

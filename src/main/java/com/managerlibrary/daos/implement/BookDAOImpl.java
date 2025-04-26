@@ -20,7 +20,7 @@ public class BookDAOImpl implements BookDAO {
 
     @Override
     public void insertBook(Book book) throws SQLException {
-        String sql = "INSERT INTO livro (titulo, autor, isbn, genero, total_copias, copias_disponiveis) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO books (title, author, isbn, genre, total_copies, available_copies) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DataBaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, book.getTitle());
@@ -36,12 +36,12 @@ public class BookDAOImpl implements BookDAO {
     @Override
     public List<Book> searchBook(Book book) throws SQLException {
         List<Book> books = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT * FROM livro WHERE 1=1");
+        StringBuilder sql = new StringBuilder("SELECT * FROM books WHERE 1=1");
         if (book.getTitle() != null && !book.getTitle().isEmpty()) {
-            sql.append(" AND titulo LIKE ?");
+            sql.append(" AND title LIKE ?");
         }
         if (book.getAuthor() != null && !book.getAuthor().isEmpty()) {
-            sql.append(" AND autor LIKE ?");
+            sql.append(" AND author LIKE ?");
         }
         // Adicione outras condições de busca conforme necessário
         try (Connection conn = DataBaseConnection.getConnection();
@@ -63,7 +63,7 @@ public class BookDAOImpl implements BookDAO {
 
     @Override
     public Book findBookById(int id) throws SQLException {
-        String sql = "SELECT * FROM livro WHERE id = ?";
+        String sql = "SELECT * FROM books WHERE id = ?";
         try (Connection conn = DataBaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, id);
@@ -78,7 +78,7 @@ public class BookDAOImpl implements BookDAO {
     @Override
     public List<Book> findAllBooks() throws SQLException {
         List<Book> books = new ArrayList<>();
-        String sql = "SELECT * FROM livro";
+        String sql = "SELECT * FROM books";
         try (Connection conn = DataBaseConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -92,7 +92,7 @@ public class BookDAOImpl implements BookDAO {
     @Override
     public List<Book> findAllAvailable() throws SQLException {
         List<Book> availableBooks = new ArrayList<>();
-        String sql = "SELECT * FROM livro WHERE copias_disponiveis > 0";
+        String sql = "SELECT * FROM books WHERE available_copies > 0";
         try (Connection conn = DataBaseConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -105,7 +105,7 @@ public class BookDAOImpl implements BookDAO {
 
     @Override
     public void updateBook(Book book) throws SQLException {
-        String sql = "UPDATE livro SET titulo = ?, autor = ?, isbn = ?, genero = ?, total_copias = ?, copias_disponiveis = ? WHERE id = ?";
+        String sql = "UPDATE books SET title = ?, author = ?, isbn = ?, genre = ?, total_copies = ?, available_copies = ? WHERE id = ?";
         try (Connection conn = DataBaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, book.getTitle());
@@ -121,7 +121,7 @@ public class BookDAOImpl implements BookDAO {
 
     @Override
     public void deleteBook(int id) throws SQLException {
-        String sql = "DELETE FROM livro WHERE id = ?";
+        String sql = "DELETE FROM books WHERE id = ?";
         try (Connection conn = DataBaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, id);
@@ -152,12 +152,12 @@ public class BookDAOImpl implements BookDAO {
     private Book mapResultSetToBook(ResultSet rs) throws SQLException {
         Book book = new Book();
         book.setId(rs.getInt("id"));
-        book.setTitle(rs.getString("titulo"));
-        book.setAuthor(rs.getString("autor"));
+        book.setTitle(rs.getString("title")); // Atualizado para "title"
+        book.setAuthor(rs.getString("author")); // Atualizado para "author"
         book.setIsbn(rs.getString("isbn"));
-        book.setGenre(rs.getString("genero"));
-        book.setTotalCopies(rs.getInt("total_copias"));
-        book.setAvailableCopies(rs.getInt("copias_disponiveis"));
+        book.setGenre(rs.getString("genre")); // Atualizado para "genre"
+        book.setTotalCopies(rs.getInt("total_copies")); // Atualizado para "total_copies"
+        book.setAvailableCopies(rs.getInt("available_copies")); // Atualizado para "available_copies"
         return book;
     }
 }

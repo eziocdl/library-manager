@@ -1,3 +1,4 @@
+// com/managerlibrary/controllers/NewLoanController.java
 package com.managerlibrary.controllers;
 
 import com.managerlibrary.daos.implement.BookDAOImpl;
@@ -10,11 +11,14 @@ import com.managerlibrary.services.LoanService;
 import com.managerlibrary.services.UserService;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Alert;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
@@ -35,8 +39,13 @@ public class NewLoanController {
     private UserService userService = new UserService();
     private BookService bookService = new BookService(new BookDAOImpl());
     private LoanService loanService = new LoanService(new LoanDAOImpl());
+    private RootLayoutController rootLayoutController;
 
     public NewLoanController() throws SQLException {
+    }
+
+    public void setRootLayoutController(RootLayoutController rootLayoutController) {
+        this.rootLayoutController = rootLayoutController;
     }
 
     @FXML
@@ -96,9 +105,21 @@ public class NewLoanController {
 
     @FXML
     public void closeNewLoanView() {
-        Stage stage = (Stage) userComboBox.getScene().getWindow();
-        if (stage != null) {
-            stage.close();
+        if (rootLayoutController != null) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/LoanView.fxml"));
+                Pane loanView = loader.load();
+                LoanController controller = loader.getController();
+                controller.setRootLayoutController(rootLayoutController);
+                rootLayoutController.setCenterView(loanView);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Stage stage = (Stage) userComboBox.getScene().getWindow();
+            if (stage != null) {
+                stage.close();
+            }
         }
     }
 

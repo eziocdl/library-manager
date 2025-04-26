@@ -1,5 +1,7 @@
+// com/managerlibrary/controllers/RootLayoutController.java
 package com.managerlibrary.controllers;
 
+import com.managerlibrary.entities.Loan;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,6 +18,7 @@ public class RootLayoutController {
 
     private BookController bookController;
     private UserController userController;
+    private LoanController loanController; // Adicione esta linha
 
     // Injeção do BookController
     public void setBookController(BookController bookController) {
@@ -25,6 +28,11 @@ public class RootLayoutController {
     // Injeção do UserController
     public void setUserController(UserController userController) {
         this.userController = userController;
+    }
+
+    // Injeção do LoanController
+    public void setLoanController(LoanController loanController) {
+        this.loanController = loanController;
     }
 
     // Ação para o menu "Sair"
@@ -45,7 +53,10 @@ public class RootLayoutController {
     // Ação para exibir a view de empréstimos
     @FXML
     public void showLoanView(ActionEvent event) {
-        loadView("/views/LoanView.fxml", null); // Não precisa de controller específico aqui, por enquanto
+        loadView("/views/LoanView.fxml", (loader) -> {
+            loanController = loader.getController();
+            loanController.setRootLayoutController(this); // Garante que LoanController tenha a referência
+        });
     }
 
     // Ação para exibir a view de usuários

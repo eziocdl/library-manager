@@ -4,21 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fd3267b2-b4d9-4f03-86e7-0c79657ef842" name="Changes" comment="feat: Implementa busca unificada de usuários e ajustes na UI&#10;&#10;Este commit introduz uma nova funcionalidade que permite aos usuários buscar por outros usuários usando nome, CPF ou e-mail em um único campo de busca.&#10;&#10;As seguintes mudanças foram realizadas para implementar isso:&#10;&#10;- **UserController.java:** Atualizado o método `handleSearchUser` para chamar o novo método `findUsersByNameOrCPFOrEmail` em `UserService`.&#10;- **UserService.java:** Adicionado o método `findUsersByNameOrCPFOrEmail` para lidar com a lógica de busca combinada, delegando ao DAO quando disponível e implementando a busca em memória caso contrário.&#10;- **UserDAO.java:** Declarado o método `findUsersByNameOrCPFOrEmail` na interface.&#10;- **UserDAOImpl.java:** Implementado o método `findUsersByNameOrCPFOrEmail` para consultar o banco de dados com base no nome (usando `LIKE`), CPF (usando `=`) e e-mail (usando `LIKE` com condições `OR`).&#10;- **UserView.fxml:**&#10;    - Removidos os elementos `ImageView` para os ícones de busca e adicionar usuário.&#10;    - Ajustado o layout do `HBox` superior para posicionar o botão &quot;Adicionar Usuário&quot; à direita usando um `Region` com `HBox.hgrow=&quot;ALWAYS&quot;`.&#10;    - Inicialmente tentou-se estilizar os tamanhos dos ícones usando classes CSS, mas, para resolver os problemas de dimensionamento imediatamente, aplicou-se `fitWidth`, `fitHeight` e `preserveRatio` diretamente nas tags `ImageView`.&#10;- **Styles.css:** Adicionadas classes CSS (`search-icon`, `add-icon`) para potencial estilização futura dos ícones (embora a estilização direta no FXML tenha sido usada como solução alternativa imediata).&#10;&#10;Essas mudanças proporcionam uma maneira mais conveniente para os usuários encontrarem registros de usuários específicos e refinam a interface do usuário para melhor usabilidade.">
+    <list default="true" id="fd3267b2-b4d9-4f03-86e7-0c79657ef842" name="Changes" comment="feat: Implementação da tela de Novo Empréstimo&#10;&#10;Este commit adiciona a funcionalidade para criar novos empréstimos no sistema:&#10;&#10;- **NewLoanController.java:** Controla a lógica da tela de novo empréstimo. Permite selecionar um usuário e um livro através de ComboBoxes, definir as datas de empréstimo e devolução, e salvar o novo empréstimo no banco de dados. Inicializa o status do empréstimo como &quot;Ativo&quot;.&#10;- **NewLoanView.fxml:** Define a interface gráfica para a tela de novo empréstimo, incluindo ComboBoxes para selecionar livro e usuário, DatePickers para as datas, e botões para salvar e cancelar.&#10;&#10;Com essa implementação, os usuários agora podem registrar novos empréstimos de livros no sistema da biblioteca.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/controllers/LoanCardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/controllers/LoanCardController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/App.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/controllers/LoanController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/controllers/LoanController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/controllers/LoanDetailsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/controllers/LoanDetailsController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/controllers/NewLoanController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/controllers/NewLoanController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/controllers/RootLayoutController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/controllers/RootLayoutController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/controllers/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/controllers/UserController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/daos/implement/BookDAOImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/daos/implement/BookDAOImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/daos/implement/LoanDAOImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/daos/implement/LoanDAOImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/daos/interfaces/BookDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/daos/interfaces/BookDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/entities/Loan.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/entities/Loan.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/services/BookService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/services/BookService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/Styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/Styles.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/views/AddUserView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/views/AddUserView.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/views/UserView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/views/UserView.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/views/NewLoanView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/views/NewLoanView.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,32 +63,35 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;com.codeium.enabled&quot;: &quot;true&quot;,
-    &quot;full.screen.before.presentation.mode&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;onboarding.tips.debug.path&quot;: &quot;/Users/eziolima/java_apps/library-manager/src/main/java/com/managerlibrary/Main.java&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;SDKs&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.15686275&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "com.codeium.enabled": "true",
+    "full.screen.before.presentation.mode": "true",
+    "git-widget-placeholder": "main",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "onboarding.tips.debug.path": "/Users/eziolima/java_apps/library-manager/src/main/java/com/managerlibrary/Main.java",
+    "project.structure.last.edited": "SDKs",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.15686275",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;postgresql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql"
+    ],
+    "com.intellij.ide.scratch.LRUPopupBuilder$1/": [
+      "PostgreSQL"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/main/resources/icons" />
@@ -242,7 +240,8 @@
       <workItem from="1745431650147" duration="6180000" />
       <workItem from="1745502005359" duration="2434000" />
       <workItem from="1745522543263" duration="3640000" />
-      <workItem from="1745599096082" duration="8967000" />
+      <workItem from="1745599096082" duration="9324000" />
+      <workItem from="1745621015233" duration="4474000" />
     </task>
     <task id="LOCAL-00001" summary="fix: Corrige erro de conexão com o banco de dados na classe DataBaseConnection&#10;&#10;Este commit corrige um erro que impedia a classe DataBaseConnection de estabelecer uma conexão bem-sucedida com o banco de dados.&#10;&#10;As seguintes alterações foram feitas:&#10;&#10;* Corrigido um problema com as configurações de conexão que causava falha na conexão.&#10;* Adicionado tratamento de exceção para lidar com erros de conexão.&#10;&#10;Este commit garante que a classe DataBaseConnection possa se conectar ao banco de dados sem problemas.">
       <option name="closed" value="true" />
@@ -372,7 +371,23 @@
       <option name="project" value="LOCAL" />
       <updated>1745526370194</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="fix: Correção de erros de compilação e lógica de empréstimo&#10;&#10;Este commit corrige vários erros de compilação e ajusta a lógica relacionada ao gerenciamento de empréstimos:&#10;&#10;- **Entidade Loan:** Refatorada para utilizar objetos `Book` e `User` diretamente, removendo as propriedades separadas de `bookId` e `userId`. Adicionado o atributo `returned` para rastrear o status de devolução.&#10;- **LoanDAOImpl:** Adaptado para interagir com a nova estrutura da entidade `Loan`, acessando IDs através dos objetos `Book` e `User`. Implementado o método `getAllLoansWithDetails` para buscar empréstimos com detalhes de livros e usuários. Corrigida a inicialização de `BookDAO` e `UserDAO`.&#10;- **BookDAOImpl:** Implementado o método `findAllAvailable` conforme definido na interface `BookDAO`. Verificação e correção do nome da tabela (`livro`).&#10;- **LoanController:** Ajustado para criar novos empréstimos utilizando os objetos `Book` e `User` diretamente e inicializando o status como &quot;Ativo&quot;.&#10;- **LoanCardController e LoanDetailsController:** Modificados para acessar os IDs e outros detalhes de livros e usuários através dos objetos associados na entidade `Loan`, corrigindo erros de &quot;cannot find symbol&quot;.&#10;&#10;Essas alterações garantem a consistência na forma como os dados de empréstimo são gerenciados e corrigem erros que impediam a compilação e o correto funcionamento da funcionalidade de empréstimos.">
+      <option name="closed" value="true" />
+      <created>1745608938439</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1745608938439</updated>
+    </task>
+    <task id="LOCAL-00018" summary="feat: Implementação da tela de Novo Empréstimo&#10;&#10;Este commit adiciona a funcionalidade para criar novos empréstimos no sistema:&#10;&#10;- **NewLoanController.java:** Controla a lógica da tela de novo empréstimo. Permite selecionar um usuário e um livro através de ComboBoxes, definir as datas de empréstimo e devolução, e salvar o novo empréstimo no banco de dados. Inicializa o status do empréstimo como &quot;Ativo&quot;.&#10;- **NewLoanView.fxml:** Define a interface gráfica para a tela de novo empréstimo, incluindo ComboBoxes para selecionar livro e usuário, DatePickers para as datas, e botões para salvar e cancelar.&#10;&#10;Com essa implementação, os usuários agora podem registrar novos empréstimos de livros no sistema da biblioteca.">
+      <option name="closed" value="true" />
+      <created>1745609011219</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1745609011219</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -395,7 +410,9 @@
     <MESSAGE value="fix(user): Adiciona controller da tela de edição de usuários&#10;&#10;Adiciona o arquivo `EditUserController.java` que foi esquecido no commit anterior." />
     <MESSAGE value="feat: Implementa funcionalidade de detalhes e edição de usuários&#10;&#10;Implementa a funcionalidade de visualizar detalhes dos usuários em uma nova janela modal ao clicar no botão &quot;Detalhes&quot; nos cards da listagem.&#10;&#10;Adiciona a capacidade de editar as informações dos usuários ao clicar no botão &quot;Editar&quot;, carregando os dados em uma tela de edição e persistindo as alterações ao salvar.&#10;&#10;**Mudanças:**&#10;&#10;- Adicionado método `handleUserDetails` no `UserController` para carregar a `UserView` como modal de detalhes.&#10;- Adicionado método `displayUserDetails` no `UserController` para preencher os campos de detalhe na `UserView`.&#10;- Declaradas variáveis `@FXML` para os elementos de detalhe no `UserController`.&#10;- Ajustado o método `loadEditUserView` no `UserController` para passar a instância do `UserService` para o `EditUserController`.&#10;- Ajustado o `EditUserController` para receber a instância do `UserService` através do método `setService`.&#10;- Correção de erro de nome de variável (`addressLabel` para `addressDetailLabel`) no `UserController`." />
     <MESSAGE value="feat: Implementa busca unificada de usuários e ajustes na UI&#10;&#10;Este commit introduz uma nova funcionalidade que permite aos usuários buscar por outros usuários usando nome, CPF ou e-mail em um único campo de busca.&#10;&#10;As seguintes mudanças foram realizadas para implementar isso:&#10;&#10;- **UserController.java:** Atualizado o método `handleSearchUser` para chamar o novo método `findUsersByNameOrCPFOrEmail` em `UserService`.&#10;- **UserService.java:** Adicionado o método `findUsersByNameOrCPFOrEmail` para lidar com a lógica de busca combinada, delegando ao DAO quando disponível e implementando a busca em memória caso contrário.&#10;- **UserDAO.java:** Declarado o método `findUsersByNameOrCPFOrEmail` na interface.&#10;- **UserDAOImpl.java:** Implementado o método `findUsersByNameOrCPFOrEmail` para consultar o banco de dados com base no nome (usando `LIKE`), CPF (usando `=`) e e-mail (usando `LIKE` com condições `OR`).&#10;- **UserView.fxml:**&#10;    - Removidos os elementos `ImageView` para os ícones de busca e adicionar usuário.&#10;    - Ajustado o layout do `HBox` superior para posicionar o botão &quot;Adicionar Usuário&quot; à direita usando um `Region` com `HBox.hgrow=&quot;ALWAYS&quot;`.&#10;    - Inicialmente tentou-se estilizar os tamanhos dos ícones usando classes CSS, mas, para resolver os problemas de dimensionamento imediatamente, aplicou-se `fitWidth`, `fitHeight` e `preserveRatio` diretamente nas tags `ImageView`.&#10;- **Styles.css:** Adicionadas classes CSS (`search-icon`, `add-icon`) para potencial estilização futura dos ícones (embora a estilização direta no FXML tenha sido usada como solução alternativa imediata).&#10;&#10;Essas mudanças proporcionam uma maneira mais conveniente para os usuários encontrarem registros de usuários específicos e refinam a interface do usuário para melhor usabilidade." />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: Implementa busca unificada de usuários e ajustes na UI&#10;&#10;Este commit introduz uma nova funcionalidade que permite aos usuários buscar por outros usuários usando nome, CPF ou e-mail em um único campo de busca.&#10;&#10;As seguintes mudanças foram realizadas para implementar isso:&#10;&#10;- **UserController.java:** Atualizado o método `handleSearchUser` para chamar o novo método `findUsersByNameOrCPFOrEmail` em `UserService`.&#10;- **UserService.java:** Adicionado o método `findUsersByNameOrCPFOrEmail` para lidar com a lógica de busca combinada, delegando ao DAO quando disponível e implementando a busca em memória caso contrário.&#10;- **UserDAO.java:** Declarado o método `findUsersByNameOrCPFOrEmail` na interface.&#10;- **UserDAOImpl.java:** Implementado o método `findUsersByNameOrCPFOrEmail` para consultar o banco de dados com base no nome (usando `LIKE`), CPF (usando `=`) e e-mail (usando `LIKE` com condições `OR`).&#10;- **UserView.fxml:**&#10;    - Removidos os elementos `ImageView` para os ícones de busca e adicionar usuário.&#10;    - Ajustado o layout do `HBox` superior para posicionar o botão &quot;Adicionar Usuário&quot; à direita usando um `Region` com `HBox.hgrow=&quot;ALWAYS&quot;`.&#10;    - Inicialmente tentou-se estilizar os tamanhos dos ícones usando classes CSS, mas, para resolver os problemas de dimensionamento imediatamente, aplicou-se `fitWidth`, `fitHeight` e `preserveRatio` diretamente nas tags `ImageView`.&#10;- **Styles.css:** Adicionadas classes CSS (`search-icon`, `add-icon`) para potencial estilização futura dos ícones (embora a estilização direta no FXML tenha sido usada como solução alternativa imediata).&#10;&#10;Essas mudanças proporcionam uma maneira mais conveniente para os usuários encontrarem registros de usuários específicos e refinam a interface do usuário para melhor usabilidade." />
+    <MESSAGE value="fix: Correção de erros de compilação e lógica de empréstimo&#10;&#10;Este commit corrige vários erros de compilação e ajusta a lógica relacionada ao gerenciamento de empréstimos:&#10;&#10;- **Entidade Loan:** Refatorada para utilizar objetos `Book` e `User` diretamente, removendo as propriedades separadas de `bookId` e `userId`. Adicionado o atributo `returned` para rastrear o status de devolução.&#10;- **LoanDAOImpl:** Adaptado para interagir com a nova estrutura da entidade `Loan`, acessando IDs através dos objetos `Book` e `User`. Implementado o método `getAllLoansWithDetails` para buscar empréstimos com detalhes de livros e usuários. Corrigida a inicialização de `BookDAO` e `UserDAO`.&#10;- **BookDAOImpl:** Implementado o método `findAllAvailable` conforme definido na interface `BookDAO`. Verificação e correção do nome da tabela (`livro`).&#10;- **LoanController:** Ajustado para criar novos empréstimos utilizando os objetos `Book` e `User` diretamente e inicializando o status como &quot;Ativo&quot;.&#10;- **LoanCardController e LoanDetailsController:** Modificados para acessar os IDs e outros detalhes de livros e usuários através dos objetos associados na entidade `Loan`, corrigindo erros de &quot;cannot find symbol&quot;.&#10;&#10;Essas alterações garantem a consistência na forma como os dados de empréstimo são gerenciados e corrigem erros que impediam a compilação e o correto funcionamento da funcionalidade de empréstimos." />
+    <MESSAGE value="feat: Implementação da tela de Novo Empréstimo&#10;&#10;Este commit adiciona a funcionalidade para criar novos empréstimos no sistema:&#10;&#10;- **NewLoanController.java:** Controla a lógica da tela de novo empréstimo. Permite selecionar um usuário e um livro através de ComboBoxes, definir as datas de empréstimo e devolução, e salvar o novo empréstimo no banco de dados. Inicializa o status do empréstimo como &quot;Ativo&quot;.&#10;- **NewLoanView.fxml:** Define a interface gráfica para a tela de novo empréstimo, incluindo ComboBoxes para selecionar livro e usuário, DatePickers para as datas, e botões para salvar e cancelar.&#10;&#10;Com essa implementação, os usuários agora podem registrar novos empréstimos de livros no sistema da biblioteca." />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: Implementação da tela de Novo Empréstimo&#10;&#10;Este commit adiciona a funcionalidade para criar novos empréstimos no sistema:&#10;&#10;- **NewLoanController.java:** Controla a lógica da tela de novo empréstimo. Permite selecionar um usuário e um livro através de ComboBoxes, definir as datas de empréstimo e devolução, e salvar o novo empréstimo no banco de dados. Inicializa o status do empréstimo como &quot;Ativo&quot;.&#10;- **NewLoanView.fxml:** Define a interface gráfica para a tela de novo empréstimo, incluindo ComboBoxes para selecionar livro e usuário, DatePickers para as datas, e botões para salvar e cancelar.&#10;&#10;Com essa implementação, os usuários agora podem registrar novos empréstimos de livros no sistema da biblioteca." />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
