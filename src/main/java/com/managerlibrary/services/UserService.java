@@ -1,5 +1,6 @@
 package com.managerlibrary.services;
 
+import com.managerlibrary.daos.implement.UserDAOImpl; // Importe a implementação do DAO
 import com.managerlibrary.daos.interfaces.UserDAO;
 import com.managerlibrary.entities.User;
 import javafx.collections.FXCollections;
@@ -17,8 +18,7 @@ public class UserService {
     private int nextId = 1;
 
     public UserService() {
-        // Se você quiser simular o DAO em memória inicialmente
-        // this.userDAO = null;
+        this.userDAO = new UserDAOImpl(); // Inicialize o UserDAOImpl no construtor padrão
     }
 
     public UserService(UserDAO userDAO) {
@@ -32,6 +32,7 @@ public class UserService {
         if (userDAO != null) {
             userDAO.insertUser(user);
         } else {
+            // Isso agora só deve acontecer se a inicialização do DAO falhar
             user.setId(nextId++);
             users.add(user);
         }

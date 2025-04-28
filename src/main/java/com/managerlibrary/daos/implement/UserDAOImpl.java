@@ -12,7 +12,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public void insertUser(User user) throws SQLException {
-        String sql = "INSERT INTO Usuario (nome, endereco, telefone, email, cpf) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO users (name, address, phone, email, cpf) VALUES (?, ?, ?, ?, ?)";
         try (Connection connection = DataBaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, user.getName());
@@ -26,7 +26,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public User findUserById(int id) throws SQLException {
-        String sql = "SELECT * FROM Usuario WHERE id = ?";
+        String sql = "SELECT id, name, address, phone, email, cpf FROM users WHERE id = ?";
         try (Connection connection = DataBaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, id);
@@ -40,7 +40,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public List<User> findAllUsers() throws SQLException {
-        String sql = "SELECT * FROM Usuario";
+        String sql = "SELECT id, name, address, phone, email, cpf FROM users";
         try (Connection connection = DataBaseConnection.getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
@@ -54,7 +54,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public void updateUser(User user) throws SQLException {
-        String sql = "UPDATE Usuario SET nome = ?, endereco = ?, telefone = ?, email = ?, cpf = ? WHERE id = ?";
+        String sql = "UPDATE users SET name = ?, address = ?, phone = ?, email = ?, cpf = ? WHERE id = ?";
         try (Connection connection = DataBaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, user.getName());
@@ -69,7 +69,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public void deleteUser(int id) throws SQLException {
-        String sql = "DELETE FROM Usuario WHERE id = ?";
+        String sql = "DELETE FROM users WHERE id = ?";
         try (Connection connection = DataBaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, id);
@@ -79,11 +79,11 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public List<User> findUsersByName(String name) throws SQLException {
-        String sql = "SELECT * FROM Usuario WHERE nome LIKE ?";
+        String sql = "SELECT id, name, address, phone, email, cpf FROM users WHERE LOWER(name) LIKE ?";
         List<User> users = new ArrayList<>();
         try (Connection connection = DataBaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, "%" + name + "%");
+            preparedStatement.setString(1, "%" + name.toLowerCase() + "%");
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 users.add(createUser(resultSet));
@@ -94,7 +94,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public User findUserByCPF(String cpf) throws SQLException {
-        String sql = "SELECT * FROM Usuario WHERE cpf = ?";
+        String sql = "SELECT id, name, address, phone, email, cpf FROM users WHERE cpf = ?";
         try (Connection connection = DataBaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, cpf);
@@ -109,7 +109,7 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public List<User> findUsersByNameOrCPFOrEmail(String searchTerm) throws SQLException {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT * FROM Usuario WHERE LOWER(nome) LIKE ? OR cpf LIKE ? OR LOWER(email) LIKE ?";
+        String sql = "SELECT id, name, address, phone, email, cpf FROM users WHERE LOWER(name) LIKE ? OR cpf LIKE ? OR LOWER(email) LIKE ?";
         try (Connection connection = DataBaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             String likeTerm = "%" + searchTerm.toLowerCase() + "%";
@@ -134,9 +134,9 @@ public class UserDAOImpl implements UserDAO {
     private User createUser(ResultSet resultSet) throws SQLException {
         User user = new User();
         user.setId(resultSet.getInt("id"));
-        user.setName(resultSet.getString("nome"));
-        user.setAddress(resultSet.getString("endereco"));
-        user.setPhone(resultSet.getString("telefone"));
+        user.setName(resultSet.getString("name"));
+        user.setAddress(resultSet.getString("address"));
+        user.setPhone(resultSet.getString("phone"));
         user.setEmail(resultSet.getString("email"));
         user.setCpf(resultSet.getString("cpf"));
         return user;

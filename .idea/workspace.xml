@@ -4,16 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fd3267b2-b4d9-4f03-86e7-0c79657ef842" name="Changes" comment="feat: Implementação da tela de Novo Empréstimo&#10;&#10;Este commit adiciona a funcionalidade para criar novos empréstimos no sistema:&#10;&#10;- **NewLoanController.java:** Controla a lógica da tela de novo empréstimo. Permite selecionar um usuário e um livro através de ComboBoxes, definir as datas de empréstimo e devolução, e salvar o novo empréstimo no banco de dados. Inicializa o status do empréstimo como &quot;Ativo&quot;.&#10;- **NewLoanView.fxml:** Define a interface gráfica para a tela de novo empréstimo, incluindo ComboBoxes para selecionar livro e usuário, DatePickers para as datas, e botões para salvar e cancelar.&#10;&#10;Com essa implementação, os usuários agora podem registrar novos empréstimos de livros no sistema da biblioteca.">
+    <list default="true" id="fd3267b2-b4d9-4f03-86e7-0c79657ef842" name="Changes" comment="feat: Implementa funcionalidade de multa e padroniza schema para inglês&#10;&#10;Este commit introduz a funcionalidade de multa para os empréstimos e realiza a padronização dos nomes de tabelas e colunas do banco de dados para o inglês, visando maior consistência e seguindo as convenções de desenvolvimento.&#10;&#10;**As seguintes alterações foram realizadas:**&#10;&#10;* **Banco de Dados:**&#10;    * Renomeadas colunas da tabela `emprestimo` para inglês (`book_id`, `user_id`, `loan_date`, `return_date`).&#10;    * Adicionada coluna `fine` (tipo `DECIMAL(10, 2)`) à tabela `emprestimo` para armazenar o valor da multa.&#10;* **Entidade `Loan` (Java):**&#10;    * Adicionado campo `fine` (tipo `double`) para representar a multa.&#10;    * Implementados getter e setter para o novo campo.&#10;* **`LoanDAOImpl.java`:**&#10;    * Atualizadas todas as consultas SQL para utilizar os novos nomes de colunas em inglês (`book_id`, `user_id`, `loan_date`, `return_date`, `fine`).&#10;    * Modificados os métodos `insertLoan`, `findLoanById`, `findAllLoans`, `updateLoan` e `getAllLoansWithDetails` para incluir a manipulação da coluna `fine`.&#10;* **`BookDAOImpl.java`:**&#10;    * As consultas SQL já estavam utilizando o nome da tabela em inglês (`books`). Verificação realizada para garantir a consistência.&#10;* **`application.properties`:**&#10;    * Adicionado o parâmetro `currentSchema=public` à URL de conexão JDBC para especificar o schema padrão do banco de dados.&#10;&#10;Estas alterações preparam a aplicação para o futuro desenvolvimento de funcionalidades relacionadas a multas e melhoram a organização e a legibilidade do schema do banco de dados.">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/App.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/controllers/LoanController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/controllers/LoanController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/controllers/NewLoanController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/controllers/NewLoanController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/controllers/RootLayoutController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/controllers/RootLayoutController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/daos/implement/BookDAOImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/daos/implement/BookDAOImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/daos/implement/LoanDAOImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/daos/implement/LoanDAOImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/views/NewLoanView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/views/NewLoanView.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/daos/implement/UserDAOImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/daos/implement/UserDAOImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/daos/interfaces/LoanDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/daos/interfaces/LoanDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/managerlibrary/services/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/managerlibrary/services/UserService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,35 +61,35 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "com.codeium.enabled": "true",
-    "full.screen.before.presentation.mode": "true",
-    "git-widget-placeholder": "main",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "onboarding.tips.debug.path": "/Users/eziolima/java_apps/library-manager/src/main/java/com/managerlibrary/Main.java",
-    "project.structure.last.edited": "SDKs",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.15686275",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;com.codeium.enabled&quot;: &quot;true&quot;,
+    &quot;full.screen.before.presentation.mode&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;/Users/eziolima/java_apps/library-manager/src/main/java/com/managerlibrary/Main.java&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;SDKs&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.15686275&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "postgresql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
     ],
-    "com.intellij.ide.scratch.LRUPopupBuilder$1/": [
-      "PostgreSQL"
+    &quot;com.intellij.ide.scratch.LRUPopupBuilder$1/&quot;: [
+      &quot;PostgreSQL&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/main/resources/icons" />
@@ -241,7 +239,8 @@
       <workItem from="1745502005359" duration="2434000" />
       <workItem from="1745522543263" duration="3640000" />
       <workItem from="1745599096082" duration="9324000" />
-      <workItem from="1745621015233" duration="4474000" />
+      <workItem from="1745621015233" duration="4747000" />
+      <workItem from="1745859531067" duration="10659000" />
     </task>
     <task id="LOCAL-00001" summary="fix: Corrige erro de conexão com o banco de dados na classe DataBaseConnection&#10;&#10;Este commit corrige um erro que impedia a classe DataBaseConnection de estabelecer uma conexão bem-sucedida com o banco de dados.&#10;&#10;As seguintes alterações foram feitas:&#10;&#10;* Corrigido um problema com as configurações de conexão que causava falha na conexão.&#10;* Adicionado tratamento de exceção para lidar com erros de conexão.&#10;&#10;Este commit garante que a classe DataBaseConnection possa se conectar ao banco de dados sem problemas.">
       <option name="closed" value="true" />
@@ -387,7 +386,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745609011219</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="feat: Implementa funcionalidade de multa e padroniza schema para inglês&#10;&#10;Este commit introduz a funcionalidade de multa para os empréstimos e realiza a padronização dos nomes de tabelas e colunas do banco de dados para o inglês, visando maior consistência e seguindo as convenções de desenvolvimento.&#10;&#10;**As seguintes alterações foram realizadas:**&#10;&#10;* **Banco de Dados:**&#10;    * Renomeadas colunas da tabela `emprestimo` para inglês (`book_id`, `user_id`, `loan_date`, `return_date`).&#10;    * Adicionada coluna `fine` (tipo `DECIMAL(10, 2)`) à tabela `emprestimo` para armazenar o valor da multa.&#10;* **Entidade `Loan` (Java):**&#10;    * Adicionado campo `fine` (tipo `double`) para representar a multa.&#10;    * Implementados getter e setter para o novo campo.&#10;* **`LoanDAOImpl.java`:**&#10;    * Atualizadas todas as consultas SQL para utilizar os novos nomes de colunas em inglês (`book_id`, `user_id`, `loan_date`, `return_date`, `fine`).&#10;    * Modificados os métodos `insertLoan`, `findLoanById`, `findAllLoans`, `updateLoan` e `getAllLoansWithDetails` para incluir a manipulação da coluna `fine`.&#10;* **`BookDAOImpl.java`:**&#10;    * As consultas SQL já estavam utilizando o nome da tabela em inglês (`books`). Verificação realizada para garantir a consistência.&#10;* **`application.properties`:**&#10;    * Adicionado o parâmetro `currentSchema=public` à URL de conexão JDBC para especificar o schema padrão do banco de dados.&#10;&#10;Estas alterações preparam a aplicação para o futuro desenvolvimento de funcionalidades relacionadas a multas e melhoram a organização e a legibilidade do schema do banco de dados.">
+      <option name="closed" value="true" />
+      <created>1745625980707</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1745625980707</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -412,7 +419,8 @@
     <MESSAGE value="feat: Implementa busca unificada de usuários e ajustes na UI&#10;&#10;Este commit introduz uma nova funcionalidade que permite aos usuários buscar por outros usuários usando nome, CPF ou e-mail em um único campo de busca.&#10;&#10;As seguintes mudanças foram realizadas para implementar isso:&#10;&#10;- **UserController.java:** Atualizado o método `handleSearchUser` para chamar o novo método `findUsersByNameOrCPFOrEmail` em `UserService`.&#10;- **UserService.java:** Adicionado o método `findUsersByNameOrCPFOrEmail` para lidar com a lógica de busca combinada, delegando ao DAO quando disponível e implementando a busca em memória caso contrário.&#10;- **UserDAO.java:** Declarado o método `findUsersByNameOrCPFOrEmail` na interface.&#10;- **UserDAOImpl.java:** Implementado o método `findUsersByNameOrCPFOrEmail` para consultar o banco de dados com base no nome (usando `LIKE`), CPF (usando `=`) e e-mail (usando `LIKE` com condições `OR`).&#10;- **UserView.fxml:**&#10;    - Removidos os elementos `ImageView` para os ícones de busca e adicionar usuário.&#10;    - Ajustado o layout do `HBox` superior para posicionar o botão &quot;Adicionar Usuário&quot; à direita usando um `Region` com `HBox.hgrow=&quot;ALWAYS&quot;`.&#10;    - Inicialmente tentou-se estilizar os tamanhos dos ícones usando classes CSS, mas, para resolver os problemas de dimensionamento imediatamente, aplicou-se `fitWidth`, `fitHeight` e `preserveRatio` diretamente nas tags `ImageView`.&#10;- **Styles.css:** Adicionadas classes CSS (`search-icon`, `add-icon`) para potencial estilização futura dos ícones (embora a estilização direta no FXML tenha sido usada como solução alternativa imediata).&#10;&#10;Essas mudanças proporcionam uma maneira mais conveniente para os usuários encontrarem registros de usuários específicos e refinam a interface do usuário para melhor usabilidade." />
     <MESSAGE value="fix: Correção de erros de compilação e lógica de empréstimo&#10;&#10;Este commit corrige vários erros de compilação e ajusta a lógica relacionada ao gerenciamento de empréstimos:&#10;&#10;- **Entidade Loan:** Refatorada para utilizar objetos `Book` e `User` diretamente, removendo as propriedades separadas de `bookId` e `userId`. Adicionado o atributo `returned` para rastrear o status de devolução.&#10;- **LoanDAOImpl:** Adaptado para interagir com a nova estrutura da entidade `Loan`, acessando IDs através dos objetos `Book` e `User`. Implementado o método `getAllLoansWithDetails` para buscar empréstimos com detalhes de livros e usuários. Corrigida a inicialização de `BookDAO` e `UserDAO`.&#10;- **BookDAOImpl:** Implementado o método `findAllAvailable` conforme definido na interface `BookDAO`. Verificação e correção do nome da tabela (`livro`).&#10;- **LoanController:** Ajustado para criar novos empréstimos utilizando os objetos `Book` e `User` diretamente e inicializando o status como &quot;Ativo&quot;.&#10;- **LoanCardController e LoanDetailsController:** Modificados para acessar os IDs e outros detalhes de livros e usuários através dos objetos associados na entidade `Loan`, corrigindo erros de &quot;cannot find symbol&quot;.&#10;&#10;Essas alterações garantem a consistência na forma como os dados de empréstimo são gerenciados e corrigem erros que impediam a compilação e o correto funcionamento da funcionalidade de empréstimos." />
     <MESSAGE value="feat: Implementação da tela de Novo Empréstimo&#10;&#10;Este commit adiciona a funcionalidade para criar novos empréstimos no sistema:&#10;&#10;- **NewLoanController.java:** Controla a lógica da tela de novo empréstimo. Permite selecionar um usuário e um livro através de ComboBoxes, definir as datas de empréstimo e devolução, e salvar o novo empréstimo no banco de dados. Inicializa o status do empréstimo como &quot;Ativo&quot;.&#10;- **NewLoanView.fxml:** Define a interface gráfica para a tela de novo empréstimo, incluindo ComboBoxes para selecionar livro e usuário, DatePickers para as datas, e botões para salvar e cancelar.&#10;&#10;Com essa implementação, os usuários agora podem registrar novos empréstimos de livros no sistema da biblioteca." />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: Implementação da tela de Novo Empréstimo&#10;&#10;Este commit adiciona a funcionalidade para criar novos empréstimos no sistema:&#10;&#10;- **NewLoanController.java:** Controla a lógica da tela de novo empréstimo. Permite selecionar um usuário e um livro através de ComboBoxes, definir as datas de empréstimo e devolução, e salvar o novo empréstimo no banco de dados. Inicializa o status do empréstimo como &quot;Ativo&quot;.&#10;- **NewLoanView.fxml:** Define a interface gráfica para a tela de novo empréstimo, incluindo ComboBoxes para selecionar livro e usuário, DatePickers para as datas, e botões para salvar e cancelar.&#10;&#10;Com essa implementação, os usuários agora podem registrar novos empréstimos de livros no sistema da biblioteca." />
+    <MESSAGE value="feat: Implementa funcionalidade de multa e padroniza schema para inglês&#10;&#10;Este commit introduz a funcionalidade de multa para os empréstimos e realiza a padronização dos nomes de tabelas e colunas do banco de dados para o inglês, visando maior consistência e seguindo as convenções de desenvolvimento.&#10;&#10;**As seguintes alterações foram realizadas:**&#10;&#10;* **Banco de Dados:**&#10;    * Renomeadas colunas da tabela `emprestimo` para inglês (`book_id`, `user_id`, `loan_date`, `return_date`).&#10;    * Adicionada coluna `fine` (tipo `DECIMAL(10, 2)`) à tabela `emprestimo` para armazenar o valor da multa.&#10;* **Entidade `Loan` (Java):**&#10;    * Adicionado campo `fine` (tipo `double`) para representar a multa.&#10;    * Implementados getter e setter para o novo campo.&#10;* **`LoanDAOImpl.java`:**&#10;    * Atualizadas todas as consultas SQL para utilizar os novos nomes de colunas em inglês (`book_id`, `user_id`, `loan_date`, `return_date`, `fine`).&#10;    * Modificados os métodos `insertLoan`, `findLoanById`, `findAllLoans`, `updateLoan` e `getAllLoansWithDetails` para incluir a manipulação da coluna `fine`.&#10;* **`BookDAOImpl.java`:**&#10;    * As consultas SQL já estavam utilizando o nome da tabela em inglês (`books`). Verificação realizada para garantir a consistência.&#10;* **`application.properties`:**&#10;    * Adicionado o parâmetro `currentSchema=public` à URL de conexão JDBC para especificar o schema padrão do banco de dados.&#10;&#10;Estas alterações preparam a aplicação para o futuro desenvolvimento de funcionalidades relacionadas a multas e melhoram a organização e a legibilidade do schema do banco de dados." />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: Implementa funcionalidade de multa e padroniza schema para inglês&#10;&#10;Este commit introduz a funcionalidade de multa para os empréstimos e realiza a padronização dos nomes de tabelas e colunas do banco de dados para o inglês, visando maior consistência e seguindo as convenções de desenvolvimento.&#10;&#10;**As seguintes alterações foram realizadas:**&#10;&#10;* **Banco de Dados:**&#10;    * Renomeadas colunas da tabela `emprestimo` para inglês (`book_id`, `user_id`, `loan_date`, `return_date`).&#10;    * Adicionada coluna `fine` (tipo `DECIMAL(10, 2)`) à tabela `emprestimo` para armazenar o valor da multa.&#10;* **Entidade `Loan` (Java):**&#10;    * Adicionado campo `fine` (tipo `double`) para representar a multa.&#10;    * Implementados getter e setter para o novo campo.&#10;* **`LoanDAOImpl.java`:**&#10;    * Atualizadas todas as consultas SQL para utilizar os novos nomes de colunas em inglês (`book_id`, `user_id`, `loan_date`, `return_date`, `fine`).&#10;    * Modificados os métodos `insertLoan`, `findLoanById`, `findAllLoans`, `updateLoan` e `getAllLoansWithDetails` para incluir a manipulação da coluna `fine`.&#10;* **`BookDAOImpl.java`:**&#10;    * As consultas SQL já estavam utilizando o nome da tabela em inglês (`books`). Verificação realizada para garantir a consistência.&#10;* **`application.properties`:**&#10;    * Adicionado o parâmetro `currentSchema=public` à URL de conexão JDBC para especificar o schema padrão do banco de dados.&#10;&#10;Estas alterações preparam a aplicação para o futuro desenvolvimento de funcionalidades relacionadas a multas e melhoram a organização e a legibilidade do schema do banco de dados." />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

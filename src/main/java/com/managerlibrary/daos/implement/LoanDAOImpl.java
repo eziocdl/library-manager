@@ -26,7 +26,7 @@ public class LoanDAOImpl implements LoanDAO {
 
     @Override
     public void insertLoan(Loan loan) throws SQLException {
-        String sql = "INSERT INTO emprestimo (book_id, user_id, loan_date, return_date, actual_return_date, status, fine) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO loan (book_id, user_id, loan_date, return_date, actual_return_date, status, fine) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = DataBaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, loan.getBook().getId());
@@ -42,7 +42,7 @@ public class LoanDAOImpl implements LoanDAO {
 
     @Override
     public Loan findLoanById(int id) throws SQLException {
-        String sql = "SELECT id, book_id, user_id, loan_date, return_date, actual_return_date, status, fine FROM emprestimo WHERE id = ?";
+        String sql = "SELECT id, book_id, user_id, loan_date, return_date, actual_return_date, status, fine FROM loan WHERE id = ?";
         try (Connection connection = DataBaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, id);
@@ -56,7 +56,7 @@ public class LoanDAOImpl implements LoanDAO {
 
     @Override
     public List<Loan> findAllLoans() throws SQLException {
-        String sql = "SELECT id, book_id, user_id, loan_date, return_date, actual_return_date, status, fine FROM emprestimo";
+        String sql = "SELECT id, book_id, user_id, loan_date, return_date, actual_return_date, status, fine FROM loan";
         try (Connection connection = DataBaseConnection.getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
@@ -70,7 +70,7 @@ public class LoanDAOImpl implements LoanDAO {
 
     @Override
     public void updateLoan(Loan loan) throws SQLException {
-        String sql = "UPDATE emprestimo SET book_id = ?, user_id = ?, loan_date = ?, return_date = ?, actual_return_date = ?, status = ?, fine = ? WHERE id = ?";
+        String sql = "UPDATE loan SET book_id = ?, user_id = ?, loan_date = ?, return_date = ?, actual_return_date = ?, status = ?, fine = ? WHERE id = ?";
         try (Connection connection = DataBaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, loan.getBook().getId());
@@ -87,7 +87,7 @@ public class LoanDAOImpl implements LoanDAO {
 
     @Override
     public void deleteLoan(int id) throws SQLException {
-        String sql = "DELETE FROM emprestimo WHERE id = ?";
+        String sql = "DELETE FROM loan WHERE id = ?";
         try (Connection connection = DataBaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, id);
@@ -107,10 +107,10 @@ public class LoanDAOImpl implements LoanDAO {
             String sql = "SELECT " +
                     "l.id AS loan_id, l.book_id, l.user_id, l.loan_date, l.return_date, l.actual_return_date, l.status, l.fine, " +
                     "b.title AS book_title, b.author AS book_author, b.isbn AS book_isbn, " +
-                    "u.nome AS user_name, u.email AS user_email " +
-                    "FROM emprestimo l " +
+                    "u.name AS user_name, u.email AS user_email " +
+                    "FROM loan l " +
                     "JOIN books b ON l.book_id = b.id " +
-                    "JOIN usuario u ON l.user_id = u.id";
+                    "JOIN users u ON l.user_id = u.id";
             preparedStatement = connection.prepareStatement(sql);
             resultSet = preparedStatement.executeQuery();
 
@@ -146,7 +146,7 @@ public class LoanDAOImpl implements LoanDAO {
 
     @Override
     public void markAsReturned(int loanId, LocalDate returnDate) throws SQLException {
-        String sql = "UPDATE emprestimo SET actual_return_date = ?, status = 'Devolvido' WHERE id = ?";
+        String sql = "UPDATE loan SET actual_return_date = ?, status = 'Devolvido' WHERE id = ?";
         try (Connection connection = DataBaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setDate(1, Date.valueOf(returnDate));

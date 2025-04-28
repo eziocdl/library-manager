@@ -36,7 +36,7 @@ public class BookDAOImpl implements BookDAO {
     @Override
     public List<Book> searchBook(Book book) throws SQLException {
         List<Book> books = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT * FROM books WHERE 1=1");
+        StringBuilder sql = new StringBuilder("SELECT id, title, author, isbn, genre, total_copies, available_copies FROM books WHERE 1=1");
         if (book.getTitle() != null && !book.getTitle().isEmpty()) {
             sql.append(" AND title LIKE ?");
         }
@@ -63,7 +63,7 @@ public class BookDAOImpl implements BookDAO {
 
     @Override
     public Book findBookById(int id) throws SQLException {
-        String sql = "SELECT * FROM books WHERE id = ?";
+        String sql = "SELECT id, title, author, isbn, genre, total_copies, available_copies FROM books WHERE id = ?";
         try (Connection conn = DataBaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, id);
@@ -78,7 +78,7 @@ public class BookDAOImpl implements BookDAO {
     @Override
     public List<Book> findAllBooks() throws SQLException {
         List<Book> books = new ArrayList<>();
-        String sql = "SELECT * FROM books";
+        String sql = "SELECT id, title, author, isbn, genre, total_copies, available_copies FROM books";
         try (Connection conn = DataBaseConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -92,7 +92,7 @@ public class BookDAOImpl implements BookDAO {
     @Override
     public List<Book> findAllAvailable() throws SQLException {
         List<Book> availableBooks = new ArrayList<>();
-        String sql = "SELECT * FROM books WHERE available_copies > 0";
+        String sql = "SELECT id, title, author, isbn, genre, total_copies, available_copies FROM books WHERE available_copies > 0";
         try (Connection conn = DataBaseConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -131,33 +131,72 @@ public class BookDAOImpl implements BookDAO {
 
     @Override
     public List<Book> findBooksByTitle(String title) throws SQLException {
-        return null;
+        List<Book> books = new ArrayList<>();
+        String sql = "SELECT id, title, author, isbn, genre, total_copies, available_copies FROM books WHERE title LIKE ?";
+        try (Connection conn = DataBaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, "%" + title + "%");
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                books.add(mapResultSetToBook(rs));
+            }
+        }
+        return books;
     }
 
     @Override
     public List<Book> findBooksByAuthor(String author) throws SQLException {
-        return null;
+        List<Book> books = new ArrayList<>();
+        String sql = "SELECT id, title, author, isbn, genre, total_copies, available_copies FROM books WHERE author LIKE ?";
+        try (Connection conn = DataBaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, "%" + author + "%");
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                books.add(mapResultSetToBook(rs));
+            }
+        }
+        return books;
     }
 
     @Override
     public Book findBookByISBN(String isbn) throws SQLException {
-        return null;
+        String sql = "SELECT id, title, author, isbn, genre, total_copies, available_copies FROM books WHERE isbn = ?";
+        try (Connection conn = DataBaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, isbn);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return mapResultSetToBook(rs);
+            }
+            return null;
+        }
     }
 
     @Override
     public List<Book> findBooksByGenre(String genre) throws SQLException {
-        return null;
+        List<Book> books = new ArrayList<>();
+        String sql = "SELECT id, title, author, isbn, genre, total_copies, available_copies FROM books WHERE genre LIKE ?";
+        try (Connection conn = DataBaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, "%" + genre + "%");
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                books.add(mapResultSetToBook(rs));
+            }
+        }
+        return books;
     }
 
     private Book mapResultSetToBook(ResultSet rs) throws SQLException {
         Book book = new Book();
         book.setId(rs.getInt("id"));
-        book.setTitle(rs.getString("title")); // Atualizado para "title"
-        book.setAuthor(rs.getString("author")); // Atualizado para "author"
+        book.setTitle(rs.getString("title"));
+        book.setAuthor(rs.getString("author"));
         book.setIsbn(rs.getString("isbn"));
-        book.setGenre(rs.getString("genre")); // Atualizado para "genre"
-        book.setTotalCopies(rs.getInt("total_copies")); // Atualizado para "total_copies"
-        book.setAvailableCopies(rs.getInt("available_copies")); // Atualizado para "available_copies"
+        book.setGenre(rs.getString("genre"));
+        book.setTotalCopies(rs.getInt("total_copies"));
+        book.setAvailableCopies(rs.getInt("available_copies"));
         return book;
     }
 }
