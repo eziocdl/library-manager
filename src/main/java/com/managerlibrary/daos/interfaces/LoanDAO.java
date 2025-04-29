@@ -17,23 +17,21 @@ public interface LoanDAO {
     void insertLoan(Loan loan) throws SQLException;
 
     /**
-     * Busca um empréstimo pelo ID.
+     * Busca um empréstimo pelo ID com detalhes do livro e usuário.
      *
      * @param id O ID do empréstimo a ser buscado.
-     * @return O empréstimo encontrado, ou null se não encontrado.
+     * @return O empréstimo encontrado com seus detalhes, ou null se não encontrado.
      * @throws SQLException Se ocorrer um erro ao buscar o empréstimo.
      */
-
-    Loan findLoanById(int id) throws SQLException;
+    Loan getLoanById(int id) throws SQLException;
 
     /**
-     * Busca todos os empréstimos no banco de dados.
+     * Busca todos os empréstimos no banco de dados (sem detalhes completos).
      *
      * @return Uma lista com todos os empréstimos encontrados.
      * @throws SQLException Se ocorrer um erro ao buscar os empréstimos.
      */
-
-    List<Loan> findAllLoans() throws SQLException;
+    List<Loan> getAllLoans() throws SQLException;
 
     /**
      * Atualiza um empréstimo no banco de dados.
@@ -41,9 +39,7 @@ public interface LoanDAO {
      * @param loan O empréstimo a ser atualizado.
      * @throws SQLException Se ocorrer um erro ao atualizar o empréstimo.
      */
-
     void updateLoan(Loan loan) throws SQLException;
-
 
     /**
      * Deleta um empréstimo pelo ID.
@@ -51,13 +47,22 @@ public interface LoanDAO {
      * @param id O ID do empréstimo a ser deletado.
      * @throws SQLException Se ocorrer um erro ao deletar o empréstimo.
      */
-
-
     void deleteLoan(int id) throws SQLException;
 
-
+    /**
+     * Busca todos os empréstimos com detalhes do livro e usuário.
+     *
+     * @return Uma lista com todos os empréstimos e seus detalhes.
+     * @throws SQLException Se ocorrer um erro ao buscar os empréstimos.
+     */
     List<Loan> getAllLoansWithDetails() throws SQLException;
 
-
+    /**
+     * Marca um empréstimo como devolvido, atualizando a data de devolução.
+     *
+     * @param loanId     O ID do empréstimo a ser marcado como devolvido.
+     * @param returnDate A data real da devolução.
+     * @throws SQLException Se ocorrer um erro ao atualizar o empréstimo.
+     */
     void markAsReturned(int loanId, LocalDate returnDate) throws SQLException;
 }

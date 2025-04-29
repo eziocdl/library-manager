@@ -22,7 +22,7 @@ public class BookDAOImpl implements BookDAO {
     public void insertBook(Book book) throws SQLException {
         String sql = "INSERT INTO books (title, author, isbn, genre, total_copies, available_copies) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DataBaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) { // Adicionada a flag
             pstmt.setString(1, book.getTitle());
             pstmt.setString(2, book.getAuthor());
             pstmt.setString(3, book.getIsbn());
@@ -30,6 +30,11 @@ public class BookDAOImpl implements BookDAO {
             pstmt.setInt(5, book.getTotalCopies());
             pstmt.setInt(6, book.getAvailableCopies());
             pstmt.executeUpdate();
+
+            ResultSet generatedKeys = pstmt.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                book.setId(generatedKeys.getInt(1)); // Define o ID gerado no objeto Book
+            }
         }
     }
 

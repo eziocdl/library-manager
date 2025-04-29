@@ -21,24 +21,30 @@
 
         <Label text="ID do Livro:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="label bold-text"/>
         <Label fx:id="bookIdLabel" GridPane.rowIndex="1" GridPane.columnIndex="1" styleClass="label"/>
+        <Label text="Título do Livro:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="label bold-text"/>
+        <Label fx:id="bookTitleLabel" GridPane.rowIndex="2" GridPane.columnIndex="1" styleClass="label"/>
 
-        <Label text="ID do Usuário:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="label bold-text"/>
-        <Label fx:id="userIdLabel" GridPane.rowIndex="2" GridPane.columnIndex="1" styleClass="label"/>
+        <Label text="ID do Usuário:" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="label bold-text"/>
+        <Label fx:id="userIdLabel" GridPane.rowIndex="3" GridPane.columnIndex="1" styleClass="label"/>
+        <Label text="Nome do Usuário:" GridPane.rowIndex="4" GridPane.columnIndex="0" styleClass="label bold-text"/>
+        <Label fx:id="userNameLabel" GridPane.rowIndex="4" GridPane.columnIndex="1" styleClass="label"/>
+        <Label text="CPF do Usuário:" GridPane.rowIndex="5" GridPane.columnIndex="0" styleClass="label bold-text"/>
+        <Label fx:id="userCPFLabel" GridPane.rowIndex="5" GridPane.columnIndex="1" styleClass="label"/>
 
-        <Label text="Data do Empréstimo:" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="label bold-text"/>
-        <Label fx:id="loanDateLabel" GridPane.rowIndex="3" GridPane.columnIndex="1" styleClass="label"/>
+        <Label text="Data do Empréstimo:" GridPane.rowIndex="6" GridPane.columnIndex="0" styleClass="label bold-text"/>
+        <Label fx:id="loanDateLabel" GridPane.rowIndex="6" GridPane.columnIndex="1" styleClass="label"/>
 
-        <Label text="Data de Devolução Prevista:" GridPane.rowIndex="4" GridPane.columnIndex="0" styleClass="label bold-text"/>
-        <Label fx:id="returnDateLabel" GridPane.rowIndex="4" GridPane.columnIndex="1" styleClass="label"/>
+        <Label text="Data de Devolução Prevista:" GridPane.rowIndex="7" GridPane.columnIndex="0" styleClass="label bold-text"/>
+        <Label fx:id="returnDateLabel" GridPane.rowIndex="7" GridPane.columnIndex="1" styleClass="label"/>
 
-        <Label text="Data de Devolução Efetiva:" GridPane.rowIndex="5" GridPane.columnIndex="0" styleClass="label bold-text"/>
-        <Label fx:id="actualReturnDateLabel" GridPane.rowIndex="5" GridPane.columnIndex="1" styleClass="label"/>
+        <Label text="Data de Devolução Efetiva:" GridPane.rowIndex="8" GridPane.columnIndex="0" styleClass="label bold-text"/>
+        <Label fx:id="actualReturnDateLabel" GridPane.rowIndex="8" GridPane.columnIndex="1" styleClass="label"/>
 
-        <Label text="Status:" GridPane.rowIndex="6" GridPane.columnIndex="0" styleClass="label bold-text"/>
-        <Label fx:id="statusLabel" GridPane.rowIndex="6" GridPane.columnIndex="1" styleClass="label"/>
+        <Label text="Status:" GridPane.rowIndex="9" GridPane.columnIndex="0" styleClass="label bold-text"/>
+        <Label fx:id="statusLabel" GridPane.rowIndex="9" GridPane.columnIndex="1" styleClass="label"/>
 
-        <Label text="Multa:" GridPane.rowIndex="7" GridPane.columnIndex="0" styleClass="label bold-text"/>
-        <Label fx:id="fineLabel" GridPane.rowIndex="7" GridPane.columnIndex="1" styleClass="label error-text"/>
+        <Label text="Multa:" GridPane.rowIndex="10" GridPane.columnIndex="0" styleClass="label bold-text"/>
+        <Label fx:id="fineLabel" GridPane.rowIndex="10" GridPane.columnIndex="1" styleClass="label error-text"/>
     </GridPane>
 
     <HBox spacing="10" alignment="BOTTOM_RIGHT" style="-fx-padding: 20.0 0.0 0.0;">

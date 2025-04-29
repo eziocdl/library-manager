@@ -238,14 +238,14 @@ public class BookController {
     }
 
     @FXML
-    private void handleEditBook(Book book) {
+    private void handleEditBook(Book bookToEdit) { // Renomeei o parâmetro para clareza
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/AddBookView.fxml"));
             Pane addBookView = loader.load();
 
             AddBookViewController addBookViewController = loader.getController();
             addBookViewController.setBookController(this);
-            addBookViewController.setBookToEdit(book); // Pass the book to edit
+            addBookViewController.setBookToEdit(bookToEdit); // Pass the book to edit
 
             Stage dialogStage = new Stage();
             dialogStage.setTitle("Editar Livro");
@@ -254,6 +254,14 @@ public class BookController {
             dialogStage.initOwner(booksFlowPane.getScene().getWindow());
             addBookViewController.setDialogStage(dialogStage);
             dialogStage.showAndWait();
+
+            // Após o diálogo ser fechado, atualizamos o livro se as alterações foram salvas
+            if (addBookViewController.isSaveClicked()) { // Adicione um método isSaveClicked() no AddBookViewController
+                Book editedBook = addBookViewController.getBook(); // Adicione um método getBook() no AddBookViewController
+                if (editedBook != null) {
+                    updateBook(editedBook);
+                }
+            }
 
             try {
                 loadingBooks(); // Reload the list after editing

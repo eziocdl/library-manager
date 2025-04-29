@@ -7,7 +7,7 @@
 
 <VBox xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.managerlibrary.controllers.LoanController"
+      fx:controller="com.managerlibrary.controllers.AddLoanViewController"
       spacing="10"
       stylesheets="@/Styles.css">
     <padding>

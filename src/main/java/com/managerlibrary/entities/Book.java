@@ -1,207 +1,123 @@
+// com/managerlibrary/entities/Book.java
 package com.managerlibrary.entities;
 
-import javafx.beans.property.*;
-
-import java.util.Objects;
-
-/**
- * Representa um livro no sistema da biblioteca.
- */
 public class Book {
+    private int id;
+    private String title;
+    private String author;
+    private String isbn;
+    private String publisher;
+    private int year;
+    private String genre;
+    private int totalCopies;
+    private int availableCopies;
+    private String imageUrl;
+    private String coverImagePath;
 
-    private final IntegerProperty id = new SimpleIntegerProperty();
-    private final StringProperty title = new SimpleStringProperty();
-    private final StringProperty author = new SimpleStringProperty();
-    private final StringProperty isbn = new SimpleStringProperty();
-    private final StringProperty publisher = new SimpleStringProperty();
-    private final StringProperty year = new SimpleStringProperty();
-    private final StringProperty genre = new SimpleStringProperty();
-    private final IntegerProperty totalCopies = new SimpleIntegerProperty();
-    private final IntegerProperty availableCopies = new SimpleIntegerProperty();
-    private final StringProperty coverImagePath = new SimpleStringProperty();
-    private final StringProperty imageUrl = new SimpleStringProperty(); // Adicionado
-
+    // Construtores
     public Book() {
     }
 
-    // Construtor com argumentos (adicione imageUrl se necessário)
-    public Book(int id, String title, String author, String isbn, String publisher, String year, String genre, int totalCopies, int availableCopies, String coverImagePath, String imageUrl) {
-        this.id.set(id);
-        this.title.set(title);
-        this.author.set(author);
-        this.isbn.set(isbn);
-        this.publisher.set(publisher);
-        this.year.set(year);
-        this.genre.set(genre);
-        this.totalCopies.set(totalCopies);
-        this.availableCopies.set(availableCopies);
-        this.coverImagePath.set(coverImagePath);
-        this.imageUrl.set(imageUrl); // Inicialize no construtor
+    public Book(int id, String title, String author, String isbn, String publisher, int year, String genre, int totalCopies, int availableCopies, String imageUrl, String coverImagePath) {
+        this.id = id;
+        this.title = title;
+        this.author = author;
+        this.isbn = isbn;
+        this.publisher = publisher;
+        this.year = year;
+        this.genre = genre;
+        this.totalCopies = totalCopies;
+        this.availableCopies = availableCopies;
+        this.imageUrl = imageUrl;
+        this.coverImagePath = coverImagePath;
     }
 
-    public Book(String orgulhoEPreconceito, String janeAusten, String s, String penguinClassics, String number, String romance, int i, int i1) {
-    }
-
-    public IntegerProperty idProperty() {
+    // Getters e Setters
+    public int getId() {
         return id;
     }
 
-    public int getId() {
-        return id.get();
-    }
-
     public void setId(int id) {
-        this.id.set(id);
-    }
-
-    public StringProperty titleProperty() {
-        return title;
+        this.id = id;
     }
 
     public String getTitle() {
-        return title.get();
+        return title;
     }
 
     public void setTitle(String title) {
-        this.title.set(title);
-    }
-
-    public StringProperty authorProperty() {
-        return author;
+        this.title = title;
     }
 
     public String getAuthor() {
-        return author.get();
+        return author;
     }
 
     public void setAuthor(String author) {
-        this.author.set(author);
-    }
-
-    public StringProperty isbnProperty() {
-        return isbn;
+        this.author = author;
     }
 
     public String getIsbn() {
-        return isbn.get();
+        return isbn;
     }
 
     public void setIsbn(String isbn) {
-        this.isbn.set(isbn);
-    }
-
-    public StringProperty publisherProperty() {
-        return publisher;
+        this.isbn = isbn;
     }
 
     public String getPublisher() {
-        return publisher.get();
+        return publisher;
     }
 
     public void setPublisher(String publisher) {
-        this.publisher.set(publisher);
+        this.publisher = publisher;
     }
 
-    public StringProperty yearProperty() {
+    public int getYear() {
         return year;
     }
 
-    public String getYear() {
-        return year.get();
-    }
-
-    public void setYear(String year) {
-        this.year.set(year);
-    }
-
-    public StringProperty genreProperty() {
-        return genre;
+    public void setYear(int year) {
+        this.year = year;
     }
 
     public String getGenre() {
-        return genre.get();
+        return genre;
     }
 
     public void setGenre(String genre) {
-        this.genre.set(genre);
-    }
-
-    public IntegerProperty totalCopiesProperty() {
-        return totalCopies;
+        this.genre = genre;
     }
 
     public int getTotalCopies() {
-        return totalCopies.get();
+        return totalCopies;
     }
 
     public void setTotalCopies(int totalCopies) {
-        this.totalCopies.set(totalCopies);
-    }
-
-    public IntegerProperty availableCopiesProperty() {
-        return availableCopies;
+        this.totalCopies = totalCopies;
     }
 
     public int getAvailableCopies() {
-        return availableCopies.get();
+        return availableCopies;
     }
 
     public void setAvailableCopies(int availableCopies) {
-        this.availableCopies.set(availableCopies);
-    }
-
-    public StringProperty coverImagePathProperty() {
-        return coverImagePath;
-    }
-
-    public String getCoverImagePath() {
-        return coverImagePath.get();
-    }
-
-    public void setCoverImagePath(String coverImagePath) {
-        this.coverImagePath.set(coverImagePath);
-    }
-
-    // Getter e Setter para imageUrl
-    public StringProperty imageUrlProperty() {
-        return imageUrl;
+        this.availableCopies = availableCopies;
     }
 
     public String getImageUrl() {
-        return imageUrl.get();
+        return imageUrl;
     }
 
     public void setImageUrl(String imageUrl) {
-        this.imageUrl.set(imageUrl);
+        this.imageUrl = imageUrl;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Book book = (Book) o;
-        return Objects.equals(id, book.id) && Objects.equals(title, book.title) && Objects.equals(author, book.author) && Objects.equals(isbn, book.isbn) && Objects.equals(publisher, book.publisher) && Objects.equals(year, book.year) && Objects.equals(genre, book.genre) && Objects.equals(totalCopies, book.totalCopies) && Objects.equals(availableCopies, book.availableCopies) && Objects.equals(coverImagePath, book.coverImagePath) && Objects.equals(imageUrl, book.imageUrl);
+    public String getCoverImagePath() {
+        return coverImagePath;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, title, author, isbn, publisher, year, genre, totalCopies, availableCopies, coverImagePath, imageUrl);
-    }
-
-    @Override
-    public String toString() {
-        return "Book{" +
-                "id=" + id +
-                ", title=" + title +
-                ", author=" + author +
-                ", isbn=" + isbn +
-                ", publisher=" + publisher +
-                ", year=" + year +
-                ", genre=" + genre +
-                ", totalCopies=" + totalCopies +
-                ", availableCopies=" + availableCopies +
-                ", coverImagePath=" + coverImagePath +
-                ", imageUrl=" + imageUrl +
-                '}';
+    public void setCoverImagePath(String coverImagePath) {
+        this.coverImagePath = coverImagePath;
     }
 }

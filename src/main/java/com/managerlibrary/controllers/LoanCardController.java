@@ -44,15 +44,21 @@ public class LoanCardController {
 
     public void displayLoanDetails() {
         if (loan != null) {
-            // Agora acessamos os detalhes do Usuário e do Livro diretamente do objeto Loan
+            // Exibe o Nome e ID do Usuário
             if (loan.getUser() != null) {
-                userNameLabel.setText("Nome do Usuário (ID: " + loan.getUser().getId() + ")");
-                userCpfLabel.setText("CPF do Usuário (Simulado)"); // Você pode precisar buscar o CPF do objeto User
+                userNameLabel.setText("Nome do Usuário: " + loan.getUser().getName() + " (ID: " + loan.getUser().getId() + ")");
+                // Exibe o CPF do Usuário
+                if (loan.getUser().getCpf() != null && !loan.getUser().getCpf().isEmpty()) {
+                    userCpfLabel.setText("CPF do Usuário: " + loan.getUser().getCpf());
+                } else {
+                    userCpfLabel.setText("CPF do Usuário: N/A");
+                }
             } else {
-                userNameLabel.setText("Nome do Usuário (ID: N/A)");
-                userCpfLabel.setText("CPF do Usuário (N/A)");
+                userNameLabel.setText("Nome do Usuário: N/A (ID: N/A)");
+                userCpfLabel.setText("CPF do Usuário: N/A");
             }
 
+            // Exibe o Título e ID do Livro
             if (loan.getBook() != null) {
                 bookTitleLabel.setText("Título do Livro (ID: " + loan.getBook().getId() + ")");
             } else {

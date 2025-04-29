@@ -17,11 +17,13 @@ public class LoanDetailsController {
     @FXML
     private Label bookIdLabel;
     @FXML
-    private Label bookTitleLabel; // Adicionado
+    private Label bookTitleLabel;
     @FXML
     private Label userIdLabel;
     @FXML
-    private Label userNameLabel; // Adicionado
+    private Label userNameLabel;
+    @FXML
+    private Label userCPFLabel;
     @FXML
     private Label loanDateLabel;
     @FXML
@@ -51,9 +53,11 @@ public class LoanDetailsController {
             if (loan.getUser() != null) {
                 userIdLabel.setText(String.valueOf(loan.getUser().getId()));
                 userNameLabel.setText(loan.getUser().getName());
+                userCPFLabel.setText(loan.getUser().getCpf());
             } else {
                 userIdLabel.setText("N/A");
                 userNameLabel.setText("N/A");
+                userCPFLabel.setText("N/A");
             }
             loanDateLabel.setText(loan.getLoanDate() != null ? loan.getLoanDate().format(dateFormatter) : "N/A");
             returnDateLabel.setText(loan.getReturnDate() != null ? loan.getReturnDate().format(dateFormatter) : "N/A");

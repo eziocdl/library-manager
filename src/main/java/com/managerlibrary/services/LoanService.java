@@ -30,14 +30,14 @@ public class LoanService {
     }
 
     /**
-     * Busca um empréstimo pelo ID.
+     * Busca um empréstimo pelo ID com detalhes do livro e usuário.
      *
      * @param id O ID do empréstimo a ser buscado.
-     * @return O empréstimo encontrado, ou null se não encontrado.
+     * @return O empréstimo encontrado com seus detalhes, ou null se não encontrado.
      * @throws SQLException Se ocorrer um erro ao buscar o empréstimo.
      */
     public Loan getLoanById(int id) throws SQLException {
-        return loanDAO.findLoanById(id);
+        return loanDAO.getLoanById(id); // Correção: Chama o método correto do DAO
     }
 
     /**
@@ -47,7 +47,7 @@ public class LoanService {
      * @throws SQLException Se ocorrer um erro ao buscar os empréstimos.
      */
     public List<Loan> getAllLoans() throws SQLException {
-        return loanDAO.findAllLoans();
+        return loanDAO.getAllLoans();
     }
 
     /**
@@ -87,7 +87,7 @@ public class LoanService {
      * @throws SQLException Se ocorrer um erro ao atualizar o empréstimo.
      */
     public void markAsReturned(int loanId, LocalDate actualReturnDate) throws SQLException {
-        Loan loan = loanDAO.findLoanById(loanId);
+        Loan loan = loanDAO.getLoanById(loanId); // Correção: Busca o empréstimo com detalhes para ter acesso às datas
         if (loan != null && loan.getActualReturnDate() == null) {
             loan.setActualReturnDate(actualReturnDate);
             loan.setStatus("Devolvido");

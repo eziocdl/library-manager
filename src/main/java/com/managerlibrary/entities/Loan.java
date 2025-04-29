@@ -1,181 +1,105 @@
+// com/managerlibrary/entities/Loan.java
 package com.managerlibrary.entities;
 
-import javafx.beans.property.*;
 import java.time.LocalDate;
-import java.util.Objects;
 
-/**
- * Representa um empréstimo de livro no sistema da biblioteca.
- */
 public class Loan {
+    private int id;
+    private Book book;
+    private User user;
+    private LocalDate loanDate;
+    private LocalDate returnDate;
+    private LocalDate actualReturnDate;
+    private String status;
+    private double fine;
+    private boolean returned; // Adicionado para consistência com o método markAsReturned
 
-    private IntegerProperty id;
-    private ObjectProperty<Book> book;
-    private ObjectProperty<User> user;
-    private ObjectProperty<LocalDate> loanDate;
-    private ObjectProperty<LocalDate> returnDate;
-    private ObjectProperty<LocalDate> actualReturnDate; // Data de devolução efetiva
-    private StringProperty status; // Ativo, Devolvido, Atrasado
-    private DoubleProperty fine; // Valor da multa
-    private BooleanProperty returned; // Novo atributo para indicar se o livro foi devolvido
-
+    // Construtores
     public Loan() {
-        this.id = new SimpleIntegerProperty();
-        this.book = new SimpleObjectProperty<>();
-        this.user = new SimpleObjectProperty<>();
-        this.loanDate = new SimpleObjectProperty<>();
-        this.returnDate = new SimpleObjectProperty<>();
-        this.actualReturnDate = new SimpleObjectProperty<>();
-        this.status = new SimpleStringProperty();
-        this.fine = new SimpleDoubleProperty(0.0); // Inicializa a multa com 0.0
-        this.returned = new SimpleBooleanProperty(false); // Inicializa como não devolvido
     }
 
     public Loan(int id, Book book, User user, LocalDate loanDate, LocalDate returnDate, LocalDate actualReturnDate, String status, double fine, boolean returned) {
-        this.id = new SimpleIntegerProperty(id);
-        this.book = new SimpleObjectProperty<>(book);
-        this.user = new SimpleObjectProperty<>(user);
-        this.loanDate = new SimpleObjectProperty<>(loanDate);
-        this.returnDate = new SimpleObjectProperty<>(returnDate);
-        this.actualReturnDate = new SimpleObjectProperty<>(actualReturnDate);
-        this.status = new SimpleStringProperty(status);
-        this.fine = new SimpleDoubleProperty(fine);
-        this.returned = new SimpleBooleanProperty(returned); // Inicializa o status de devolução
+        this.id = id;
+        this.book = book;
+        this.user = user;
+        this.loanDate = loanDate;
+        this.returnDate = returnDate;
+        this.actualReturnDate = actualReturnDate;
+        this.status = status;
+        this.fine = fine;
+        this.returned = returned;
     }
 
-    public IntegerProperty idProperty() {
+    // Getters e Setters
+    public int getId() {
         return id;
     }
 
-    public int getId() {
-        return id.get();
-    }
-
     public void setId(int id) {
-        this.id.set(id);
-    }
-
-    public ObjectProperty<Book> bookProperty() {
-        return book;
+        this.id = id;
     }
 
     public Book getBook() {
-        return book.get();
+        return book;
     }
 
     public void setBook(Book book) {
-        this.book.set(book);
-    }
-
-    public ObjectProperty<User> userProperty() {
-        return user;
+        this.book = book;
     }
 
     public User getUser() {
-        return user.get();
+        return user;
     }
 
     public void setUser(User user) {
-        this.user.set(user);
-    }
-
-    public ObjectProperty<LocalDate> loanDateProperty() {
-        return loanDate;
+        this.user = user;
     }
 
     public LocalDate getLoanDate() {
-        return loanDate.get();
+        return loanDate;
     }
 
     public void setLoanDate(LocalDate loanDate) {
-        this.loanDate.set(loanDate);
-    }
-
-    public ObjectProperty<LocalDate> returnDateProperty() {
-        return returnDate;
+        this.loanDate = loanDate;
     }
 
     public LocalDate getReturnDate() {
-        return returnDate.get();
+        return returnDate;
     }
 
     public void setReturnDate(LocalDate returnDate) {
-        this.returnDate.set(returnDate);
-    }
-
-    public ObjectProperty<LocalDate> actualReturnDateProperty() {
-        return actualReturnDate;
+        this.returnDate = returnDate;
     }
 
     public LocalDate getActualReturnDate() {
-        return actualReturnDate.get();
+        return actualReturnDate;
     }
 
     public void setActualReturnDate(LocalDate actualReturnDate) {
-        this.actualReturnDate.set(actualReturnDate);
-    }
-
-    public StringProperty statusProperty() {
-        return status;
+        this.actualReturnDate = actualReturnDate;
     }
 
     public String getStatus() {
-        return status.get();
+        return status;
     }
 
     public void setStatus(String status) {
-        this.status.set(status);
-    }
-
-    public DoubleProperty fineProperty() {
-        return fine;
+        this.status = status;
     }
 
     public double getFine() {
-        return fine.get();
+        return fine;
     }
 
     public void setFine(double fine) {
-        this.fine.set(fine);
-    }
-
-    public BooleanProperty returnedProperty() {
-        return returned;
+        this.fine = fine;
     }
 
     public boolean isReturned() {
-        return returned.get();
+        return returned;
     }
 
     public void setReturned(boolean returned) {
-        this.returned.set(returned);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Loan loan = (Loan) o;
-        return Objects.equals(id, loan.id) && Objects.equals(book, loan.book) && Objects.equals(user, loan.user) && Objects.equals(loanDate, loan.loanDate) && Objects.equals(returnDate, loan.returnDate) && Objects.equals(actualReturnDate, loan.actualReturnDate) && Objects.equals(status, loan.status) && Objects.equals(fine, loan.fine) && Objects.equals(returned, loan.returned);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, book, user, loanDate, returnDate, actualReturnDate, status, fine, returned);
-    }
-
-    @Override
-    public String toString() {
-        return "Loan{" +
-                "id=" + id +
-                ", book=" + (book.get() != null ? book.get().getTitle() : null) +
-                ", user=" + (user.get() != null ? user.get().getName() : null) +
-                ", loanDate=" + loanDate +
-                ", returnDate=" + returnDate +
-                ", actualReturnDate=" + actualReturnDate +
-                ", status=" + status +
-                ", fine=" + fine +
-                ", returned=" + returned +
-                '}';
+        this.returned = returned;
     }
 }

@@ -9,6 +9,8 @@ import com.managerlibrary.entities.User;
 import com.managerlibrary.services.BookService;
 import com.managerlibrary.services.LoanService;
 import com.managerlibrary.services.UserService;
+import com.managerlibrary.util.BookStringConverter; // Importe o conversor de Book
+import com.managerlibrary.util.UserStringConverter; // Importe o conversor de User
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -62,10 +64,12 @@ public class NewLoanController {
 
     private void loadUsers() throws SQLException { // Adiciona 'throws SQLException' à assinatura
         userComboBox.setItems(FXCollections.observableList(userService.getAllUsers()));
+        userComboBox.setConverter(new UserStringConverter()); // Define o conversor para User
     }
 
     private void loadBooks() throws SQLException { // Adiciona 'throws SQLException' à assinatura
         bookComboBox.setItems(FXCollections.observableList(bookService.getAllAvailableBooks())); // Carrega apenas livros disponíveis
+        bookComboBox.setConverter(new BookStringConverter()); // Define o conversor para Book
     }
 
     @FXML
