@@ -11,7 +11,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.sql.SQLException;
 
 public class AddBookViewController {
 
@@ -56,6 +55,7 @@ public class AddBookViewController {
 
     private void populateFields() {
         if (bookToEdit != null) {
+            System.out.println("PopulateFields recebendo: " + bookToEdit.getTitle() + ", Editora: " + bookToEdit.getPublisher() + ", Ano: " + bookToEdit.getYear()); // ADICIONE ESTE LOG
             titleField.setText(bookToEdit.getTitle());
             authorField.setText(bookToEdit.getAuthor());
             isbnField.setText(bookToEdit.getIsbn());
@@ -87,7 +87,7 @@ public class AddBookViewController {
         return saveClicked;
     }
 
-    public Book getBook() { // Adicione este método
+    public Book getBook() {
         String title = titleField.getText();
         String author = authorField.getText();
         String isbn = isbnField.getText();
@@ -95,6 +95,10 @@ public class AddBookViewController {
         String yearStr = yearField.getText();
         String genre = genreField.getText();
         String quantityStr = quantityField.getText();
+        String imageUrl = imageUrlField.getText();
+
+        System.out.println("getBook(): Editora lida da tela: " + publisher); // LOG NO AddBookViewController
+        System.out.println("getBook(): Ano lido da tela: " + yearStr);     // LOG NO AddBookViewController
 
         if (title.isEmpty() || author.isEmpty() || isbn.isEmpty() || publisher.isEmpty() || yearStr.isEmpty() || genre.isEmpty() || quantityStr.isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Erro de Validação", "Todos os campos são obrigatórios.");
@@ -118,67 +122,53 @@ public class AddBookViewController {
             return null;
         }
 
+        Book book;
         if (isEditing && bookToEdit != null) {
-            bookToEdit.setTitle(title);
-            bookToEdit.setAuthor(author);
-            bookToEdit.setIsbn(isbn);
-            bookToEdit.setPublisher(publisher);
-            bookToEdit.setYear(year);
-            bookToEdit.setGenre(genre);
-            // Manter a lógica de ajuste de cópias disponíveis ao editar
-            // Assumindo que você quer atualizar available_copies também
-            int diff = quantity - bookToEdit.getTotalCopies();
-            bookToEdit.setTotalCopies(quantity);
-            bookToEdit.setAvailableCopies(bookToEdit.getAvailableCopies() + diff);
-            bookToEdit.setImageUrl(imageUrlField.getText());
+            book = bookToEdit;
+            book.setTitle(title);
+            book.setAuthor(author);
+            book.setIsbn(isbn);
+            book.setPublisher(publisher);
+            book.setYear(year);
+            book.setGenre(genre);
+            int diff = quantity - book.getTotalCopies();
+            book.setTotalCopies(quantity);
+            book.setAvailableCopies(book.getAvailableCopies() + diff);
+            book.setImageUrl(imageUrl);
             if (selectedCoverFile != null) {
-                bookToEdit.setCoverImagePath(selectedCoverFile.getAbsolutePath());
+                book.setCoverImagePath(selectedCoverFile.getAbsolutePath());
             }
-            return bookToEdit;
         } else {
-            Book newBook = new Book();
-            newBook.setTitle(title);
-            newBook.setAuthor(author);
-            newBook.setIsbn(isbn);
-            newBook.setPublisher(publisher);
-            newBook.setYear(year);
-            newBook.setGenre(genre);
-            newBook.setTotalCopies(quantity);
-            newBook.setAvailableCopies(quantity);
-            newBook.setImageUrl(imageUrlField.getText());
+            book = new Book();
+            book.setTitle(title);
+            book.setAuthor(author);
+            book.setIsbn(isbn);
+            book.setPublisher(publisher);
+            book.setYear(year);
+            book.setGenre(genre);
+            book.setTotalCopies(quantity);
+            book.setAvailableCopies(quantity);
+            book.setImageUrl(imageUrl);
             if (selectedCoverFile != null) {
-                newBook.setCoverImagePath(selectedCoverFile.getAbsolutePath());
+                book.setCoverImagePath(selectedCoverFile.getAbsolutePath());
             }
-            return newBook;
         }
+        return book;
     }
-
     @FXML
     public void saveBook(ActionEvent event) {
-        String title = titleField.getText();
-        String author = authorField.getText();
-        String isbn = isbnField.getText();
-        String publisher = publisherField.getText();
-        String yearStr = yearField.getText();
-        String genre = genreField.getText();
-        String quantityStr = quantityField.getText();
-
-        if (title.isEmpty() || author.isEmpty() || isbn.isEmpty() || publisher.isEmpty() || yearStr.isEmpty() || genre.isEmpty() || quantityStr.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Erro de Validação", "Todos os campos são obrigatórios.");
-            return;
+        Book book = getBook();
+        if (book != null) {
+            if (isEditing && bookToEdit != null) {
+                book.setId(bookToEdit.getId()); // Garante que o ID seja mantido para a edição
+                bookController.updateBook(book);
+            } else {
+                bookController.insertNewBook(book);
+            }
+            saveClicked = true;
+            Stage stage = (Stage) saveBookButton.getScene().getWindow();
+            stage.close();
         }
-
-        try {
-            Integer.parseInt(quantityStr);
-            Integer.parseInt(yearStr); // Adicionado a validação do ano aqui também
-        } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.ERROR, "Erro de Validação", "Ano ou quantidade inválida.");
-            return;
-        }
-
-        saveClicked = true; // Define saveClicked como true ao clicar em Salvar
-        Stage stage = (Stage) saveBookButton.getScene().getWindow();
-        stage.close();
     }
 
     @FXML

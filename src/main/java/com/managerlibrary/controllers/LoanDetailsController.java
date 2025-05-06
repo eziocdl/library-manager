@@ -1,6 +1,8 @@
 package com.managerlibrary.controllers;
 
 import com.managerlibrary.entities.Loan;
+import com.managerlibrary.services.BookService;
+import com.managerlibrary.services.UserService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
@@ -10,6 +12,8 @@ import java.time.format.DateTimeFormatter;
 public class LoanDetailsController {
 
     private Loan loan;
+    private BookService bookService;
+    private UserService userService;
     private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @FXML
@@ -38,6 +42,14 @@ public class LoanDetailsController {
     public void setLoan(Loan loan) {
         this.loan = loan;
         displayLoanDetails();
+    }
+
+    public void setBookService(BookService bookService) {
+        this.bookService = bookService;
+    }
+
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 
     public void displayLoanDetails() {
@@ -71,5 +83,10 @@ public class LoanDetailsController {
     private void closeLoanDetailsView() {
         Stage stage = (Stage) loanIdLabel.getScene().getWindow();
         stage.close();
+    }
+
+    @FXML
+    public void initialize() {
+        // Inicializações da tela de detalhes, se necessário
     }
 }

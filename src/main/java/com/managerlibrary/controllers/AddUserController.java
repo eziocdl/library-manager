@@ -2,6 +2,7 @@ package com.managerlibrary.controllers;
 
 import com.managerlibrary.entities.User;
 import com.managerlibrary.services.UserService;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -29,11 +30,11 @@ public class AddUserController {
     private Button cancelButton;
 
     private UserController userController;
-    private UserService userService; // Remova a inicialização aqui
+    private UserService userService;
 
     public void setUserController(UserController userController) {
         this.userController = userController;
-        this.userService = userController.getUserService(); // Obtenha a instância do UserService do UserController
+        this.userService = userController.getUserService();
     }
 
     @FXML
@@ -53,26 +54,26 @@ public class AddUserController {
 
         try {
             userService.addUser(user);
-            userController.showUserCardsView(); // Atualiza a lista na tela já aberta
+            userController.showUserCardsView();
             clearInputFields();
             showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Usuário adicionado com sucesso!");
             Stage stage = (Stage) saveButton.getScene().getWindow();
-            stage.close(); // Fecha a janela modal após salvar
+            stage.close();
         } catch (SQLException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erro ao Salvar", "Erro ao adicionar o usuário: " + e.getMessage());
         } catch (IllegalArgumentException e) {
             showAlert(Alert.AlertType.ERROR, "Erro de Validação", e.getMessage());
-        } catch (Exception e) { // Adicione este bloco
+        } catch (Exception e) {
             e.printStackTrace();
             System.err.println("Erro inesperado ao salvar usuário: " + e.getMessage());
         }
     }
 
     @FXML
-    public void cancelAddUserView() {
+    public void cancelAddUser(ActionEvent event) { // Método renomeado para cancelAddUser e recebendo ActionEvent
         // Apenas fecha a janela modal
-        Stage stage = (Stage) cancelButton.getScene().getWindow();
+        Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
         stage.close();
     }
 

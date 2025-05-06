@@ -17,10 +17,10 @@
 
     <GridPane hgap="10" vgap="10" style="-fx-padding: 20 0 0 0;">
         <Label text="Livro:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="label"/>
-        <ComboBox fx:id="bookComboBox" GridPane.rowIndex="0" GridPane.columnIndex="1" styleClass="combo-box rounded-corners"/>
+        <ComboBox fx:id="bookComboBox" prefWidth="250.0" GridPane.rowIndex="0" GridPane.columnIndex="1" styleClass="combo-box rounded-corners"/>
 
         <Label text="Usuário:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="label"/>
-        <ComboBox fx:id="userComboBox" GridPane.rowIndex="1" GridPane.columnIndex="1" styleClass="combo-box rounded-corners"/>
+        <ComboBox fx:id="userComboBox" prefWidth="250.0" GridPane.rowIndex="1" GridPane.columnIndex="1" styleClass="combo-box rounded-corners"/>
 
         <Label text="Data de Empréstimo:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="label"/>
         <DatePicker fx:id="loanDatePicker" GridPane.rowIndex="2" GridPane.columnIndex="1" styleClass="date-picker rounded-corners"/>

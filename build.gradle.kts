@@ -1,6 +1,6 @@
 plugins {
-    id("java")
-    id("application")
+    java
+    application
     id("org.openjfx.javafxplugin") version "0.0.14"
 }
 
@@ -32,6 +32,15 @@ javafx {
     modules = listOf("javafx.controls", "javafx.fxml", "javafx.base")
 }
 
+tasks.jar { // Acesse a tarefa 'jar' diretamente dentro de 'tasks'
+    from(sourceSets.main.get().resources) {
+        into("")
+    }
+    manifest {
+        attributes["Main-Class"] = application.mainClass.get()
+    }
+}
+
 application {
     mainClass.set("com.managerlibrary.Main")
     applicationDefaultJvmArgs = listOf(
@@ -42,10 +51,6 @@ application {
     )
 }
 
-
-
-
-
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }
@@ -53,4 +58,3 @@ tasks.withType<JavaCompile> {
 tasks.test {
     useJUnitPlatform()
 }
-

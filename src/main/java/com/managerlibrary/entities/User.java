@@ -18,6 +18,10 @@ public class User {
     public User() {
     }
 
+    public User(int id) { // Adicionado construtor que aceita apenas o ID
+        setId(id);
+    }
+
     public User(int id, String name, String address, String phone, String email, String registrationNumber, String cpf) {
         setId(id);
         setName(name);

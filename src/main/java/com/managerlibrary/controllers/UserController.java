@@ -48,6 +48,9 @@ public class UserController {
     private UserService userService = new UserService();
     private RootLayoutController rootLayoutController;
 
+    public UserController() throws SQLException {
+    }
+
     // Injeção do RootLayoutController
     public void setRootLayoutController(RootLayoutController rootLayoutController) {
         this.rootLayoutController = rootLayoutController;
@@ -253,7 +256,22 @@ public class UserController {
 
     public void showAddUserView() {
         try {
-            FXMLLoader loaderAddUser = new FXMLLoader(getClass().getResource("/views/AddUserView.fxml"));
+            String resourcePath = "/views/AddUserView.fxml";
+            java.net.URL location = getClass().getResource(resourcePath);
+            System.out.println("Tentando carregar FXML de: " + location); // ADICIONE ESTE LOG
+
+            if (location == null) {
+                System.err.println("Arquivo FXML não encontrado em: " + resourcePath);
+                // Você pode adicionar um Alert aqui para informar o usuário sobre o erro
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Erro ao carregar tela");
+                alert.setHeaderText("Arquivo FXML não encontrado");
+                alert.setContentText("Não foi possível encontrar o arquivo: " + resourcePath);
+                alert.showAndWait();
+                return; // Importante sair do método para evitar o erro de NullPointerException
+            }
+
+            FXMLLoader loaderAddUser = new FXMLLoader(location);
             Pane addUserView = loaderAddUser.load();
             AddUserController addUserController = loaderAddUser.getController();
             addUserController.setUserController(this);

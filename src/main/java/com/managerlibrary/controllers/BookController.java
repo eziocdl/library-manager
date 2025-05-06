@@ -2,6 +2,7 @@ package com.managerlibrary.controllers;
 
 import com.managerlibrary.daos.implement.BookDAOImpl;
 import com.managerlibrary.entities.Book;
+import com.managerlibrary.infra.DataBaseConnection;
 import com.managerlibrary.services.BookService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,15 +30,18 @@ import java.util.Optional;
 
 public class BookController {
 
-    @FXML private FlowPane booksFlowPane;
-    @FXML private TextField searchBookTextField;
-    @FXML private Button searchBookButton;
+    @FXML
+    private FlowPane booksFlowPane;
+    @FXML
+    private TextField searchBookTextField;
+    @FXML
+    private Button searchBookButton;
 
     private BookService bookService;
     private RootLayoutController rootLayoutController;
 
     public BookController() throws SQLException {
-        this.bookService = new BookService(new BookDAOImpl());
+        this.bookService = new BookService(new BookDAOImpl(DataBaseConnection.getConnection()));
     }
 
     public void setRootLayoutController(RootLayoutController rootLayoutController) {
@@ -120,6 +124,7 @@ public class BookController {
     private VBox createBookCard(Book book) {
         VBox card = new VBox(10);
         card.setStyle("-fx-border-color: #ccc; -fx-padding: 10; -fx-pref-width: 150;");
+        System.out.println("Criando card para: " + book.getTitle() + ", Editora: " + book.getPublisher() + ", Ano: " + book.getYear()); // LOG 1
         card.setUserData(book); // Associate the Book object with the card
 
         ImageView coverImageView = new ImageView();
@@ -164,7 +169,47 @@ public class BookController {
 
         Button editButton = new Button("Editar");
         editButton.setOnAction(event -> {
-            handleEditBook(book); // Call handleEditBook with the book object
+            Button sourceButton = (Button) event.getSource();
+            VBox bookCard = (VBox) sourceButton.getParent().getParent();
+            Book bookToEdit = (Book) bookCard.getUserData();
+            System.out.println("Ao clicar em Editar (card): " + bookToEdit.getTitle() + ", Editora: " + bookToEdit.getPublisher() + ", Ano: " + bookToEdit.getYear()); // LOG 2
+            int bookId = bookToEdit.getId();
+
+            try {
+                Book bookFromDatabase = bookService.findBookById(bookId);
+                System.out.println("Livro retornado do banco para edição: " + bookFromDatabase.getTitle() + ", Editora: " + bookFromDatabase.getPublisher() + ", Ano: " + bookFromDatabase.getYear()); // LOG 3
+                if (bookFromDatabase != null) {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/AddBookView.fxml"));
+                    Pane addBookView = loader.load();
+
+                    AddBookViewController addBookViewController = loader.getController();
+                    addBookViewController.setBookController(this);
+                    System.out.println("Passando para AddBookView: " + bookFromDatabase.getTitle() + ", Editora: " + bookFromDatabase.getPublisher() + ", Ano: " + bookFromDatabase.getYear()); // LOG 4
+                    addBookViewController.setBookToEdit(bookFromDatabase);
+
+                    Stage dialogStage = new Stage();
+                    dialogStage.setTitle("Editar Livro");
+                    dialogStage.setScene(new Scene(addBookView));
+                    dialogStage.initModality(Modality.APPLICATION_MODAL);
+                    dialogStage.initOwner(sourceButton.getScene().getWindow());
+
+                    addBookViewController.setDialogStage(dialogStage);
+                    dialogStage.showAndWait();
+
+                    if (addBookViewController.isSaveClicked()) {
+                        Book editedBook = addBookViewController.getBook();
+                        if (editedBook != null) {
+                            updateBook(editedBook);
+                        }
+                    }
+                    loadingBooks();
+                } else {
+                    System.err.println("Erro: Livro com ID " + bookId + " não encontrado para edição.");
+                }
+            } catch (IOException | SQLException e) {
+                e.printStackTrace();
+                System.err.println("Erro ao carregar tela de edição: " + e.getMessage());
+            }
         });
         editButton.getStyleClass().add("book-card-action-button"); // Aplica a classe CSS
 
@@ -205,6 +250,7 @@ public class BookController {
     }
 
     public void insertNewBook(Book book) {
+        System.out.println("insertNewBook recebendo: " + book.getTitle() + ", Editora: " + book.getPublisher() + ", Ano: " + book.getYear()); // LOG NO BookController
         try {
             bookService.insertBook(book);
             loadingBooks();
@@ -216,6 +262,7 @@ public class BookController {
     }
 
     public void updateBook(Book book) {
+        System.out.println("updateBook recebendo: " + book.getTitle() + ", Editora: " + book.getPublisher() + ", Ano: " + book.getYear()); // LOG NO BookController
         try {
             bookService.updateBook(book);
             loadingBooks();
@@ -234,43 +281,6 @@ public class BookController {
         } catch (SQLException e) {
             e.printStackTrace();
             // TODO: Show error message
-        }
-    }
-
-    @FXML
-    private void handleEditBook(Book bookToEdit) { // Renomeei o parâmetro para clareza
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/AddBookView.fxml"));
-            Pane addBookView = loader.load();
-
-            AddBookViewController addBookViewController = loader.getController();
-            addBookViewController.setBookController(this);
-            addBookViewController.setBookToEdit(bookToEdit); // Pass the book to edit
-
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle("Editar Livro");
-            dialogStage.setScene(new Scene(addBookView));
-            dialogStage.initModality(Modality.APPLICATION_MODAL);
-            dialogStage.initOwner(booksFlowPane.getScene().getWindow());
-            addBookViewController.setDialogStage(dialogStage);
-            dialogStage.showAndWait();
-
-            // Após o diálogo ser fechado, atualizamos o livro se as alterações foram salvas
-            if (addBookViewController.isSaveClicked()) { // Adicione um método isSaveClicked() no AddBookViewController
-                Book editedBook = addBookViewController.getBook(); // Adicione um método getBook() no AddBookViewController
-                if (editedBook != null) {
-                    updateBook(editedBook);
-                }
-            }
-
-            try {
-                loadingBooks(); // Reload the list after editing
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Erro ao carregar AddBookView.fxml para edição: " + e.getMessage());
         }
     }
 }

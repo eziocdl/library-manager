@@ -15,6 +15,7 @@ public class BookService {
     }
 
     public void insertBook(Book book) throws SQLException {
+        System.out.println("BookService.insertBook recebendo: " + book.getTitle() + ", Editora: " + book.getPublisher() + ", Ano: " + book.getYear()); // ADICIONE ESTE LOG
         bookDAO.insertBook(book);
     }
 
@@ -24,9 +25,14 @@ public class BookService {
     }
 
     public Book findBookById(int id) throws SQLException {
-        return bookDAO.findBookById(id);
+        Book book = bookDAO.findBookById(id);
+        if (book != null) {
+            System.out.println("BookService.findBookById: Livro encontrado - Título: " + book.getTitle() + ", Editora: " + book.getPublisher() + ", Ano: " + book.getYear()); // ADICIONE ESTE LOG
+        } else {
+            System.out.println("BookService.findBookById: Livro não encontrado com ID: " + id);
+        }
+        return book;
     }
-
     public List<Book> findAllBooks() throws SQLException {
         return bookDAO.findAllBooks();
     }

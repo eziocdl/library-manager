@@ -1,7 +1,5 @@
-// com/managerlibrary/controllers/RootLayoutController.java
 package com.managerlibrary.controllers;
 
-import com.managerlibrary.entities.Loan;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,7 +16,8 @@ public class RootLayoutController {
 
     private BookController bookController;
     private UserController userController;
-    private LoanController loanController; // Adicione esta linha
+    private LoanController loanController;
+    private Pane loanView; // Referência para a view de empréstimos carregada
 
     // Injeção do BookController
     public void setBookController(BookController bookController) {
@@ -33,6 +32,11 @@ public class RootLayoutController {
     // Injeção do LoanController
     public void setLoanController(LoanController loanController) {
         this.loanController = loanController;
+    }
+
+    // Método para definir a view de empréstimos carregada
+    public void setLoanView(Pane loanView) {
+        this.loanView = loanView;
     }
 
     // Ação para o menu "Sair"
@@ -53,10 +57,12 @@ public class RootLayoutController {
     // Ação para exibir a view de empréstimos
     @FXML
     public void showLoanView(ActionEvent event) {
-        loadView("/views/LoanView.fxml", (loader) -> {
-            loanController = loader.getController();
-            loanController.setRootLayoutController(this); // Garante que LoanController tenha a referência
-        });
+        if (loanView != null) {
+            rootLayout.setCenter(loanView);
+            if (loanController != null) {
+                loanController.loadAllLoans(); // Garante que os empréstimos sejam carregados ao exibir a tela
+            }
+        }
     }
 
     // Ação para exibir a view de usuários
@@ -107,9 +113,33 @@ public class RootLayoutController {
         rootLayout.setCenter(node);
     }
 
+    // Método auxiliar para carregar o conteúdo FXML
+    private Pane loadContent(String fxmlPath) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            return loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     // Interface funcional para o callback do controller
     @FunctionalInterface
     private interface ControllerCallback {
         void process(FXMLLoader loader);
+    }
+
+    // Getters para os serviços (se a primeira abordagem fosse usada)
+    public LoanController getLoanController() {
+        return loanController;
+    }
+
+    public BookController getBookController() {
+        return bookController;
+    }
+
+    public UserController getUserController() {
+        return userController;
     }
 }

@@ -1,11 +1,14 @@
 package com.managerlibrary.services;
 
-import com.managerlibrary.daos.implement.UserDAOImpl; // Importe a implementação do DAO
+import com.managerlibrary.daos.implement.UserDAOImpl;
 import com.managerlibrary.daos.interfaces.UserDAO;
 import com.managerlibrary.entities.User;
+import com.managerlibrary.infra.DataBaseConnection;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -17,8 +20,9 @@ public class UserService {
     private ObservableList<User> users = FXCollections.observableArrayList();
     private int nextId = 1;
 
-    public UserService() {
-        this.userDAO = new UserDAOImpl(); // Inicialize o UserDAOImpl no construtor padrão
+    public UserService() throws SQLException {
+        Connection connection = DataBaseConnection.getConnection();
+        this.userDAO = new UserDAOImpl(connection);
     }
 
     public UserService(UserDAO userDAO) {
@@ -32,7 +36,6 @@ public class UserService {
         if (userDAO != null) {
             userDAO.insertUser(user);
         } else {
-            // Isso agora só deve acontecer se a inicialização do DAO falhar
             user.setId(nextId++);
             users.add(user);
         }
@@ -105,7 +108,7 @@ public class UserService {
 
     public List<User> findUsersByNameOrCPFOrEmail(String searchTerm) throws SQLException {
         if (userDAO != null) {
-            return userDAO.findUsersByNameOrCPFOrEmail(searchTerm); // Assumindo que seu DAO tem este método
+            return userDAO.findUsersByNameOrCPFOrEmail(searchTerm);
         } else {
             String lowerSearchTerm = searchTerm.toLowerCase();
             List<User> results = new ArrayList<>();
@@ -142,7 +145,6 @@ public class UserService {
         return true;
     }
 
-    // Alias para consistência com o nome usado no UserController
     public void removeUser(int id) throws SQLException {
         deleteUser(id);
     }

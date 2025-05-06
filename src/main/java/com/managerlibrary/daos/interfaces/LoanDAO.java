@@ -3,8 +3,7 @@ package com.managerlibrary.daos.interfaces;
 import com.managerlibrary.entities.Loan;
 
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalDate;import java.util.List;
 
 public interface LoanDAO {
 

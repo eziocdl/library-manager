@@ -1,3 +1,4 @@
+// com/managerlibrary/controllers/AddLoanViewController.java
 package com.managerlibrary.controllers;
 
 import com.managerlibrary.entities.Book;
@@ -6,6 +7,8 @@ import com.managerlibrary.entities.User;
 import com.managerlibrary.services.LoanService;
 import com.managerlibrary.services.BookService;
 import com.managerlibrary.services.UserService;
+import com.managerlibrary.util.BookStringConverter;
+import com.managerlibrary.util.UserStringConverter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -43,13 +46,13 @@ public class AddLoanViewController {
     }
 
     public void setBookService(BookService bookService) {
+        System.out.println("setBookService chamado com: " + bookService); // ADICIONE ESTA LINHA
         this.bookService = bookService;
-        loadBooks();
     }
 
     public void setUserService(UserService userService) {
+        System.out.println("setUserService chamado com: " + userService); // ADICIONE ESTA LINHA
         this.userService = userService;
-        loadUsers();
     }
 
     public void setMainLoanController(LoanController mainLoanController) {
@@ -62,14 +65,23 @@ public class AddLoanViewController {
 
     @FXML
     public void initialize() {
-        // Lógica de inicialização, se necessário
+        // Carrega os livros e usuários APENAS se os serviços já foram injetados
+        if (bookService != null) {
+            loadBooks();
+            bookComboBox.setConverter(new BookStringConverter()); // Aplica o conversor para Livro
+        }
+        if (userService != null) {
+            loadUsers();
+            userComboBox.setConverter(new UserStringConverter()); // Aplica o conversor para Usuário
+        }
     }
 
     private void loadBooks() {
         try {
-            ObservableList<Book> books = FXCollections.observableArrayList(bookService.findAllBooks()); // Correção: Usar findAllBooks()
+            ObservableList<Book> books = FXCollections.observableArrayList(bookService.findAllBooks());
             bookComboBox.setItems(books);
         } catch (SQLException e) {
+            System.err.println("Erro ao carregar livros: " + e.getMessage()); // ADICIONEI ESTA LINHA
             e.printStackTrace();
             // Lógica para exibir erro
         }
@@ -80,6 +92,7 @@ public class AddLoanViewController {
             ObservableList<User> users = FXCollections.observableArrayList(userService.getAllUsers());
             userComboBox.setItems(users);
         } catch (SQLException e) {
+            System.err.println("Erro ao carregar usuários: " + e.getMessage()); // ADICIONEI ESTA LINHA
             e.printStackTrace();
             // Lógica para exibir erro
         }
@@ -101,7 +114,7 @@ public class AddLoanViewController {
             newLoan.setStatus("Ativo"); // Define o status inicial
 
             try {
-                loanService.addLoan(newLoan); // Correção: Usar addLoan() e passar um objeto Loan
+                loanService.addLoan(newLoan);
                 if (mainLoanController != null) {
                     mainLoanController.loadAllLoans(); // Recarrega a lista na tela principal
                 }

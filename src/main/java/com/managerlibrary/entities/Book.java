@@ -1,4 +1,3 @@
-// com/managerlibrary/entities/Book.java
 package com.managerlibrary.entities;
 
 public class Book {
@@ -16,6 +15,10 @@ public class Book {
 
     // Construtores
     public Book() {
+    }
+
+    public Book(int id) { // Adicionado construtor que aceita apenas o ID
+        this.id = id;
     }
 
     public Book(int id, String title, String author, String isbn, String publisher, int year, String genre, int totalCopies, int availableCopies, String imageUrl, String coverImagePath) {
