@@ -24,6 +24,8 @@ public class BookService {
         return bookDAO.searchBook(book);
     }
 
+
+
     public Book findBookById(int id) throws SQLException {
         Book book = bookDAO.findBookById(id);
         if (book != null) {

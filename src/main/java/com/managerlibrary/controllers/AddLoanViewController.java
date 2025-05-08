@@ -1,4 +1,3 @@
-// com/managerlibrary/controllers/AddLoanViewController.java
 package com.managerlibrary.controllers;
 
 import com.managerlibrary.entities.Book;
@@ -7,25 +6,37 @@ import com.managerlibrary.entities.User;
 import com.managerlibrary.services.LoanService;
 import com.managerlibrary.services.BookService;
 import com.managerlibrary.services.UserService;
-import com.managerlibrary.util.BookStringConverter;
-import com.managerlibrary.util.UserStringConverter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
-import java.time.LocalDate;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.List;
 
 public class AddLoanViewController {
 
     @FXML
-    private ComboBox<Book> bookComboBox;
+    private ComboBox<String> bookSearchCriteria;
     @FXML
-    private ComboBox<User> userComboBox;
+    private TextField bookSearchTextField;
+    @FXML
+    private ListView<Book> bookResultsListView;
+    @FXML
+    private Label selectedBookLabel;
+
+    @FXML
+    private ComboBox<String> userSearchCriteria;
+    @FXML
+    private TextField userSearchTextField;
+    @FXML
+    private ListView<User> userResultsListView;
+    @FXML
+    private Label selectedUserLabel;
+
     @FXML
     private DatePicker loanDatePicker;
     @FXML
@@ -41,17 +52,23 @@ public class AddLoanViewController {
     private LoanController mainLoanController;
     private Stage dialogStage;
 
+    private Book selectedBook;
+    private User selectedUser;
+
+    @FXML
+    public ObservableList<String> bookSearchOptions = FXCollections.observableArrayList("Título", "Autor", "ISBN");
+    @FXML
+    public ObservableList<String> userSearchOptions = FXCollections.observableArrayList("Nome", "CPF", "Email");
+
     public void setLoanService(LoanService loanService) {
         this.loanService = loanService;
     }
 
     public void setBookService(BookService bookService) {
-        System.out.println("setBookService chamado com: " + bookService); // ADICIONE ESTA LINHA
         this.bookService = bookService;
     }
 
     public void setUserService(UserService userService) {
-        System.out.println("setUserService chamado com: " + userService); // ADICIONE ESTA LINHA
         this.userService = userService;
     }
 
@@ -65,43 +82,106 @@ public class AddLoanViewController {
 
     @FXML
     public void initialize() {
-        // Carrega os livros e usuários APENAS se os serviços já foram injetados
-        if (bookService != null) {
-            loadBooks();
-            bookComboBox.setConverter(new BookStringConverter()); // Aplica o conversor para Livro
-        }
-        if (userService != null) {
-            loadUsers();
-            userComboBox.setConverter(new UserStringConverter()); // Aplica o conversor para Usuário
-        }
+        bookSearchCriteria.setItems(bookSearchOptions);
+        userSearchCriteria.setItems(userSearchOptions);
+
+        // CellFactory para a ListView de livros
+        bookResultsListView.setCellFactory(param -> new ListCell<Book>() {
+            @Override
+            protected void updateItem(Book book, boolean empty) {
+                super.updateItem(book, empty);
+                if (empty || book == null) {
+                    setText(null);
+                } else {
+                    setText(book.getTitle() + " - " + book.getAuthor());
+                }
+            }
+        });
+
+        // CellFactory para a ListView de usuários
+        userResultsListView.setCellFactory(param -> new ListCell<User>() {
+            @Override
+            protected void updateItem(User user, boolean empty) {
+                super.updateItem(user, empty);
+                if (empty || user == null) {
+                    setText(null);
+                } else {
+                    setText(user.getName() + " - " + user.getCpf());
+                }
+            }
+        });
     }
 
-    private void loadBooks() {
-        try {
-            ObservableList<Book> books = FXCollections.observableArrayList(bookService.findAllBooks());
-            bookComboBox.setItems(books);
-        } catch (SQLException e) {
-            System.err.println("Erro ao carregar livros: " + e.getMessage()); // ADICIONEI ESTA LINHA
-            e.printStackTrace();
-            // Lógica para exibir erro
-        }
-    }
+    @FXML
+    private void searchBook() {
+        String criteria = bookSearchCriteria.getValue();
+        String searchTerm = bookSearchTextField.getText();
+        ObservableList<Book> results = FXCollections.observableArrayList();
 
-    private void loadUsers() {
-        try {
-            ObservableList<User> users = FXCollections.observableArrayList(userService.getAllUsers());
-            userComboBox.setItems(users);
-        } catch (SQLException e) {
-            System.err.println("Erro ao carregar usuários: " + e.getMessage()); // ADICIONEI ESTA LINHA
-            e.printStackTrace();
-            // Lógica para exibir erro
+        if (criteria != null && !searchTerm.isEmpty()) {
+            try {
+                switch (criteria.toLowerCase()) {
+                    case "título":
+                        results.addAll(bookService.findBooksByTitle(searchTerm));
+                        break;
+                    case "autor":
+                        results.addAll(bookService.findBooksByAuthor(searchTerm));
+                        break;
+                    case "isbn":
+                        Book book = bookService.findBookByISBN(searchTerm);
+                        if (book != null) {
+                            results.add(book);
+                        }
+                        break;
+                    default:
+                        // Critério inválido
+                        break;
+                }
+                bookResultsListView.setItems(results);
+            } catch (SQLException e) {
+                // Lógica para exibir erro de busca de livros
+                e.printStackTrace();
+            }
+        } else {
+            // Lógica para informar que critério e termo são necessários
         }
     }
 
     @FXML
-    private void saveLoan() {
-        Book selectedBook = bookComboBox.getValue();
-        User selectedUser = userComboBox.getValue();
+    private void selectBook(MouseEvent event) {
+        selectedBook = bookResultsListView.getSelectionModel().getSelectedItem();
+        if (selectedBook != null) {
+            selectedBookLabel.setText("Livro selecionado: " + selectedBook.getTitle() + " - " + selectedBook.getAuthor());
+        }
+    }
+
+    @FXML
+    private void searchUser() {
+        String searchTerm = userSearchTextField.getText();
+
+        if (!searchTerm.isEmpty()) {
+            try {
+                List<User> results = userService.findUsersByNameOrCPFOrEmail(searchTerm);
+                userResultsListView.setItems(FXCollections.observableArrayList(results));
+            } catch (SQLException e) {
+                // Lógica para exibir erro de busca de usuários
+                e.printStackTrace();
+            }
+        } else {
+            // Lógica para informar que o termo de busca é necessário
+        }
+    }
+
+    @FXML
+    private void selectUser(MouseEvent event) {
+        selectedUser = userResultsListView.getSelectionModel().getSelectedItem();
+        if (selectedUser != null) {
+            selectedUserLabel.setText("Usuário selecionado: " + selectedUser.getName() + " - " + selectedUser.getCpf());
+        }
+    }
+
+    @FXML
+    private void saveNewLoan() {
         LocalDate loanDate = loanDatePicker.getValue();
         LocalDate returnDate = returnDatePicker.getValue();
 
@@ -111,12 +191,12 @@ public class AddLoanViewController {
             newLoan.setUser(selectedUser);
             newLoan.setLoanDate(loanDate);
             newLoan.setReturnDate(returnDate);
-            newLoan.setStatus("Ativo"); // Define o status inicial
+            newLoan.setStatus("Ativo");
 
             try {
                 loanService.addLoan(newLoan);
                 if (mainLoanController != null) {
-                    mainLoanController.loadAllLoans(); // Recarrega a lista na tela principal
+                    mainLoanController.loadAllLoans();
                 }
                 if (dialogStage != null) {
                     dialogStage.close();
@@ -126,12 +206,12 @@ public class AddLoanViewController {
                 // Lógica para exibir erro ao salvar
             }
         } else {
-            // Exibir mensagem de que todos os campos são obrigatórios
+            // Lógica para informar que livro, usuário e datas são obrigatórios
         }
     }
 
     @FXML
-    private void cancelAddLoanView() {
+    private void cancelLoan() {
         if (dialogStage != null) {
             dialogStage.close();
         }

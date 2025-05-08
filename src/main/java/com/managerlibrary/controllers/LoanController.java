@@ -101,30 +101,31 @@ public class LoanController {
     @FXML
     public void showAddLoanView() {
         try {
-            // Aqui está a correção - definir o location antes de usá-lo
-            URL location = getClass().getResource("/com/managerlibrary/resources/views/AddLoanView.fxml");
+            URL location = getClass().getResource("/views/AddLoanView.fxml");
 
             System.out.println("LoanController.showAddLoanView: URL do FXML: " + location);
             if (location == null) {
-                System.err.println("Erro: Não foi possível encontrar o arquivo FXML em /com/managerlibrary/resources/views/AddLoanView.fxml");
+                System.err.println("Erro: Não foi possível encontrar o arquivo FXML em /views/AddLoanView.fxml");
                 return; // Aborta se o arquivo não for encontrado
             }
+
             FXMLLoader loader = new FXMLLoader(location);
             Parent root = loader.load();
 
-            // *** LOGS ADICIONADOS ***
             AddLoanViewController addLoanController = loader.getController();
             System.out.println("LoanController.showAddLoanView: Controlador AddLoanViewController obtido: " + addLoanController);
             System.out.println("LoanController.showAddLoanView: bookService em LoanController: " + bookService);
             System.out.println("LoanController.showAddLoanView: userService em LoanController: " + userService);
+            System.out.println("LoanController.showAddLoanView: loanService em LoanController: " + loanService); // Adicionado log para LoanService
+
             if (addLoanController != null) {
                 addLoanController.setBookService(bookService);
                 addLoanController.setUserService(userService);
+                addLoanController.setLoanService(loanService); // Injetando o LoanService!
                 System.out.println("LoanController.showAddLoanView: Serviços setados no AddLoanViewController.");
             } else {
                 System.err.println("LoanController.showAddLoanView: Erro ao obter o controlador AddLoanViewController!");
             }
-            // *** FIM DOS LOGS ADICIONADOS ***
 
             Stage stage = new Stage();
             stage.setTitle("Novo Empréstimo");
