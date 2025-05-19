@@ -9,6 +9,10 @@ import javafx.stage.Stage;
 
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Controlador para a tela de detalhes de um empréstimo. Exibe informações
+ * completas sobre o empréstimo selecionado.
+ */
 public class LoanDetailsController {
 
     private Loan loan;
@@ -39,19 +43,39 @@ public class LoanDetailsController {
     @FXML
     private Label fineLabel;
 
+    /**
+     * Define o empréstimo a ser exibido e atualiza os campos da tela com seus detalhes.
+     *
+     * @param loan O empréstimo a ser exibido.
+     */
     public void setLoan(Loan loan) {
         this.loan = loan;
         displayLoanDetails();
     }
 
+    /**
+     * Define o serviço de livros (pode ser útil para buscar informações adicionais do livro, se necessário).
+     *
+     * @param bookService O serviço de livros a ser utilizado.
+     */
     public void setBookService(BookService bookService) {
         this.bookService = bookService;
     }
 
+    /**
+     * Define o serviço de usuários (pode ser útil para buscar informações adicionais do usuário, se necessário).
+     *
+     * @param userService O serviço de usuários a ser utilizado.
+     */
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
 
+    /**
+     * Preenche os labels da tela com os detalhes do empréstimo.
+     * Se o livro ou usuário associado ao empréstimo for nulo, exibe "N/A".
+     * Formata as datas usando o padrão definido.
+     */
     public void displayLoanDetails() {
         if (loan != null) {
             loanIdLabel.setText(String.valueOf(loan.getId()));
@@ -79,12 +103,18 @@ public class LoanDetailsController {
         }
     }
 
+    /**
+     * Fecha a tela de detalhes do empréstimo.
+     */
     @FXML
     private void closeLoanDetailsView() {
         Stage stage = (Stage) loanIdLabel.getScene().getWindow();
         stage.close();
     }
 
+    /**
+     * Método de inicialização do controlador. (Atualmente vazio, pode ser usado para inicializações específicas da tela).
+     */
     @FXML
     public void initialize() {
         // Inicializações da tela de detalhes, se necessário

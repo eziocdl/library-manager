@@ -1,23 +1,23 @@
 package com.managerlibrary.controllers;
 
+import com.managerlibrary.entities.Book;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
-import javafx.stage.Stage;
-import com.managerlibrary.entities.Book;
-import javafx.scene.control.Label;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import java.io.File;
-import java.sql.SQLException;
 
 public class AddBookViewController {
 
-    private BookController bookController;
-    private Stage dialogStage;
-    private Book bookToEdit;
-    private boolean saveClicked = false;
-    private File selectedCoverFile;
+    private BookController bookController; // Controlador da tela principal de livros
+    private Stage dialogStage; // Palco (Stage) do diálogo modal
+    private Book bookToEdit; // Livro a ser editado (se estiver no modo de edição)
+    private boolean saveClicked = false; // Flag para indicar se o botão "Salvar" foi clicado
+    private File selectedCoverFile; // Arquivo de imagem da capa selecionado pelo usuário
 
     @FXML
     private TextField titleField;
@@ -36,23 +36,43 @@ public class AddBookViewController {
     @FXML
     private TextField imageUrlField;
     @FXML
-    private Label coverFileNameLabel;
+    private Label coverFileNameLabel; // Label para exibir o nome do arquivo da capa
     @FXML
-    private ImageView coverImageView;
+    private ImageView coverImageView; // ImageView para exibir a capa do livro
 
+    /**
+     * Método de inicialização do controlador. Chamado após o FXML ser carregado.
+     * Atualmente não possui lógica de inicialização específica.
+     */
     @FXML
     public void initialize() {
-        // Código de inicialização, se necessário
+        // Nenhuma inicialização específica por enquanto
     }
 
+    /**
+     * Define o controlador da tela principal de livros que interage com este diálogo.
+     *
+     * @param bookController O controlador da tela principal de livros.
+     */
     public void setBookController(BookController bookController) {
         this.bookController = bookController;
     }
 
+    /**
+     * Define o palco (Stage) deste diálogo modal.
+     *
+     * @param dialogStage O palco do diálogo.
+     */
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
     }
 
+    /**
+     * Define o livro a ser editado. Se um livro for passado, o diálogo será preenchido
+     * com os dados do livro para edição. Se for nulo, o diálogo será para adicionar um novo livro.
+     *
+     * @param book O livro a ser editado, ou nulo para adicionar um novo livro.
+     */
     public void setBookToEdit(Book book) {
         this.bookToEdit = book;
         if (book != null) {
@@ -64,34 +84,53 @@ public class AddBookViewController {
             genreField.setText(book.getGenre());
             quantityField.setText(String.valueOf(book.getTotalCopies()));
             imageUrlField.setText(book.getImageUrl());
-            // Carregar a imagem se houver um caminho
-            if (book.getCoverImagePath() != null && !book.getCoverImagePath().isEmpty()) {
-                File file = new File(book.getCoverImagePath());
-                if (file.exists()) {
-                    coverImageView.setImage(new javafx.scene.image.Image(file.toURI().toString()));
-                    coverFileNameLabel.setText(file.getName());
-                    selectedCoverFile = file;
-                } else if (book.getImageUrl() != null && !book.getImageUrl().isEmpty()) {
-                    coverImageView.setImage(new javafx.scene.image.Image(book.getImageUrl()));
-                    coverFileNameLabel.setText("URL");
-                    selectedCoverFile = null; // Se carregou da URL, não há arquivo selecionado
-                } else {
-                    coverImageView.setImage(null);
-                    coverFileNameLabel.setText("Nenhuma imagem");
-                    selectedCoverFile = null;
-                }
+            loadCoverImage(book);
+        }
+    }
+
+    /**
+     * Carrega a imagem da capa do livro, seja do caminho do arquivo local ou da URL.
+     *
+     * @param book O livro cuja capa será carregada.
+     */
+    private void loadCoverImage(Book book) {
+        if (book.getCoverImagePath() != null && !book.getCoverImagePath().isEmpty()) {
+            File file = new File(book.getCoverImagePath());
+            if (file.exists()) {
+                coverImageView.setImage(new javafx.scene.image.Image(file.toURI().toString()));
+                coverFileNameLabel.setText(file.getName());
+                selectedCoverFile = file;
             } else if (book.getImageUrl() != null && !book.getImageUrl().isEmpty()) {
                 coverImageView.setImage(new javafx.scene.image.Image(book.getImageUrl()));
                 coverFileNameLabel.setText("URL");
                 selectedCoverFile = null;
             } else {
-                coverImageView.setImage(null);
-                coverFileNameLabel.setText("Nenhuma imagem");
-                selectedCoverFile = null;
+                clearCoverImageDisplay();
             }
+        } else if (book.getImageUrl() != null && !book.getImageUrl().isEmpty()) {
+            coverImageView.setImage(new javafx.scene.image.Image(book.getImageUrl()));
+            coverFileNameLabel.setText("URL");
+            selectedCoverFile = null;
+        } else {
+            clearCoverImageDisplay();
         }
     }
 
+    /**
+     * Limpa a exibição da imagem da capa, definindo a imagem e o nome do arquivo para o estado padrão.
+     */
+    private void clearCoverImageDisplay() {
+        coverImageView.setImage(null);
+        coverFileNameLabel.setText("Nenhuma imagem");
+        selectedCoverFile = null;
+    }
+
+    /**
+     * Cria um objeto Book com os dados inseridos nos campos do formulário.
+     * Retorna null se houver erro de formato nos campos numéricos.
+     *
+     * @return Um objeto Book com os dados do formulário, ou null se a entrada for inválida.
+     */
     public Book getBook() {
         Book book = new Book();
         book.setTitle(titleField.getText());
@@ -103,23 +142,34 @@ public class AddBookViewController {
             book.setTotalCopies(Integer.parseInt(quantityField.getText()));
             book.setAvailableCopies(book.getTotalCopies()); // Inicialmente, todos estão disponíveis
         } catch (NumberFormatException e) {
-            // Lidar com erro de formato nos campos numéricos
+            showAlert("Erro de Formato", "Por favor, insira números válidos para Ano e Quantidade.");
             return null;
         }
         book.setGenre(genreField.getText());
         book.setImageUrl(imageUrlField.getText());
+        // Define o caminho da imagem da capa. Prioriza o arquivo selecionado,
+        // caso contrário, mantém o caminho existente se estiver editando.
         if (selectedCoverFile != null) {
             book.setCoverImagePath(selectedCoverFile.getAbsolutePath());
         } else if (bookToEdit != null) {
-            book.setCoverImagePath(bookToEdit.getCoverImagePath()); // Mantém o caminho anterior se não escolher novo arquivo
+            book.setCoverImagePath(bookToEdit.getCoverImagePath());
         }
         return book;
     }
 
+    /**
+     * Retorna a flag que indica se o botão "Salvar" foi clicado.
+     *
+     * @return true se o botão "Salvar" foi clicado, false caso contrário.
+     */
     public boolean isSaveClicked() {
         return saveClicked;
     }
 
+    /**
+     * Manipula o evento de clique no botão "Salvar". Valida a entrada do usuário e,
+     * se válida, cria ou atualiza o livro através do BookController e fecha o diálogo.
+     */
     @FXML
     private void saveBook() {
         if (isInputValid()) {
@@ -133,17 +183,23 @@ public class AddBookViewController {
                     bookController.updateBook(book);
                 }
                 dialogStage.close();
-            } else {
-                // Exibir mensagem de erro de validação
             }
+            // A mensagem de erro de validação já é exibida por isInputValid() e getBook()
         }
     }
 
+    /**
+     * Manipula o evento de clique no botão "Cancelar", fechando o diálogo modal.
+     */
     @FXML
     private void cancelAddBookView() {
         dialogStage.close();
     }
 
+    /**
+     * Abre um diálogo para o usuário escolher um arquivo de imagem para a capa do livro.
+     * Atualiza a ImageView e a Label com o arquivo selecionado, e limpa o campo de URL.
+     */
     @FXML
     private void chooseCoverImage() {
         FileChooser fileChooser = new FileChooser();
@@ -155,10 +211,16 @@ public class AddBookViewController {
             selectedCoverFile = file;
             coverFileNameLabel.setText(file.getName());
             coverImageView.setImage(new javafx.scene.image.Image(file.toURI().toString()));
-            imageUrlField.setText(""); // Limpa a URL se escolher um arquivo
+            imageUrlField.setText(""); // Limpa a URL ao escolher um arquivo local
         }
     }
 
+    /**
+     * Valida os campos de entrada do formulário. Exibe um diálogo de erro se algum
+     * campo for inválido.
+     *
+     * @return true se todos os campos forem válidos, false caso contrário.
+     */
     private boolean isInputValid() {
         String errorMessage = "";
         if (titleField.getText() == null || titleField.getText().isEmpty()) {
@@ -198,13 +260,22 @@ public class AddBookViewController {
         if (errorMessage.isEmpty()) {
             return true;
         } else {
-            // Exibir mensagem de erro
-            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
-            alert.setTitle("Campos Inválidos");
-            alert.setHeaderText("Por favor, corrija os campos inválidos");
-            alert.setContentText(errorMessage);
-            alert.showAndWait();
+            showAlert("Campos Inválidos", "Por favor, corrija os campos inválidos:\n" + errorMessage);
             return false;
         }
+    }
+
+    /**
+     * Exibe um diálogo de alerta com a mensagem especificada.
+     *
+     * @param title   O título do alerta.
+     * @param content O conteúdo da mensagem do alerta.
+     */
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }

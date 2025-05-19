@@ -6,18 +6,18 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * Controlador para a tela de exibição e gerenciamento de usuários.
+ * Permite visualizar usuários em cards, adicionar novos usuários, buscar e excluir usuários.
+ */
 public class UserController {
 
     @FXML
@@ -26,40 +26,61 @@ public class UserController {
     @FXML
     private TextField searchTextField;
 
-    private UserService userService = new UserService();
+    private UserService userService;
     private RootLayoutController rootLayoutController;
 
+    /**
+     * Construtor padrão da classe. Inicializa o UserService.
+     *
+     * @throws SQLException Se ocorrer um erro ao conectar ao banco de dados.
+     */
     public UserController() throws SQLException {
+        this.userService = new UserService();
     }
 
-
-
-    // Método para definir o RootLayoutController (você já deve ter este)
+    /**
+     * Define o controlador principal da aplicação (RootLayoutController).
+     *
+     * @param rootLayoutController O controlador principal.
+     */
     public void setRootLayoutController(RootLayoutController rootLayoutController) {
         this.rootLayoutController = rootLayoutController;
-        // ... (sua lógica de inicialização existente) ...
     }
 
-    // Adicione este método para obter o RootLayoutController
+    /**
+     * Obtém o controlador principal da aplicação (RootLayoutController).
+     *
+     * @return O controlador principal.
+     */
     public RootLayoutController getRootLayoutController() {
         return rootLayoutController;
     }
 
-    // Getter para o UserService
+    /**
+     * Obtém o serviço de usuários.
+     *
+     * @return O serviço de usuários.
+     */
     public UserService getUserService() {
         return userService;
     }
 
-    // Inicialização do Controller
+    /**
+     * Método de inicialização do controlador. Exibe os cards de usuários se o FlowPane estiver presente na view.
+     */
     @FXML
     public void initialize() {
-        // Exibição dos cards, se o FlowPane estiver presente na view
         if (usersCardFlowPane != null) {
             showUserCardsView();
         }
     }
 
-    // Cria um card visual para exibir as informações do usuário USANDO O UserCard.fxml
+    /**
+     * Cria um card visual para exibir as informações do usuário usando o FXML UserCard.fxml.
+     *
+     * @param user O usuário cujas informações serão exibidas no card.
+     * @return O Pane (card) criado para o usuário, ou null em caso de erro.
+     */
     private Pane createUserCard(User user) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/UserCard.fxml"));
@@ -69,13 +90,14 @@ public class UserController {
             controller.setUserListController(this); // Passa a referência do UserController para o UserCardController
             return userCard;
         } catch (IOException e) {
-            e.printStackTrace();
-            // Tratar erro ao carregar o FXML do card
+            logError("Erro ao carregar UserCard.fxml", e);
             return null;
         }
     }
 
-    // Exibe os usuários em formato de cards no FlowPane USANDO O UserCard.fxml
+    /**
+     * Exibe os usuários em formato de cards no FlowPane, carregando os dados do banco de dados.
+     */
     public void showUserCardsView() {
         if (usersCardFlowPane != null) {
             usersCardFlowPane.getChildren().clear();
@@ -88,27 +110,32 @@ public class UserController {
                     }
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                logError("Erro ao carregar usuários", e);
+                showAlert("Erro ao Carregar", "Não foi possível carregar os usuários.");
             }
         }
     }
 
-    // Lógica para excluir um usuário (chamado pelo UserCardController)
+    /**
+     * Lógica para excluir um usuário, chamada pelo UserCardController.
+     * Atualiza a visualização após a exclusão.
+     *
+     * @param userId O ID do usuário a ser excluído.
+     */
     public void handleDeleteUser(int userId) {
         try {
             userService.deleteUser(userId);
             showUserCardsView();
         } catch (SQLException e) {
-            e.printStackTrace();
-            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-            errorAlert.setTitle("Erro");
-            errorAlert.setHeaderText("Erro ao remover usuário");
-            errorAlert.setContentText(e.getMessage());
-            errorAlert.showAndWait();
+            logError("Erro ao remover usuário", e);
+            showAlert("Erro ao Remover", "Erro ao remover usuário: " + e.getMessage());
         }
     }
 
-    // Exibe a tela para adicionar um novo usuário (modal)
+    /**
+     * Exibe a tela para adicionar um novo usuário em um diálogo modal.
+     * Atualiza a visualização após o fechamento do diálogo.
+     */
     public void showAddUserView() {
         try {
             FXMLLoader loaderAddUser = new FXMLLoader(getClass().getResource("/views/AddUserView.fxml"));
@@ -127,12 +154,15 @@ public class UserController {
             showUserCardsView();
 
         } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Erro ao carregar views: " + e.getMessage());
+            logError("Erro ao carregar AddUserView.fxml", e);
+            showAlert("Erro ao Carregar", "Erro ao carregar tela de adicionar usuário: " + e.getMessage());
         }
     }
 
-    // Lógica para buscar usuários
+    /**
+     * Lógica para buscar usuários com base no termo de pesquisa (nome, CPF ou email).
+     * Atualiza a exibição dos cards com os resultados da busca.
+     */
     @FXML
     private void handleSearchUser() {
         String searchTerm = searchTextField.getText();
@@ -141,14 +171,19 @@ public class UserController {
                 List<User> searchResults = userService.findUsersByNameOrCPFOrEmail(searchTerm);
                 updateUserCardDisplay(searchResults);
             } catch (SQLException e) {
-                e.printStackTrace();
+                logError("Erro ao buscar usuários", e);
+                showAlert("Erro ao Buscar", "Erro ao buscar usuários: " + e.getMessage());
             }
         } else {
             showUserCardsView();
         }
     }
 
-    // Atualiza a exibição dos cards com uma nova lista de usuários USANDO O UserCard.fxml
+    /**
+     * Atualiza a exibição dos cards de usuários com uma nova lista de usuários.
+     *
+     * @param userList A lista de usuários a serem exibidos.
+     */
     private void updateUserCardDisplay(List<User> userList) {
         if (usersCardFlowPane != null) {
             usersCardFlowPane.getChildren().clear();
@@ -161,19 +196,56 @@ public class UserController {
         }
     }
 
-    // Ações dos botões na interface
+    /**
+     * Ação do botão para exibir a tela de adicionar usuário.
+     *
+     * @param event O evento de ação.
+     */
     @FXML
     public void addUser(ActionEvent event) {
         showAddUserView();
     }
 
+    /**
+     * Ação do botão para realizar a busca de usuários.
+     *
+     * @param event O evento de ação.
+     */
     @FXML
     public void searchUsers(ActionEvent event) {
         handleSearchUser();
     }
 
-    // Método chamado ao cancelar a tela de adicionar usuário
+    /**
+     * Método chamado ao cancelar a tela de adicionar usuário (atualmente não utilizado diretamente,
+     * a atualização ocorre após o fechamento da janela modal).
+     */
     public void cancelAddUserView() {
         showUserCardsView(); // Atualizar a visualização
+    }
+
+    /**
+     * Exibe um diálogo de alerta com a mensagem especificada.
+     *
+     * @param title   O título do alerta.
+     * @param content O conteúdo da mensagem do alerta.
+     */
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    /**
+     * Registra uma mensagem de erro no console.
+     *
+     * @param message A mensagem de erro.
+     * @param e       A exceção ocorrida.
+     */
+    private void logError(String message, Exception e) {
+        System.err.println(message + ": " + e.getMessage());
+        e.printStackTrace();
     }
 }
