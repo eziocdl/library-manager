@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 
@@ -18,6 +19,7 @@ public class RootLayoutController {
     private UserController userController;
     private LoanController loanController;
     private Pane loanView; // Referência para a view de empréstimos carregada
+    private Stage primaryStage; // Adicione esta linha
 
     // Injeção do BookController
     public void setBookController(BookController bookController) {
@@ -37,6 +39,16 @@ public class RootLayoutController {
     // Método para definir a view de empréstimos carregada
     public void setLoanView(Pane loanView) {
         this.loanView = loanView;
+    }
+
+    // Método para definir o primaryStage
+    public void setPrimaryStage(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+    }
+
+    // Método para obter o primaryStage
+    public Stage getPrimaryStage() {
+        return primaryStage;
     }
 
     // Ação para o menu "Sair"

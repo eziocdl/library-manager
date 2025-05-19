@@ -64,4 +64,6 @@ public interface LoanDAO {
      * @throws SQLException Se ocorrer um erro ao atualizar o empréstimo.
      */
     void markAsReturned(int loanId, LocalDate returnDate) throws SQLException;
+
+    List<Loan> getAllLoansWithBookAndUser();
 }

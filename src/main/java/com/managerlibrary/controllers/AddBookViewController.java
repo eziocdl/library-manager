@@ -1,188 +1,210 @@
 package com.managerlibrary.controllers;
 
-import com.managerlibrary.entities.Book;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.stage.FileChooser;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import com.managerlibrary.entities.Book;
+import javafx.scene.control.Label;
+import javafx.stage.FileChooser;
 
 import java.io.File;
+import java.sql.SQLException;
 
 public class AddBookViewController {
 
-    @FXML private TextField titleField;
-    @FXML private TextField authorField;
-    @FXML private TextField isbnField;
-    @FXML private TextField publisherField;
-    @FXML private TextField yearField;
-    @FXML private TextField genreField;
-    @FXML private TextField quantityField;
-    @FXML private TextField imageUrlField;
-    @FXML private Button closeButton;
-    @FXML private Button saveBookButton;
-    @FXML private Label coverFileNameLabel;
-
-    private File selectedCoverFile;
-    private Stage dialogStage;
     private BookController bookController;
+    private Stage dialogStage;
     private Book bookToEdit;
-    private boolean isEditing = false;
-    private boolean saveClicked = false; // Adicione esta variável
+    private boolean saveClicked = false;
+    private File selectedCoverFile;
 
-    public void setDialogStage(Stage dialogStage) {
-        this.dialogStage = dialogStage;
+    @FXML
+    private TextField titleField;
+    @FXML
+    private TextField authorField;
+    @FXML
+    private TextField isbnField;
+    @FXML
+    private TextField publisherField;
+    @FXML
+    private TextField yearField;
+    @FXML
+    private TextField genreField;
+    @FXML
+    private TextField quantityField;
+    @FXML
+    private TextField imageUrlField;
+    @FXML
+    private Label coverFileNameLabel;
+    @FXML
+    private ImageView coverImageView;
+
+    @FXML
+    public void initialize() {
+        // Código de inicialização, se necessário
     }
 
     public void setBookController(BookController bookController) {
         this.bookController = bookController;
     }
 
+    public void setDialogStage(Stage dialogStage) {
+        this.dialogStage = dialogStage;
+    }
+
     public void setBookToEdit(Book book) {
         this.bookToEdit = book;
-        this.isEditing = true;
-        populateFields();
-        saveBookButton.setText("Salvar Alterações");
-    }
-
-    @FXML
-    public void initialize() {
-        // Lógica de inicialização para AddBookView, se necessário
-    }
-
-    private void populateFields() {
-        if (bookToEdit != null) {
-            System.out.println("PopulateFields recebendo: " + bookToEdit.getTitle() + ", Editora: " + bookToEdit.getPublisher() + ", Ano: " + bookToEdit.getYear()); // ADICIONE ESTE LOG
-            titleField.setText(bookToEdit.getTitle());
-            authorField.setText(bookToEdit.getAuthor());
-            isbnField.setText(bookToEdit.getIsbn());
-            publisherField.setText(bookToEdit.getPublisher());
-            yearField.setText(String.valueOf(bookToEdit.getYear()));
-            genreField.setText(bookToEdit.getGenre());
-            quantityField.setText(String.valueOf(bookToEdit.getTotalCopies()));
-            imageUrlField.setText(bookToEdit.getImageUrl());
-            // TODO: Lógica para carregar a imagem da capa, se necessário
+        if (book != null) {
+            titleField.setText(book.getTitle());
+            authorField.setText(book.getAuthor());
+            isbnField.setText(book.getIsbn());
+            publisherField.setText(book.getPublisher());
+            yearField.setText(String.valueOf(book.getYear()));
+            genreField.setText(book.getGenre());
+            quantityField.setText(String.valueOf(book.getTotalCopies()));
+            imageUrlField.setText(book.getImageUrl());
+            // Carregar a imagem se houver um caminho
+            if (book.getCoverImagePath() != null && !book.getCoverImagePath().isEmpty()) {
+                File file = new File(book.getCoverImagePath());
+                if (file.exists()) {
+                    coverImageView.setImage(new javafx.scene.image.Image(file.toURI().toString()));
+                    coverFileNameLabel.setText(file.getName());
+                    selectedCoverFile = file;
+                } else if (book.getImageUrl() != null && !book.getImageUrl().isEmpty()) {
+                    coverImageView.setImage(new javafx.scene.image.Image(book.getImageUrl()));
+                    coverFileNameLabel.setText("URL");
+                    selectedCoverFile = null; // Se carregou da URL, não há arquivo selecionado
+                } else {
+                    coverImageView.setImage(null);
+                    coverFileNameLabel.setText("Nenhuma imagem");
+                    selectedCoverFile = null;
+                }
+            } else if (book.getImageUrl() != null && !book.getImageUrl().isEmpty()) {
+                coverImageView.setImage(new javafx.scene.image.Image(book.getImageUrl()));
+                coverFileNameLabel.setText("URL");
+                selectedCoverFile = null;
+            } else {
+                coverImageView.setImage(null);
+                coverFileNameLabel.setText("Nenhuma imagem");
+                selectedCoverFile = null;
+            }
         }
-    }
-
-    @FXML
-    public void chooseCoverImage(ActionEvent event) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Selecionar Capa do Livro");
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Imagens", "*.png", "*.jpg", "*.jpeg", "*.gif")
-        );
-        Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
-        File selectedFile = fileChooser.showOpenDialog(stage);
-        if (selectedFile != null) {
-            selectedCoverFile = selectedFile;
-            coverFileNameLabel.setText(selectedFile.getName());
-        }
-    }
-
-    public boolean isSaveClicked() { // Adicione este método
-        return saveClicked;
     }
 
     public Book getBook() {
-        String title = titleField.getText();
-        String author = authorField.getText();
-        String isbn = isbnField.getText();
-        String publisher = publisherField.getText();
-        String yearStr = yearField.getText();
-        String genre = genreField.getText();
-        String quantityStr = quantityField.getText();
-        String imageUrl = imageUrlField.getText();
-
-        System.out.println("getBook(): Editora lida da tela: " + publisher); // LOG NO AddBookViewController
-        System.out.println("getBook(): Ano lido da tela: " + yearStr);     // LOG NO AddBookViewController
-
-        if (title.isEmpty() || author.isEmpty() || isbn.isEmpty() || publisher.isEmpty() || yearStr.isEmpty() || genre.isEmpty() || quantityStr.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Erro de Validação", "Todos os campos são obrigatórios.");
-            return null;
-        }
-
-        int year;
-        int quantity;
-
+        Book book = new Book();
+        book.setTitle(titleField.getText());
+        book.setAuthor(authorField.getText());
+        book.setIsbn(isbnField.getText());
+        book.setPublisher(publisherField.getText());
         try {
-            year = Integer.parseInt(yearStr);
+            book.setYear(Integer.parseInt(yearField.getText()));
+            book.setTotalCopies(Integer.parseInt(quantityField.getText()));
+            book.setAvailableCopies(book.getTotalCopies()); // Inicialmente, todos estão disponíveis
         } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.ERROR, "Erro de Validação", "Ano inválido.");
+            // Lidar com erro de formato nos campos numéricos
             return null;
         }
-
-        try {
-            quantity = Integer.parseInt(quantityStr);
-        } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.ERROR, "Erro de Validação", "Quantidade inválida.");
-            return null;
-        }
-
-        Book book;
-        if (isEditing && bookToEdit != null) {
-            book = bookToEdit;
-            book.setTitle(title);
-            book.setAuthor(author);
-            book.setIsbn(isbn);
-            book.setPublisher(publisher);
-            book.setYear(year);
-            book.setGenre(genre);
-            int diff = quantity - book.getTotalCopies();
-            book.setTotalCopies(quantity);
-            book.setAvailableCopies(book.getAvailableCopies() + diff);
-            book.setImageUrl(imageUrl);
-            if (selectedCoverFile != null) {
-                book.setCoverImagePath(selectedCoverFile.getAbsolutePath());
-            }
-        } else {
-            book = new Book();
-            book.setTitle(title);
-            book.setAuthor(author);
-            book.setIsbn(isbn);
-            book.setPublisher(publisher);
-            book.setYear(year);
-            book.setGenre(genre);
-            book.setTotalCopies(quantity);
-            book.setAvailableCopies(quantity);
-            book.setImageUrl(imageUrl);
-            if (selectedCoverFile != null) {
-                book.setCoverImagePath(selectedCoverFile.getAbsolutePath());
-            }
+        book.setGenre(genreField.getText());
+        book.setImageUrl(imageUrlField.getText());
+        if (selectedCoverFile != null) {
+            book.setCoverImagePath(selectedCoverFile.getAbsolutePath());
+        } else if (bookToEdit != null) {
+            book.setCoverImagePath(bookToEdit.getCoverImagePath()); // Mantém o caminho anterior se não escolher novo arquivo
         }
         return book;
     }
+
+    public boolean isSaveClicked() {
+        return saveClicked;
+    }
+
     @FXML
-    public void saveBook(ActionEvent event) {
-        Book book = getBook();
-        if (book != null) {
-            if (isEditing && bookToEdit != null) {
-                book.setId(bookToEdit.getId()); // Garante que o ID seja mantido para a edição
-                bookController.updateBook(book);
-            } else {
-                bookController.insertNewBook(book);
-            }
+    private void saveBook() {
+        if (isInputValid()) {
             saveClicked = true;
-            Stage stage = (Stage) saveBookButton.getScene().getWindow();
-            stage.close();
+            Book book = getBook();
+            if (book != null) {
+                if (bookToEdit == null) {
+                    bookController.insertNewBook(book);
+                } else {
+                    book.setId(bookToEdit.getId()); // Mantém o ID para a edição
+                    bookController.updateBook(book);
+                }
+                dialogStage.close();
+            } else {
+                // Exibir mensagem de erro de validação
+            }
         }
     }
 
     @FXML
-    public void cancelAddBookView(ActionEvent event) {
-        if (dialogStage != null) {
-            dialogStage.close();
+    private void cancelAddBookView() {
+        dialogStage.close();
+    }
+
+    @FXML
+    private void chooseCoverImage() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Selecionar Capa do Livro");
+        FileChooser.ExtensionFilter imageFilter = new FileChooser.ExtensionFilter("Arquivos de Imagem", "*.png", "*.jpg", "*.jpeg", "*.gif");
+        fileChooser.getExtensionFilters().add(imageFilter);
+        File file = fileChooser.showOpenDialog(dialogStage);
+        if (file != null) {
+            selectedCoverFile = file;
+            coverFileNameLabel.setText(file.getName());
+            coverImageView.setImage(new javafx.scene.image.Image(file.toURI().toString()));
+            imageUrlField.setText(""); // Limpa a URL se escolher um arquivo
         }
     }
 
-    private void showAlert(Alert.AlertType alertType, String title, String content) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
+    private boolean isInputValid() {
+        String errorMessage = "";
+        if (titleField.getText() == null || titleField.getText().isEmpty()) {
+            errorMessage += "Título inválido!\n";
+        }
+        if (authorField.getText() == null || authorField.getText().isEmpty()) {
+            errorMessage += "Autor inválido!\n";
+        }
+        if (isbnField.getText() == null || isbnField.getText().isEmpty()) {
+            errorMessage += "ISBN inválido!\n";
+        }
+        if (publisherField.getText() == null || publisherField.getText().isEmpty()) {
+            errorMessage += "Editora inválida!\n";
+        }
+        if (yearField.getText() == null || yearField.getText().isEmpty()) {
+            errorMessage += "Ano inválido!\n";
+        } else {
+            try {
+                Integer.parseInt(yearField.getText());
+            } catch (NumberFormatException e) {
+                errorMessage += "Ano deve ser um número!\n";
+            }
+        }
+        if (genreField.getText() == null || genreField.getText().isEmpty()) {
+            errorMessage += "Gênero inválido!\n";
+        }
+        if (quantityField.getText() == null || quantityField.getText().isEmpty()) {
+            errorMessage += "Quantidade inválida!\n";
+        } else {
+            try {
+                Integer.parseInt(quantityField.getText());
+            } catch (NumberFormatException e) {
+                errorMessage += "Quantidade deve ser um número!\n";
+            }
+        }
+
+        if (errorMessage.isEmpty()) {
+            return true;
+        } else {
+            // Exibir mensagem de erro
+            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+            alert.setTitle("Campos Inválidos");
+            alert.setHeaderText("Por favor, corrija os campos inválidos");
+            alert.setContentText(errorMessage);
+            alert.showAndWait();
+            return false;
+        }
     }
 }

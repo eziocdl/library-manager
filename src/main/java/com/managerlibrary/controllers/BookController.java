@@ -6,17 +6,13 @@ import com.managerlibrary.infra.DataBaseConnection;
 import com.managerlibrary.services.BookService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -122,154 +118,104 @@ public class BookController {
     }
 
     private VBox createBookCard(Book book) {
-        VBox card = new VBox(10);
-        card.setStyle("-fx-border-color: #ccc; -fx-padding: 10; -fx-pref-width: 150;");
-        System.out.println("Criando card para: " + book.getTitle() + ", Editora: " + book.getPublisher() + ", Ano: " + book.getYear()); // LOG 1
-        card.setUserData(book); // Associate the Book object with the card
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/BookCardView.fxml"));
+            VBox card = loader.load();
+            BookCardController controller = loader.getController();
+            controller.setBook(book);
+            controller.setBookListController(this);
+            return card;
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Lidar com o erro ao carregar o FXML
+            return new VBox(); // Ou outra forma de indicar erro
+        }
+    }
 
-        ImageView coverImageView = new ImageView();
-        coverImageView.setFitWidth(100);
-        coverImageView.setFitHeight(150);
-        // TODO: Adicionar aqui a lógica para carregar a imagem da capa, se necessário
+    public void showBookDetails(Book book, Window owner) {
+        Stage detailsStage = new Stage();
+        detailsStage.setTitle("Detalhes do Livro");
+        detailsStage.initModality(Modality.APPLICATION_MODAL);
+        detailsStage.initOwner(owner);
 
-        Label titleLabel = new Label(book.getTitle());
-        titleLabel.setStyle("-fx-font-weight: bold;");
+        VBox detailsLayout = new VBox(10);
+        detailsLayout.setStyle("-fx-padding: 15;");
+        javafx.scene.control.Label titleLabelDetails = new javafx.scene.control.Label("Título: " + book.getTitle());
+        javafx.scene.control.Label authorLabelDetails = new javafx.scene.control.Label("Autor: " + book.getAuthor());
+        javafx.scene.control.Label isbnLabelDetails = new javafx.scene.control.Label("ISBN: " + book.getIsbn());
+        javafx.scene.control.Label publisherLabelDetails = new javafx.scene.control.Label("Editora: " + book.getPublisher());
+        javafx.scene.control.Label yearLabelDetails = new javafx.scene.control.Label("Ano: " + book.getYear());
+        javafx.scene.control.Label genreLabelDetails = new javafx.scene.control.Label("Gênero: " + book.getGenre());
+        javafx.scene.control.Label availabilityLabelDetails = new javafx.scene.control.Label("Disponíveis: " + book.getAvailableCopies() + "/" + book.getTotalCopies());
+        Button closeButton = new Button("Fechar");
+        closeButton.setOnAction(e -> detailsStage.close());
 
-        Label authorLabel = new Label("Autor: " + book.getAuthor());
+        detailsLayout.getChildren().addAll(titleLabelDetails, authorLabelDetails, isbnLabelDetails, publisherLabelDetails, yearLabelDetails, genreLabelDetails, availabilityLabelDetails, closeButton);
 
-        Label availableLabel = new Label("Disponíveis: " + book.getAvailableCopies() + "/" + book.getTotalCopies());
+        Scene detailsScene = new Scene(detailsLayout);
+        detailsStage.setScene(detailsScene);
+        detailsStage.showAndWait();
+    }
 
-        Button detailsButton = new Button("Detalhes");
-        detailsButton.setOnAction(event -> {
-            Stage detailsStage = new Stage();
-            detailsStage.setTitle("Detalhes do Livro");
-            detailsStage.initModality(Modality.APPLICATION_MODAL);
-            Window mainWindow = detailsButton.getScene().getWindow();
-            detailsStage.initOwner(mainWindow);
+    public void loadEditBookView(Book bookToEdit, Button sourceButton) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/AddBookView.fxml"));
+            Pane addBookView = loader.load();
 
-            VBox detailsLayout = new VBox(10);
-            detailsLayout.setStyle("-fx-padding: 15;");
-            Label titleLabelDetails = new Label("Título: " + book.getTitle());
-            Label authorLabelDetails = new Label("Autor: " + book.getAuthor());
-            Label isbnLabelDetails = new Label("ISBN: " + book.getIsbn());
-            Label publisherLabelDetails = new Label("Editora: " + book.getPublisher());
-            Label yearLabelDetails = new Label("Ano: " + book.getYear());
-            Label genreLabelDetails = new Label("Gênero: " + book.getGenre());
-            Label availabilityLabelDetails = new Label("Disponíveis: " + book.getAvailableCopies() + "/" + book.getTotalCopies());
-            Button closeButton = new Button("Fechar");
-            closeButton.setOnAction(e -> detailsStage.close());
+            AddBookViewController addBookViewController = loader.getController();
+            addBookViewController.setBookController(this);
+            addBookViewController.setBookToEdit(bookToEdit);
 
-            detailsLayout.getChildren().addAll(titleLabelDetails, authorLabelDetails, isbnLabelDetails, publisherLabelDetails, yearLabelDetails, genreLabelDetails, availabilityLabelDetails, closeButton);
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Editar Livro");
+            dialogStage.setScene(new Scene(addBookView));
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.initOwner(sourceButton.getScene().getWindow());
 
-            Scene detailsScene = new Scene(detailsLayout);
-            detailsStage.setScene(detailsScene);
-            detailsStage.showAndWait();
-        });
-        detailsButton.getStyleClass().add("book-card-action-button"); // Aplica a classe CSS
+            addBookViewController.setDialogStage(dialogStage);
+            dialogStage.showAndWait();
 
-        Button editButton = new Button("Editar");
-        editButton.setOnAction(event -> {
-            Button sourceButton = (Button) event.getSource();
-            VBox bookCard = (VBox) sourceButton.getParent().getParent();
-            Book bookToEdit = (Book) bookCard.getUserData();
-            System.out.println("Ao clicar em Editar (card): " + bookToEdit.getTitle() + ", Editora: " + bookToEdit.getPublisher() + ", Ano: " + bookToEdit.getYear()); // LOG 2
-            int bookId = bookToEdit.getId();
-
-            try {
-                Book bookFromDatabase = bookService.findBookById(bookId);
-                System.out.println("Livro retornado do banco para edição: " + bookFromDatabase.getTitle() + ", Editora: " + bookFromDatabase.getPublisher() + ", Ano: " + bookFromDatabase.getYear()); // LOG 3
-                if (bookFromDatabase != null) {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/AddBookView.fxml"));
-                    Pane addBookView = loader.load();
-
-                    AddBookViewController addBookViewController = loader.getController();
-                    addBookViewController.setBookController(this);
-                    System.out.println("Passando para AddBookView: " + bookFromDatabase.getTitle() + ", Editora: " + bookFromDatabase.getPublisher() + ", Ano: " + bookFromDatabase.getYear()); // LOG 4
-                    addBookViewController.setBookToEdit(bookFromDatabase);
-
-                    Stage dialogStage = new Stage();
-                    dialogStage.setTitle("Editar Livro");
-                    dialogStage.setScene(new Scene(addBookView));
-                    dialogStage.initModality(Modality.APPLICATION_MODAL);
-                    dialogStage.initOwner(sourceButton.getScene().getWindow());
-
-                    addBookViewController.setDialogStage(dialogStage);
-                    dialogStage.showAndWait();
-
-                    if (addBookViewController.isSaveClicked()) {
-                        Book editedBook = addBookViewController.getBook();
-                        if (editedBook != null) {
-                            updateBook(editedBook);
-                        }
-                    }
-                    loadingBooks();
-                } else {
-                    System.err.println("Erro: Livro com ID " + bookId + " não encontrado para edição.");
-                }
-            } catch (IOException | SQLException e) {
-                e.printStackTrace();
-                System.err.println("Erro ao carregar tela de edição: " + e.getMessage());
-            }
-        });
-        editButton.getStyleClass().add("book-card-action-button"); // Aplica a classe CSS
-
-        Button removeButton = new Button("Remover");
-        removeButton.setOnAction(event -> {
-            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
-            confirmation.setTitle("Confirmar Remoção");
-            confirmation.setHeaderText("Remover o livro: " + book.getTitle());
-            confirmation.setContentText("Tem certeza que deseja remover este livro?");
-
-            // Obtenha a janela principal a partir do botão
-            Window mainWindow = removeButton.getScene().getWindow();
-            confirmation.initOwner(mainWindow); // Define a janela principal como proprietária
-
-            Optional<javafx.scene.control.ButtonType> result = confirmation.showAndWait();
-            if (result.isPresent() && result.get() == javafx.scene.control.ButtonType.OK) {
-                try {
-                    bookService.deleteBook(book.getId()); // Assuming your Book entity has an getId() method
-                    loadingBooks(); // Reload the list after deletion
-                    // TODO: Show success message
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    // TODO: Show error message
+            if (addBookViewController.isSaveClicked()) {
+                Book editedBook = addBookViewController.getBook();
+                if (editedBook != null) {
+                    updateBook(editedBook);
                 }
             }
-        });
-        removeButton.getStyleClass().add("book-card-action-button"); // Aplica a classe CSS
+            loadingBooks();
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+            System.err.println("Erro ao carregar tela de edição: " + e.getMessage());
+        }
+    }
 
-        HBox actionButtons = new HBox(5); // Reduzi o espaçamento para tentar otimizar o espaço
-        actionButtons.getChildren().addAll(detailsButton, editButton, removeButton);
-        actionButtons.setAlignment(javafx.geometry.Pos.CENTER);
+    public void confirmRemoveBook(Book book, Window owner) {
+        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmation.setTitle("Confirmar Remoção");
+        confirmation.setHeaderText("Remover o livro: " + book.getTitle());
+        confirmation.setContentText("Tem certeza que deseja remover este livro?");
+        confirmation.initOwner(owner);
 
-        card.getChildren().addAll(coverImageView, titleLabel, authorLabel, availableLabel, actionButtons);
-        VBox.setVgrow(actionButtons, javafx.scene.layout.Priority.ALWAYS);
-        card.setAlignment(javafx.geometry.Pos.TOP_LEFT);
-
-        return card;
+        Optional<javafx.scene.control.ButtonType> result = confirmation.showAndWait();
+        if (result.isPresent() && result.get() == javafx.scene.control.ButtonType.OK) {
+            deleteBook(book.getId());
+        }
     }
 
     public void insertNewBook(Book book) {
-        System.out.println("insertNewBook recebendo: " + book.getTitle() + ", Editora: " + book.getPublisher() + ", Ano: " + book.getYear()); // LOG NO BookController
         try {
             bookService.insertBook(book);
             loadingBooks();
-            // TODO: Mostrar mensagem de sucesso para o usuário
         } catch (SQLException e) {
             e.printStackTrace();
-            // TODO: Mostrar mensagem de erro para o usuário
         }
     }
 
     public void updateBook(Book book) {
-        System.out.println("updateBook recebendo: " + book.getTitle() + ", Editora: " + book.getPublisher() + ", Ano: " + book.getYear()); // LOG NO BookController
         try {
             bookService.updateBook(book);
             loadingBooks();
-            // TODO: Mostrar mensagem de sucesso de atualização
         } catch (SQLException e) {
             e.printStackTrace();
-            // TODO: Mostrar mensagem de erro de atualização
         }
     }
 
@@ -277,10 +223,8 @@ public class BookController {
         try {
             bookService.deleteBook(id);
             loadingBooks();
-            // TODO: Show success message
         } catch (SQLException e) {
             e.printStackTrace();
-            // TODO: Show error message
         }
     }
 }

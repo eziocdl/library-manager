@@ -2,11 +2,17 @@ package com.managerlibrary.controllers;
 
 import com.managerlibrary.entities.User;
 import com.managerlibrary.services.UserService;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.event.ActionEvent;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+
+import java.io.File;
 import java.sql.SQLException;
 
 public class EditUserController {
@@ -27,14 +33,29 @@ public class EditUserController {
     private TextField addressTextField;
 
     @FXML
-    private Button saveButton;
+    private TextField profileImagePathTextField;
 
     @FXML
-    private Button cancelButton;
+    private ImageView profileImageView;
+
+    @FXML
+    private Button chooseProfileImageButton;
+
+    @FXML
+    private Button saveEditedUser; // Corrigido o fx:id
+
+    @FXML
+    private Button cancelEditUser;   // Corrigido o fx:id
 
     private User currentUser;
     private UserController userController;
-    private UserService userService; // Removi a inicialização aqui
+    private UserService userService;
+    private File selectedProfileImageFile;
+
+    // Adicione este construtor
+    public EditUserController() throws SQLException {
+        this.userService = new UserService();
+    }
 
     public void setUser(User user) {
         this.currentUser = user;
@@ -47,7 +68,6 @@ public class EditUserController {
         this.userController = userController;
     }
 
-    // Novo método para receber a instância do UserService
     public void setService(UserService userService) {
         this.userService = userService;
     }
@@ -58,23 +78,63 @@ public class EditUserController {
         cpfTextField.setText(currentUser.getCpf());
         phoneTextField.setText(currentUser.getPhone());
         addressTextField.setText(currentUser.getAddress());
+        profileImagePathTextField.setText(currentUser.getProfileImagePath());
+        if (currentUser.getProfileImagePath() != null && !currentUser.getProfileImagePath().isEmpty()) {
+            try {
+                File file = new File(currentUser.getProfileImagePath());
+                if (file.exists()) {
+                    profileImageView.setImage(new Image(file.toURI().toString()));
+                } else {
+                    profileImageView.setImage(new Image(getClass().getResourceAsStream("/images/default_user.png")));
+                }
+            } catch (Exception e) {
+                profileImageView.setImage(new Image(getClass().getResourceAsStream("/images/default_user_error.png")));
+            }
+        } else {
+            profileImageView.setImage(new Image(getClass().getResourceAsStream("/images/default_user_icon.png")));
+        }
     }
 
     @FXML
-    private void handleSave(ActionEvent event) {
+    private void chooseProfileImage(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Selecionar Nova Foto de Perfil");
+        FileChooser.ExtensionFilter imageFilter = new FileChooser.ExtensionFilter("Arquivos de Imagem", "*.png", "*.jpg", "*.jpeg", "*.gif");
+        fileChooser.getExtensionFilters().add(imageFilter);
+
+        Stage stage = (Stage) chooseProfileImageButton.getScene().getWindow();
+        selectedProfileImageFile = fileChooser.showOpenDialog(stage);
+
+        if (selectedProfileImageFile != null) {
+            profileImagePathTextField.setText(selectedProfileImageFile.getAbsolutePath());
+            try {
+                profileImageView.setImage(new Image(selectedProfileImageFile.toURI().toString()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @FXML
+    private void saveEditedUser(ActionEvent event) {
         if (currentUser != null) {
             currentUser.setName(nameTextField.getText());
             currentUser.setEmail(emailTextField.getText());
             currentUser.setCpf(cpfTextField.getText());
             currentUser.setPhone(phoneTextField.getText());
             currentUser.setAddress(addressTextField.getText());
+            if (selectedProfileImageFile != null) {
+                currentUser.setProfileImagePath(selectedProfileImageFile.getAbsolutePath());
+            }
 
             try {
                 userService.updateUser(currentUser);
                 showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Usuário atualizado com sucesso!");
                 if (userController != null) {
                     userController.showUserCardsView(); // Atualiza a visualização
-                    handleCancel(event); // Volta para a tela de gerenciamento
+                    // REMOVA A LINHA QUE FECHA A JANELA DE EDIÇÃO
+                    // Stage stage = (Stage) saveEditedUser.getScene().getWindow();
+                    // stage.close();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -86,17 +146,9 @@ public class EditUserController {
     }
 
     @FXML
-    private void handleCancel(ActionEvent event) {
-        // Lógica para voltar para a tela de gerenciamento de usuários
-        if (userController != null) {
-            // Recarrega a UserView (em cards ou tabela, dependendo da última visualização)
-            try {
-                userController.cancelAddUserView(); // Reutilizando um método existente para voltar à UserView
-            } catch (Exception e) {
-                e.printStackTrace();
-                // Lidar com a exceção ao tentar voltar
-            }
-        }
+    private void cancelEditUser(ActionEvent event) {
+        Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+        stage.close();
     }
 
     private void showAlert(Alert.AlertType alertType, String title, String content) {

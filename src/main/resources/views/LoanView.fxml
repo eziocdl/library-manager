@@ -15,7 +15,8 @@
     <HBox alignment="CENTER_LEFT" spacing="10">
         <Label text="Gerenciar Empréstimos" styleClass="label-title"/>
         <Region HBox.hgrow="ALWAYS"/>
-        <TextField promptText="Buscar por usuário, livro ou CPF..." HBox.hgrow="ALWAYS" styleClass="text-field rounded-corners"/>
+        <TextField fx:id="searchTextField" promptText="Buscar por usuário, livro ou CPF..." HBox.hgrow="ALWAYS" styleClass="text-field rounded-corners"/>
+        <Button fx:id="searchButton" text="Buscar" onAction="#handleSearchLoans" styleClass="primary-button rounded-corners shadow-effect"/>
         <Button text="+ Novo Empréstimo" onAction="#showAddLoanView" styleClass="primary-button rounded-corners shadow-effect"/>
     </HBox>
 

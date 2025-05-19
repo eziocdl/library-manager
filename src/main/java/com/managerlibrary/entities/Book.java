@@ -116,11 +116,18 @@ public class Book {
         this.imageUrl = imageUrl;
     }
 
+    // Getter para coverImagePath
     public String getCoverImagePath() {
         return coverImagePath;
     }
 
+    // Setter para coverImagePath (já existe)
     public void setCoverImagePath(String coverImagePath) {
         this.coverImagePath = coverImagePath;
+    }
+
+    @Override
+    public String toString() {
+        return title + " - " + author;
     }
 }

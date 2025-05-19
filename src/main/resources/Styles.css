@@ -1,125 +1,140 @@
-/* Cores Primárias e Secundárias */
 /* Estilos Globais */
-body {
-    font-family: sans-serif;
-    background-color: #f0f8ff; /* Azul bem claro (AliceBlue) */
-    color: #333; /* Texto primário mais escuro */
+.root {
+    -fx-background-color: #f0f8ff; /* Azul bem claro (AliceBlue) */
+    -fx-font-family: "Roboto", "Segoe UI", sans-serif; /* Fontes mais modernas */
 }
 
-.root { /* Contêiner principal */
-    -fx-background-color: #f0f8ff;
+.label {
+    -fx-text-fill: #555; /* Cinza um pouco mais escuro */
 }
 
 /* Barra Superior (Top Bar) */
 .top-bar {
-    -fx-padding: 10px;
-    -fx-background-color: #F9FAFB; /* Cor de fundo clara */
-    -fx-border-bottom: 1px solid #E5E7EB; /* Linha divisória inferior */
-}
-
-.top { /* Contêiner da barra superior (pode ser removido se usar .top-bar) */
+    -fx-padding: 16px;
     -fx-background-color: #e0f2f7; /* Azul bem claro (Light Cyan) */
-    -fx-padding: 12px 16px;
     -fx-border-bottom: 1px solid #b2ebf2; /* Borda azul mais clara */
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 6, 0, 2, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 8, 0, 2, 2);
     -fx-alignment: CENTER_LEFT;
-    -fx-spacing: 10px;
+    -fx-spacing: 16px;
 }
 
 .top-search-field {
-    -fx-padding: 10px;
-    -fx-border-color: #b2ebf2; /* Borda azul mais clara */
-    -fx-border-radius: 8px;
-    -fx-background-color: #f0f8ff;
+    -fx-padding: 10px 16px;
+    -fx-border-color: #b2ebf2; /* Borda azul mais clara para a borda */
+    -fx-border-radius: 4px;
+    -fx-background-color: #fff;
+    -fx-prompt-text-fill: #9e9e9e; /* Cor do texto de dica */
+    -fx-font-size: 1.0em;
+}
+
+.top .primary-button { /* Botão "Adicionar Livro" na barra superior */
+    -fx-background-color: #4caf50; /* Verde mais vivo */
+    -fx-text-fill: #fff;
+    -fx-padding: 10px 16px;
+    -fx-border-radius: 4px;
+    -fx-font-size: 1.0em;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 4, 0, 2, 2);
+}
+
+.top .primary-button:hover {
+    -fx-background-color: #388e3c;
 }
 
 /* Barra Lateral (Sidebar) */
 .left {
-    -fx-background-color: #e0f2f7; /* Azul bem claro (Light Cyan) */
+    -fx-background-color: #f5f5f5; /* Fundo claro */
     -fx-padding: 16px;
-    -fx-alignment: top-left;
+    -fx-alignment: TOP_LEFT;
+    -fx-spacing: 8px;
+    -fx-border-right: 1px solid #e0e0e0; /* Borda sutil à direita */
 }
 
 .sidebar-label-title {
-    -fx-text-fill: #2c3e50; /* Tom mais escuro */
-    -fx-font-size: 2.0em;
+    -fx-text-fill: #2c3e50;
+    -fx-font-size: 1.4em;
     -fx-font-weight: bold;
-    -fx-alignment: CENTER;
-    -fx-padding: 20px 0 10px 0;
-    -fx-font-family: "Arial Black";
+    -fx-padding: 16px 0;
+    -fx-alignment: CENTER_LEFT;
+    -fx-font-family: "Segoe UI", sans-serif;
 }
 
 .sidebar-button {
     -fx-background-color: transparent;
-    -fx-text-fill: #333; /* Texto mais escuro */
+    -fx-text-fill: #333;
     -fx-border-color: transparent;
-    -fx-padding: 12px 16px;
-    -fx-font-size: 1em;
+    -fx-padding: 10px 16px;
+    -fx-font-size: 1.0em;
     -fx-cursor: hand;
     -fx-pref-width: infinity;
+    -fx-alignment: CENTER_LEFT;
 }
 
 .sidebar-button:hover {
     -fx-background-color: #b2ebf2; /* Azul mais claro ao passar o mouse */
 }
 
-/* Logo */
+.sidebar-button:selected {
+    -fx-background-color: #e0f7fa; /* Azul bem claro para o item selecionado */
+    -fx-text-fill: #00838f; /* Azul mais escuro para texto selecionado */
+    -fx-font-weight: bold;
+}
+
 .logo-image {
-    -fx-pref-width: 100px;
-    -fx-pref-height: 100px;
-    -fx-background-color: #81d4fa;
-    -fx-border-color: #b2ebf2;
-    -fx-border-width: 1px;
-    -fx-background-radius: 8px;
-    -fx-border-radius: 8px;
-    -fx-padding: 16px;
-    -fx-image: url("assets/logo.jpeg"); /* Caminho da imagem */
+    -fx-pref-width: 80px;
+    -fx-pref-height: 80px;
+    -fx-background-color: #e0e0e0;
+    -fx-border-radius: 50%; /* Círculo */
+    -fx-background-radius: 50%;
+    -fx-padding: 8px;
+    -fx-image: url("assets/logo.jpeg");
     -fx-image-preserve-ratio: true;
     -fx-image-repeat: no-repeat;
     -fx-image-position: center;
     -fx-image-size: contain;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 6, 0, 2, 2);
+    -fx-margin-bottom: 16px;
 }
 
 /* Títulos */
 .label-title {
-    -fx-font-size: 2em;
+    -fx-font-size: 1.8em;
     -fx-font-weight: 500;
     -fx-padding: 16px 0;
     -fx-text-fill: #2979ff; /* Azul mais intenso */
 }
 
 .app-title {
-    -fx-font-size: 20px;
+    -fx-font-size: 1.2em;
     -fx-font-weight: bold;
     -fx-text-fill: #2563EB; /* Azul primária */
 }
 
-/* Botões */
+/* Botões - Estilo Geral */
 .primary-button {
     -fx-background-color: #4caf50; /* Verde mais vivo */
     -fx-text-fill: #fff;
-    -fx-padding: 12px 24px;
+    -fx-padding: 10px 16px;
     -fx-border-color: transparent;
-    -fx-border-radius: 8px;
-    -fx-background-radius: 8px;
-    -fx-font-size: 1.1em;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-font-size: 1.0em;
     -fx-cursor: hand;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 4, 0, 2, 2);
 }
 
 .primary-button:hover {
-    -fx-background-color: #388e3c; /* Verde mais escuro ao passar o mouse */
+    -fx-background-color: #388e3c;
 }
 
-.button-action { /* Renomeado de .action-button para consistência */
-    -fx-background-color: #fff;
+.button-action {
+    -fx-background-color:  #e1f5fe;
     -fx-text-fill: #2979ff; /* Azul mais intenso */
-    -fx-padding: 10px 16px;
-    -fx-font-size: 1em;
+    -fx-padding: 8px 12px;
+    -fx-font-size: 0.9em;
     -fx-cursor: hand;
-    -fx-border-color: #2979ff; /* Borda azul mais intensa */
-    -fx-border-radius: 8px;
-    -fx-background-radius: 8px;
+    -fx-border-color: #2979ff;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
 }
 
 .button-action:hover {
@@ -129,206 +144,352 @@ body {
 .overdue-button {
     -fx-background-color: #f44336; /* Vermelho */
     -fx-text-fill: #fff;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
 }
 
 .overdue-button:hover {
-    -fx-background-color: #d32f2f; /* Vermelho mais escuro ao passar o mouse */
+    -fx-background-color: #d32f2f;
+}
+
+.default-action-button { /* Estilo para botões acinzentados (Editar/Remover em Usuários) */
+    -fx-background-color: #f0f0f0; /* Cinza claro */
+    -fx-text-fill: #000; /* Preto */
+    -fx-border-color: #ccc; /* Borda cinza clara */
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-padding: 8px 12px;
+    -fx-font-size: 0.9em;
+    -fx-cursor: hand;
+}
+
+.default-action-button:hover {
+    -fx-background-color: #e0e0e0; /* Cinza um pouco mais escuro no hover */
+}
+
+.default-action-button:pressed {
+    -fx-background-color: #d0d0d0; /* Cinza ainda mais escuro ao pressionar */
 }
 
 /* Tabelas */
 .table-view {
-    -fx-column-header-background: linear-gradient(#e0f2f7, #b2ebf2); /* Azul mais claro para o cabeçalho */
-    -fx-fixed-cell-size: 36px;
-    -fx-border-color: #b2ebf2; /* Borda azul mais clara */
+    -fx-column-header-background: linear-gradient(#e0f2f7, #b2ebf2);
+    -fx-fixed-cell-size: 32px;
+    -fx-border-color: #b2ebf2;
     -fx-border-width: 1px;
     -fx-background-color: #fff;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 4, 0, 2, 2);
-    -fx-background-radius: 8px;
-    -fx-border-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 6, 0, 2, 2);
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
 }
 
 .table-column {
     -fx-alignment: CENTER-LEFT;
-    -fx-padding: 10px;
+    -fx-padding: 8px;
 }
 
 .table-header-row {
-    -fx-background-color: #b2ebf2; /* Azul mais clara */
-    -fx-padding: 10px;
+    -fx-background-color: #b2ebf2;
+    -fx-padding: 8px;
 }
 
 .table-cell {
-    -fx-padding: 10px;
-    -fx-text-fill: #333; /* Texto mais escuro */
+    -fx-padding: 8px;
+    -fx-text-fill: #333;
 }
 
 /* Estilos de Texto */
-.bold-text {
-    -fx-font-weight: bold;
-}
-
-.light-text {
-    -fx-text-fill: #777; /* Cinza um pouco mais escuro */
-}
-
-.success-text {
-    -fx-text-fill: #43a047; /* Verde um pouco mais escuro */
-}
-
-.error-text {
-    -fx-text-fill: #e53935; /* Vermelho um pouco mais escuro */
-}
+.bold-text { -fx-font-weight: 500; }
+.light-text { -fx-text-fill: #777; }
+.success-text { -fx-text-fill: #43a047; }
+.error-text { -fx-text-fill: #e53935; }
 
 /* Campos de Texto */
 .text-field {
-    -fx-padding: 12px;
-    -fx-border-color: #b2ebf2; /* Borda azul mais clara */
-    -fx-border-radius: 8px;
+    -fx-padding: 10px 12px;
+    -fx-border-color: #b2ebf2;
+    -fx-border-radius: 4px;
     -fx-background-color: #fff;
+    -fx-prompt-text-fill: #9e9e9e;
+    -fx-font-size: 1.0em;
 }
 
 /* ComboBox */
 .combo-box {
     -fx-background-color: #fff;
-    -fx-border-color: #b2ebf2; /* Borda azul mais clara */
-    -fx-border-radius: 8px;
-    -fx-padding: 8px;
-    -fx-text-fill: #333; /* Texto mais escuro */
-}
-
-.combo-box:focused {
-    -fx-border-color: #2979ff; /* Azul mais intenso ao focar */
-}
-
-.combo-box .list-cell {
+    -fx-border-color: #b2ebf2;
+    -fx-border-radius: 4px;
+    -fx-padding: 8px 12px;
     -fx-text-fill: #333;
+    -fx-font-size: 1.0em;
 }
 
-.combo-box .list-cell:filled:hover {
-    -fx-background-color: #e1f5fe; /* Azul bem claro ao passar o mouse */
-}
-
-.combo-box .list-cell:filled:selected {
-    -fx-background-color: #2979ff; /* Azul mais intenso ao selecionar */
-    -fx-text-fill: #fff;
-}
+.combo-box:focused { -fx-border-color: #2979ff; }
+.combo-box .list-cell { -fx-text-fill: #333; }
+.combo-box .list-cell:filled:hover { -fx-background-color: #e1f5fe; }
+.combo-box .list-cell:filled:selected { -fx-background-color: #2979ff; -fx-text-fill: #fff; }
 
 /* DatePicker */
 .date-picker {
     -fx-background-color: #fff;
-    -fx-border-color: #b2ebf2; /* Borda azul mais clara */
-    -fx-border-radius: 8px;
+    -fx-border-color: #b2ebf2;
+    -fx-border-radius: 4px;
 }
 
-.date-picker:focused {
-    -fx-border-color: #2979ff; /* Azul mais intenso ao focar */
-}
-
-.date-picker .text-field {
-    -fx-padding: 8px;
-    -fx-text-fill: #333; /* Texto mais escuro */
-    -fx-background-color: #fff;
-    -fx-border-color: #b2ebf2; /* Borda azul mais clara */
-    -fx-border-radius: 8px;
-}
-
-.date-picker .text-field:focused {
-    -fx-border-color: #2979ff; /* Azul mais intenso ao focar */
-}
-
-.date-picker .date-cell {
-    -fx-text-fill: #333; /* Texto mais escuro nos dias */
-}
-
-.date-picker .date-cell:hover {
-    -fx-background-color: #e1f5fe; /* Azul bem claro ao passar o mouse */
-}
-
-.date-picker .date-cell.selected {
-    -fx-background-color: #2979ff; /* Azul mais intenso no dia selecionado */
-    -fx-text-fill: #fff;
-}
-
-.date-picker .arrow-button {
-    -fx-background-color: transparent;
-}
-
-.date-picker .arrow {
-    -fx-fill: #777; /* Cor da seta um pouco mais escura */
-}
+.date-picker:focused { -fx-border-color: #2979ff; }
+.date-picker .text-field { -fx-padding: 8px 12px; -fx-text-fill: #333; -fx-background-color: #fff; -fx-border-color: #b2ebf2; -fx-border-radius: 4px; -fx-font-size: 1.0em; }
+.date-picker .text-field:focused { -fx-border-color: #2979ff; }
+.date-picker .date-cell { -fx-text-fill: #333; }
+.date-picker .date-cell:hover { -fx-background-color: #e1f5fe; }
+.date-picker .date-cell.selected { -fx-background-color: #2979ff; -fx-text-fill: #fff; }
+.date-picker .arrow-button { -fx-background-color: transparent; }
+.date-picker .arrow { -fx-fill: #777; }
 
 /* Cards */
 .user-card {
-    -fx-background-color: #fff; /* Cor de fundo do card (branco) */
-    -fx-border-color: #ddd; /* Cor da borda (cinza claro) */
-    -fx-border-width: 1px; /* Largura da borda */
-    -fx-border-radius: 8px; /* Cantos arredondados */
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 4, 0, 2, 2); /* Sombra suave */
-    -fx-padding: 10px; /* Espaçamento interno dentro do card */
-    -fx-max-width: 300px; /* Largura máxima do card */
+    -fx-background-color: transparent;
+    -fx-border-color: #ddd;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 6, 0, 2, 2);
+    -fx-padding: 12px;
+    -fx-max-width: 320px;
 }
 
 .loan-card {
-    -fx-background-color: #fff;
-    -fx-border-color: #b2ebf2; /* Borda azul mais clara */
-    -fx-border-width: 1px;
-    -fx-border-radius: 8px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 3, 0, 1, 1);
-    -fx-padding: 16px;
+    -fx-background-color: transparent; /* Fundo transparente */
+    -fx-border-color: #ddd;         /* Borda cinza clara para separação (opcional) */
+    -fx-border-width: 1px;           /* Largura da borda (opcional) */
+    -fx-border-radius: 4px;          /* Cantos arredondados */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 6, 0, 2, 2); /* Efeito de sombra para destacar */
+    -fx-padding: 12px;              /* Espaçamento interno */
+    -fx-margin-bottom: 10px;       /* Espaçamento entre os cards (opcional) */
+
+}
+
+#loansVBox {
+    -fx-background-color: transparent; /* Define o fundo como transparente */
+    -fx-border-color: transparent; /* Remove a cor da borda */
+    -fx-border-width: 0px; /* Define a largura da borda como zero */
+    -fx-border-radius: 4px; /* Mantém os cantos arredondados (se desejado) */
+    -fx-padding: 10px;
+    -fx-spacing: 10px;
 }
 
 /* Botões dentro de Cards */
 .book-card-action-button {
-    -fx-pref-width: 60px;
-    -fx-min-width: 60px;
-    -fx-max-width: 60px;
+    -fx-pref-width: 70px;
+    -fx-min-width: 70px;
+    -fx-max-width: 70px;
     -fx-font-size: 0.9em;
-    -fx-padding: 5px;
-    -fx-background-color: #f9f9f9; /* Cor de fundo clara */
-    -fx-text-fill: #333;
-    -fx-border-color: #ddd;
-    -fx-border-radius: 5px;
+    -fx-padding: 6px 8px;
+    -fx-background-color: #e1f5fe; /* Azul bem claro */
+    -fx-text-fill: #2979ff; /* Azul mais intenso */
+    -fx-border-color: #b2ebf2; /* Borda azul mais clara */
+    -fx-border-radius: 4px;
     -fx-cursor: hand;
-    -fx-alignment: center; /* Centralizar o texto */
+    -fx-alignment: center;
 }
 
 .book-card-action-button:hover {
-    -fx-background-color: #eee;
+    -fx-background-color: #bbdefb; /* Azul mais clara ao passar o mouse */
 }
 
 .book-card-action-button:pressed {
-    -fx-background-color: #ddd;
+    -fx-background-color: #90caf9; /* Azul um pouco mais escuro ao pressionar */
 }
 
 /* Ícones */
-.search-icon {
-    -fx-fit-width: 24px;
-    -fx-fit-height: 24px;
-}
-
-.add-icon {
-    -fx-fit-width: 24px;
-    -fx-fit-height: 24px;
-}
+.search-icon { -fx-fill: #777; -fx-fit-width: 24px; -fx-fit-height: 24px; }
+.add-icon { -fx-fill: #fff; -fx-fit-width: 24px; -fx-fit-height: 24px; } /* Branco para usar em botões primários */
 
 /* Classes de Utilidade */
-.rounded-corners {
-    -fx-background-radius: 8px;
+.rounded-corners { -fx-background-radius: 4px; -fx-border-radius: 4px; }
+.shadow-effect { -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 6, 0, 2, 2); }
+.bottom-margin { -fx-margin-bottom: 8px; }
+
+/* Estilos Específicos para a Tela de Gerenciar Livros */
+.library-view { /* Container principal da tela */
+    -fx-padding: 20px;
+    -fx-spacing: 15px; /* Espaçamento entre os elementos principais */
+}
+
+.library-header { /* Container para a busca e o botão adicionar */
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 15px;
+    -fx-padding: 0 0 20px 0;
+}
+
+.add-book-button { /* Estilo específico para o botão "Adicionar Livro" */
+    -fx-background-color: #4caf50; /* Verde mais vivo */
+    -fx-text-fill: #fff;
+    -fx-padding: 10px 16px;
+    -fx-border-radius: 4px;
+    -fx-font-size: 1.0em;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 4, 0, 2, 2);
+}
+.add-book-button:hover {
+    -fx-background-color: #388e3c;
+}
+
+.book-list-container { /* Container para os cards de livros (provavelmente um FlowPane) */
+    -fx-spacing: 15px; /* Espaçamento entre os cards */
+    -fx-hgap: 15px; /* Espaçamento horizontal entre os cards */
+    -fx-vgap: 15px; /* Espaçamento vertical entre os cards */
+}
+
+.book-card { /* Estilo específico para o card do livro */
+    -fx-background-color: transparent;
+    -fx-border-color: #ddd;
+    -fx-border-width: 1px;
     -fx-border-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 6, 0, 2, 2);
+    -fx-padding: 12px;
+    -fx-pref-width: 280px; /* Largura preferida do card */
 }
 
-.shadow-effect {
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 5, 0, 0, 2);
+.book-card-image-container { /* Container para a imagem da capa */
+    -fx-alignment: CENTER;
+    -fx-padding: 0 0 8px 0;
 }
 
-.bottom-margin {
-    -fx-margin-bottom: 6px;
+.book-card-image { /* Estilo para a imagem da capa */
+    -fx-fit-width: 100px;
+    -fx-fit-height: 150px;
+    -fx-preserve-ratio: true;
+    -fx-border-radius: 4px;
 }
 
-.label {
-    -fx-text-fill: #555; /* Cinza um pouco mais escuro */
+.book-card-details { /* Container para os detalhes do livro (título, autor, etc.) */
+    -fx-spacing: 6px;
 }
 
-.top .primary-button {
-    -fx-margin-left: 10px; /* Espaço à esquerda do botão no .top */
+.book-card-title { /* Estilo para o título do livro */
+    -fx-font-size: 1.1em;
+    -fx-font-weight: bold;
+    -fx-text-fill: #212121;
 }
+
+.book-card-author { /* Estilo para o autor do livro */
+    -fx-font-size: 0.9em;
+    -fx-text-fill: #757575;
+}
+
+.book-card-info { /* Estilo para outras informações (ISBN, Editora, Ano, Gênero) */
+    -fx-font-size: 0.85em;
+    -fx-text-fill: #424242;
+}
+
+.book-card-availability { /* Estilo para a informação de disponibilidade */
+    -fx-font-size: 0.9em;
+    -fx-font-weight: bold;
+    -fx-text-fill: #43a047; /* Verde para disponível */
+    -fx-padding: 8px 0;
+}
+
+.book-card-actions { /* Container para os botões de ação (Detalhes) */
+    -fx-alignment: CENTER_RIGHT;
+    -fx-padding: 8px 0 0 0;
+}
+
+.details-button { /* Estilo para o botão "Detalhes" */
+    -fx-background-color: transparent;
+    -fx-text-fill: #2979ff; /* Azul mais intenso */
+    -fx-border-color: #2979ff; /* Borda azul mais intensa */
+    -fx-border-radius: 4px;
+    -fx-border-width: 1px;
+    -fx-padding: 6px 10px;
+    -fx-font-size: 0.9em;
+    -fx-cursor: hand;
+}
+
+.details-button:hover {
+    -fx-background-color: #e1f5fe; /* Azul bem claro ao passar o mouse */
+}
+
+/* Estilos para a barra lateral (baseado no mockup) */
+.left {
+    -fx-background-color: #f9f9f9; /* Fundo mais claro */
+    -fx-padding: 20px;
+    -fx-alignment: TOP_LEFT;
+    -fx-spacing: 10px;
+    -fx-border-right: 1px solid #eee;
+}
+
+.sidebar-label-title {
+    -fx-text-fill: #333;
+    -fx-font-size: 1.6em;
+    -fx-font-weight: bold;
+    -fx-padding: 15px 0;
+    -fx-alignment: CENTER_LEFT;
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #555;
+    -fx-border-color: transparent;
+    -fx-padding: 10px 15px;
+    -fx-font-size: 1.0em;
+    -fx-cursor: hand;
+    -fx-pref-width: infinity;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #eee;
+}
+
+.sidebar-button:selected {
+    -fx-background-color: #e0f7fa; /* Azul bem claro para seleção */
+    -fx-text-fill: #00838f; /* Azul mais escuro para texto selecionado */
+    -fx-font-weight: bold;
+}
+
+.logo-image {
+    -fx-pref-width: 70px;
+    -fx-pref-height: 70px;
+    -fx-background-color: #fff;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-padding: 8px;
+    -fx-image: url("assets/logo.jpeg");
+    -fx-image-preserve-ratio: true;
+    -fx-image-repeat: no-repeat;
+    -fx-image-position: center;
+    -fx-image-size: contain;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 6, 0, 2, 2);
+    -fx-margin-bottom: 20px;
+}
+
+/* Estilos para a barra inferior (baseado no mockup) */
+.bottom-bar {
+    -fx-padding: 10px 16px;
+    -fx-background-color: #f9f9f9;
+    -fx-border-top: 1px solid #eee;
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 10px;
+}
+
+.admin-info {
+    -fx-font-size: 0.9em;
+    -fx-text-fill: #777;
+}
+
+.admin-username {
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
+
+/* Estilo para o ScrollPane (removendo a borda) */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0px;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+

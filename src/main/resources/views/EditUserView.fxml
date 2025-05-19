@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.managerlibrary.controllers.EditUserController"
+      spacing="10.0"
+      stylesheets="@/Styles.css">
+    <padding>
+        <Insets top="20.0" left="20.0" bottom="20.0" right="20.0"/>
+    </padding>
+    <Label text="Editar Usuário" styleClass="label-title"/>
+    <GridPane hgap="10.0" vgap="10.0">
+        <Label text="Nome:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="nameTextField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Endereço:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="addressTextField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="Telefone:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <TextField fx:id="phoneTextField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+        <Label text="Email:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <TextField fx:id="emailTextField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+        <Label text="CPF:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <TextField fx:id="cpfTextField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+        <Label text="Foto de Perfil:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+        <HBox spacing="5" GridPane.rowIndex="5" GridPane.columnIndex="1" alignment="CENTER_LEFT">
+            <StackPane prefWidth="80.0" prefHeight="80.0">
+                <ImageView fx:id="profileImageView" fitHeight="80.0" fitWidth="80.0" preserveRatio="true" styleClass="circular-image"/>
+            </StackPane>
+            <VBox spacing="5">
+                <TextField fx:id="profileImagePathTextField" HBox.hgrow="ALWAYS" editable="false"/>
+                <Button fx:id="chooseProfileImageButton" text="Escolher Nova Foto" onAction="#chooseProfileImage"/>
+            </VBox>
+        </HBox>
+    </GridPane>
+    <HBox spacing="10.0" alignment="CENTER_RIGHT" styleClass="top-spacing">
+        <Button text="Cancelar" onAction="#cancelEditUser" styleClass="secondary-button rounded-corners"/>
+        <Button fx:id="saveEditedUser" text="Salvar" onAction="#saveEditedUser" styleClass="primary-button rounded-corners shadow-effect"/>
+    </HBox>
+</VBox>

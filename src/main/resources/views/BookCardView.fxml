@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.managerlibrary.controllers.BookCardController"
+      styleClass="book-card" spacing="8.0">
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+    </padding>
+    <HBox alignment="CENTER_LEFT" spacing="10.0">
+        <StackPane styleClass="book-card-image-container">
+            <ImageView fx:id="coverImageView" fitHeight="80.0" fitWidth="80.0" preserveRatio="true" styleClass="book-card-image"/>
+        </StackPane>
+        <VBox spacing="4.0" styleClass="book-card-details">
+            <Label fx:id="titleLabel" styleClass="book-card-title"/>
+            <Label fx:id="authorLabel" styleClass="book-card-author"/>
+            <Label fx:id="availableLabel" styleClass="book-card-info"/>
+            <Label fx:id="isbnLabel" styleClass="book-card-info"/>
+            <Label fx:id="publisherLabel" styleClass="book-card-info"/>
+            <Label fx:id="yearLabel" styleClass="book-card-info"/>
+            <Label fx:id="genreLabel" styleClass="book-card-info"/>
+        </VBox>
+    </HBox>
+    <HBox alignment="CENTER_RIGHT" spacing="5.0" styleClass="book-card-actions">
+        <Button text="Detalhes" onAction="#handleDetails" styleClass="book-card-action-button rounded-corners"/>
+        <Button fx:id="editButton" text="Editar" onAction="#handleEdit" styleClass="book-card-action-button rounded-corners"/>
+        <Button text="Remover" onAction="#handleRemove" styleClass="book-card-action-button rounded-corners overdue-button"/>
+    </HBox>
+</VBox>

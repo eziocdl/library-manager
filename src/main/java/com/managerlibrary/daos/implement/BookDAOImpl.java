@@ -20,7 +20,7 @@ public class BookDAOImpl implements BookDAO {
 
     @Override
     public void insertBook(Book book) throws SQLException {
-        String sql = "INSERT INTO books (title, author, isbn, genre, total_copies, available_copies, publisher, year) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO books (title, author, isbn, genre, total_copies, available_copies, publisher, year, image_url, cover_image_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, book.getTitle());
             pstmt.setString(2, book.getAuthor());
@@ -30,6 +30,8 @@ public class BookDAOImpl implements BookDAO {
             pstmt.setInt(6, book.getAvailableCopies());
             pstmt.setString(7, book.getPublisher());
             pstmt.setInt(8, book.getYear());
+            pstmt.setString(9, book.getImageUrl());
+            pstmt.setString(10, book.getCoverImagePath());
             pstmt.executeUpdate();
 
             ResultSet generatedKeys = pstmt.getGeneratedKeys();
@@ -42,7 +44,7 @@ public class BookDAOImpl implements BookDAO {
     @Override
     public List<Book> searchBook(Book book) throws SQLException {
         List<Book> books = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT id, title, author, isbn, genre, total_copies, available_copies, publisher, year FROM books WHERE 1=1");
+        StringBuilder sql = new StringBuilder("SELECT id, title, author, isbn, genre, total_copies, available_copies, publisher, year, image_url, cover_image_path FROM books WHERE 1=1");
         if (book.getTitle() != null && !book.getTitle().isEmpty()) {
             sql.append(" AND title LIKE ?");
         }
@@ -67,7 +69,7 @@ public class BookDAOImpl implements BookDAO {
 
     @Override
     public Book findBookById(int id) throws SQLException {
-        String sql = "SELECT id, title, author, isbn, genre, total_copies, available_copies, publisher, year FROM books WHERE id = ?";
+        String sql = "SELECT id, title, author, isbn, genre, total_copies, available_copies, publisher, year, image_url, cover_image_path FROM books WHERE id = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
@@ -81,7 +83,7 @@ public class BookDAOImpl implements BookDAO {
     @Override
     public List<Book> findAllBooks() throws SQLException {
         List<Book> books = new ArrayList<>();
-        String sql = "SELECT id, title, author, isbn, genre, total_copies, available_copies, publisher, year FROM books";
+        String sql = "SELECT id, title, author, isbn, genre, total_copies, available_copies, publisher, year, image_url, cover_image_path FROM books";
         System.out.println("BookDAOImpl.findAllBooks: Executando consulta: " + sql);
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -101,7 +103,7 @@ public class BookDAOImpl implements BookDAO {
     @Override
     public List<Book> findAllAvailable() throws SQLException {
         List<Book> availableBooks = new ArrayList<>();
-        String sql = "SELECT id, title, author, isbn, genre, total_copies, available_copies, publisher, year FROM books WHERE available_copies > 0";
+        String sql = "SELECT id, title, author, isbn, genre, total_copies, available_copies, publisher, year, image_url, cover_image_path FROM books WHERE available_copies > 0";
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
@@ -113,7 +115,7 @@ public class BookDAOImpl implements BookDAO {
 
     @Override
     public void updateBook(Book book) throws SQLException {
-        String sql = "UPDATE books SET title = ?, author = ?, isbn = ?, genre = ?, total_copies = ?, available_copies = ?, publisher = ?, year = ? WHERE id = ?";
+        String sql = "UPDATE books SET title = ?, author = ?, isbn = ?, genre = ?, total_copies = ?, available_copies = ?, publisher = ?, year = ?, image_url = ?, cover_image_path = ? WHERE id = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, book.getTitle());
             pstmt.setString(2, book.getAuthor());
@@ -123,7 +125,9 @@ public class BookDAOImpl implements BookDAO {
             pstmt.setInt(6, book.getAvailableCopies());
             pstmt.setString(7, book.getPublisher());
             pstmt.setInt(8, book.getYear());
-            pstmt.setInt(9, book.getId());
+            pstmt.setString(9, book.getImageUrl());
+            pstmt.setString(10, book.getCoverImagePath());
+            pstmt.setInt(11, book.getId());
             pstmt.executeUpdate();
         }
     }
@@ -140,7 +144,7 @@ public class BookDAOImpl implements BookDAO {
     @Override
     public List<Book> findBooksByTitle(String title) throws SQLException {
         List<Book> books = new ArrayList<>();
-        String sql = "SELECT id, title, author, isbn, genre, total_copies, available_copies, publisher, year FROM books WHERE title LIKE ?";
+        String sql = "SELECT id, title, author, isbn, genre, total_copies, available_copies, publisher, year, image_url, cover_image_path FROM books WHERE title LIKE ?";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, "%" + title + "%");
             ResultSet rs = pstmt.executeQuery();
@@ -154,7 +158,7 @@ public class BookDAOImpl implements BookDAO {
     @Override
     public List<Book> findBooksByAuthor(String author) throws SQLException {
         List<Book> books = new ArrayList<>();
-        String sql = "SELECT id, title, author, isbn, genre, total_copies, available_copies, publisher, year FROM books WHERE author LIKE ?";
+        String sql = "SELECT id, title, author, isbn, genre, total_copies, available_copies, publisher, year, image_url, cover_image_path FROM books WHERE author LIKE ?";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, "%" + author + "%");
             ResultSet rs = pstmt.executeQuery();
@@ -167,7 +171,7 @@ public class BookDAOImpl implements BookDAO {
 
     @Override
     public Book findBookByISBN(String isbn) throws SQLException {
-        String sql = "SELECT id, title, author, isbn, genre, total_copies, available_copies, publisher, year FROM books WHERE isbn = ?";
+        String sql = "SELECT id, title, author, isbn, genre, total_copies, available_copies, publisher, year, image_url, cover_image_path FROM books WHERE isbn = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, isbn);
             ResultSet rs = pstmt.executeQuery();
@@ -181,7 +185,7 @@ public class BookDAOImpl implements BookDAO {
     @Override
     public List<Book> findBooksByGenre(String genre) throws SQLException {
         List<Book> books = new ArrayList<>();
-        String sql = "SELECT id, title, author, isbn, genre, total_copies, available_copies, publisher, year FROM books WHERE genre LIKE ?";
+        String sql = "SELECT id, title, author, isbn, genre, total_copies, available_copies, publisher, year, image_url, cover_image_path FROM books WHERE genre LIKE ?";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, "%" + genre + "%");
             ResultSet rs = pstmt.executeQuery();
@@ -203,6 +207,8 @@ public class BookDAOImpl implements BookDAO {
         book.setAvailableCopies(rs.getInt("available_copies"));
         book.setPublisher(rs.getString("publisher"));
         book.setYear(rs.getInt("year"));
+        book.setImageUrl(rs.getString("image_url")); // Carregar imageUrl
+        book.setCoverImagePath(rs.getString("cover_image_path")); // Carregar coverImagePath
         return book;
     }
 }

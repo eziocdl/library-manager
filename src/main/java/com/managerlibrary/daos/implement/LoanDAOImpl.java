@@ -35,7 +35,7 @@ public class LoanDAOImpl implements LoanDAO {
     @Override
     public Loan getLoanById(int id) throws SQLException {
         String sql = "SELECT l.id AS loan_id, l.book_id, l.user_id, l.loan_date, l.return_date, l.actual_return_date, l.status, l.fine, " +
-                "b.title AS book_title, b.author AS book_author, " +
+                "b.title AS book_title, b.author AS book_author, b.cover_image_path AS book_cover_image_path, " +
                 "u.name AS user_name, u.cpf AS user_cpf, b.id AS b_id, u.id AS u_id " +
                 "FROM loan l " +
                 "JOIN books b ON l.book_id = b.id " +
@@ -58,6 +58,7 @@ public class LoanDAOImpl implements LoanDAO {
                 book.setId(rs.getInt("b_id"));
                 book.setTitle(rs.getString("book_title"));
                 book.setAuthor(rs.getString("book_author"));
+                book.setCoverImagePath(rs.getString("book_cover_image_path"));
                 loan.setBook(book);
 
                 User user = new User();
@@ -131,10 +132,15 @@ public class LoanDAOImpl implements LoanDAO {
     }
 
     @Override
+    public List<Loan> getAllLoansWithBookAndUser() {
+        return null;
+    }
+
+    @Override
     public List<Loan> getAllLoansWithDetails() throws SQLException {
         List<Loan> loans = new ArrayList<>();
         String sql = "SELECT l.id AS loan_id, l.book_id, l.user_id, l.loan_date, l.return_date, l.actual_return_date, l.status, l.fine, " +
-                "b.title AS book_title, b.author AS book_author, " +
+                "b.title AS book_title, b.author AS book_author, b.cover_image_path AS book_cover_image_path, " +
                 "u.name AS user_name, u.cpf AS user_cpf, b.id AS b_id, u.id AS u_id " +
                 "FROM loan l " +
                 "JOIN books b ON l.book_id = b.id " +
@@ -155,6 +161,7 @@ public class LoanDAOImpl implements LoanDAO {
                 book.setId(rs.getInt("b_id"));
                 book.setTitle(rs.getString("book_title"));
                 book.setAuthor(rs.getString("book_author"));
+                book.setCoverImagePath(rs.getString("book_cover_image_path"));
                 loan.setBook(book);
 
                 User user = new User();

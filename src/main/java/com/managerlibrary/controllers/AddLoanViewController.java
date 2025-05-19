@@ -10,6 +10,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
@@ -27,6 +29,8 @@ public class AddLoanViewController {
     private ListView<Book> bookResultsListView;
     @FXML
     private Label selectedBookLabel;
+    @FXML
+    private ImageView selectedBookImageView; // Adicionado o ImageView
 
     @FXML
     private ComboBox<String> userSearchCriteria;
@@ -152,6 +156,21 @@ public class AddLoanViewController {
         selectedBook = bookResultsListView.getSelectionModel().getSelectedItem();
         if (selectedBook != null) {
             selectedBookLabel.setText("Livro selecionado: " + selectedBook.getTitle() + " - " + selectedBook.getAuthor());
+            if (selectedBook.getCoverImagePath() != null && !selectedBook.getCoverImagePath().isEmpty()) {
+                try {
+                    Image image = new Image("file:" + selectedBook.getCoverImagePath());
+                    selectedBookImageView.setImage(image);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    // Lógica para lidar com erro ao carregar a imagem
+                    selectedBookImageView.setImage(new Image(getClass().getResourceAsStream("/images/default_book.png"))); // Exibir imagem padrão em caso de erro
+                }
+            } else {
+                selectedBookImageView.setImage(new Image(getClass().getResourceAsStream("/images/default_book_icon.png"))); // Exibir ícone padrão se não houver imagem
+            }
+        } else {
+            selectedBookLabel.setText("Nenhum livro selecionado");
+            selectedBookImageView.setImage(null); // Limpar a imagem se nenhum livro estiver selecionado
         }
     }
 
@@ -204,9 +223,18 @@ public class AddLoanViewController {
             } catch (SQLException e) {
                 e.printStackTrace();
                 // Lógica para exibir erro ao salvar
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Erro ao Salvar");
+                alert.setHeaderText(null);
+                alert.setContentText("Ocorreu um erro ao salvar o empréstimo: " + e.getMessage());
+                alert.showAndWait();
             }
         } else {
-            // Lógica para informar que livro, usuário e datas são obrigatórios
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Campos Obrigatórios");
+            alert.setHeaderText(null);
+            alert.setContentText("Por favor, selecione um livro, um usuário e as datas de empréstimo e devolução.");
+            alert.showAndWait();
         }
     }
 

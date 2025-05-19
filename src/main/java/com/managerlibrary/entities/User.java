@@ -13,6 +13,7 @@ public class User {
     private final StringProperty email = new SimpleStringProperty(this, "email");
     private final StringProperty registrationNumber = new SimpleStringProperty(this, "registrationNumber");
     private final StringProperty cpf = new SimpleStringProperty(this, "cpf");
+    private final StringProperty profileImagePath = new SimpleStringProperty(this, "profileImagePath"); // Adicionado campo para o caminho da foto
 
     // Construtores
     public User() {
@@ -30,6 +31,32 @@ public class User {
         setEmail(email);
         setRegistrationNumber(registrationNumber);
         setCpf(cpf);
+    }
+
+    public User(int id, String name, String address, String phone, String email, String registrationNumber, String cpf, String profileImagePath) {
+        setId(id);
+        setName(name);
+        setAddress(address);
+        setPhone(phone);
+        setEmail(email);
+        setRegistrationNumber(registrationNumber);
+        setCpf(cpf);
+        this.profileImagePath.set(profileImagePath); // Inicializando o profileImagePath no construtor
+    }
+
+    // Getter para a Property profileImagePath
+    public StringProperty profileImagePathProperty() {
+        return profileImagePath;
+    }
+
+    // Getter para o valor de profileImagePath
+    public String getProfileImagePath() {
+        return profileImagePath.get();
+    }
+
+    // Setter para o valor de profileImagePath
+    public void setProfileImagePath(String profileImagePath) {
+        this.profileImagePath.set(profileImagePath);
     }
 
     // Getters para as Properties

@@ -59,6 +59,9 @@ public class App extends Application {
             rootLayout = rootLoader.load();
             rootController = rootLoader.getController();
 
+            // PASSO CRUCIAL: Passar a referência do primaryStage para o RootLayoutController
+            rootController.setPrimaryStage(primaryStage);
+
             // Carregar e configurar LoanView e LoanController
             FXMLLoader loanLoader = new FXMLLoader(getClass().getResource("/views/LoanView.fxml"));
             Pane loanView = loanLoader.load();

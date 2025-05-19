@@ -4,12 +4,14 @@ plugins {
     id("org.openjfx.javafxplugin") version "0.0.14"
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
-        vendor.set(JvmVendorSpec.ORACLE)
-    }
-}
+
+
+        java {
+            toolchain {
+                languageVersion.set(JavaLanguageVersion.of(21))
+                vendor.set(JvmVendorSpec.ORACLE)
+            }
+        }
 
 group = "com.managerlibrary"
 version = "1.0-SNAPSHOT"
@@ -21,6 +23,8 @@ repositories {
 dependencies {
     implementation("org.openjfx:javafx-controls:21")
     implementation("org.openjfx:javafx-fxml:21")
+    implementation("org.openjfx:javafx-base:21")
+
     implementation("org.postgresql:postgresql:42.7.2")
 
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
@@ -33,6 +37,7 @@ javafx {
 }
 
 tasks.jar { // Acesse a tarefa 'jar' diretamente dentro de 'tasks'
+
     from(sourceSets.main.get().resources) {
         into("")
     }

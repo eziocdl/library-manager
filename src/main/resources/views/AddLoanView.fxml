@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 
 <VBox xmlns="http://javafx.com/javafx/21"
@@ -23,7 +24,10 @@
                 <TextField fx:id="bookSearchTextField" promptText="Digite o termo de busca"/>
                 <Button text="Buscar" onAction="#searchBook"/>
             </HBox>
-            <ListView fx:id="bookResultsListView" prefHeight="150.0" onMouseClicked="#selectBook"/>
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <ListView fx:id="bookResultsListView" prefHeight="150.0" onMouseClicked="#selectBook" HBox.hgrow="ALWAYS"/>
+                <ImageView fx:id="selectedBookImageView" fitHeight="100.0" fitWidth="80.0" preserveRatio="true"/>
+            </HBox>
             <Label fx:id="selectedBookLabel" styleClass="label-info" text="Nenhum livro selecionado"/>
         </VBox>
     </TitledPane>
