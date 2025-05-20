@@ -1,6 +1,6 @@
 package com.managerlibrary.services;
 
-import com.managerlibrary.daos.implement.LoanDAOImpl; // Importação específica
+import com.managerlibrary.daos.implement.LoanDAOImpl; // Considerar mudar para interfaces sempre que possível
 import com.managerlibrary.daos.interfaces.LoanDAO;
 import com.managerlibrary.entities.Loan;
 
@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects; // Adicionado para Objects.requireNonNull
+import java.util.Objects;
 
 /**
  * Serviço responsável por gerenciar as operações de negócio relacionadas a empréstimos.
@@ -18,7 +18,7 @@ import java.util.Objects; // Adicionado para Objects.requireNonNull
  */
 public class LoanService {
 
-    private final LoanDAO loanDAO; // Declarado como final para imutabilidade
+    private final LoanDAO loanDAO;
 
     /**
      * Construtor do LoanService.
@@ -26,8 +26,7 @@ public class LoanService {
      * @param loanDAO A implementação de LoanDAO a ser utilizada para acesso a dados.
      * Não pode ser nula.
      */
-    public LoanService(LoanDAO loanDAO) { // Usar a interface LoanDAO como tipo de parâmetro
-        // Garantir que o DAO não seja nulo para evitar NullPointerException em tempo de execução.
+    public LoanService(LoanDAO loanDAO) {
         this.loanDAO = Objects.requireNonNull(loanDAO, "LoanDAO não pode ser nulo.");
     }
 
@@ -59,10 +58,9 @@ public class LoanService {
             throw new IllegalArgumentException("A data de devolução não pode ser anterior à data de empréstimo.");
         }
 
-        // Definir status inicial para novo empréstimo
         loan.setStatus("Ativo");
-        loan.setActualReturnDate(null); // Garantir que a data de devolução real seja nula inicialmente
-        loan.setFine(0.0); // Garantir que a multa inicial seja 0.0
+        loan.setActualReturnDate(null);
+        loan.setFine(0.0);
 
         loanDAO.insertLoan(loan);
     }
@@ -80,7 +78,8 @@ public class LoanService {
         if (id <= 0) {
             throw new IllegalArgumentException("ID do empréstimo inválido.");
         }
-        return loanDAO.getLoanById(id);
+        // CORRIGIDO: Método renomeado no DAO
+        return loanDAO.findLoanByIdWithDetails(id);
     }
 
     /**
@@ -90,8 +89,8 @@ public class LoanService {
      * @throws SQLException Se ocorrer um erro de acesso ao banco de dados.
      */
     public List<Loan> getAllLoans() throws SQLException {
-        // O DAO deve garantir que não retorna null, mas o service pode adicionar uma camada de proteção
-        List<Loan> loans = loanDAO.getAllLoans();
+        // CORRIGIDO: Método renomeado no DAO
+        List<Loan> loans = loanDAO.findAllLoans();
         return loans != null ? loans : new ArrayList<>();
     }
 
@@ -106,7 +105,6 @@ public class LoanService {
         if (loan == null || loan.getId() <= 0) {
             throw new IllegalArgumentException("Empréstimo para atualização inválido.");
         }
-        // Poderia adicionar mais validações de negócio aqui (ex: não permitir mudar livro/usuário se já devolvido)
         loanDAO.updateLoan(loan);
     }
 
@@ -122,8 +120,8 @@ public class LoanService {
         if (id <= 0) {
             throw new IllegalArgumentException("ID do empréstimo para exclusão inválido.");
         }
-        // Lógica de negócio: talvez não permitir remover um empréstimo ativo
-        Loan loanToDelete = loanDAO.getLoanById(id);
+        // Usando o método correto do DAO para buscar o empréstimo para validação
+        Loan loanToDelete = loanDAO.findLoanByIdWithDetails(id);
         if (loanToDelete != null && loanToDelete.getActualReturnDate() == null) {
             throw new IllegalStateException("Não é possível remover um empréstimo ativo. Marque-o como devolvido primeiro.");
         }
@@ -137,8 +135,9 @@ public class LoanService {
      * @throws SQLException Se ocorrer um erro de acesso ao banco de dados.
      */
     public List<Loan> getAllLoansWithDetails() throws SQLException {
-        List<Loan> loans = loanDAO.getAllLoansWithDetails();
-        return loans != null ? loans : new ArrayList<>(); // Retorna uma lista vazia em vez de null
+        // CORRIGIDO: Método renomeado no DAO
+        List<Loan> loans = loanDAO.findAllLoansWithBookAndUser();
+        return loans != null ? loans : new ArrayList<>();
     }
 
     /**
@@ -174,16 +173,14 @@ public class LoanService {
      * @return O valor da multa, ou 0.0 se não houver atraso ou datas inválidas.
      */
     private double calculateLateFee(LocalDate returnDate, LocalDate actualReturnDate) {
-        // Validações adicionais para datas
         if (returnDate == null || actualReturnDate == null) {
-            // Ou logar um erro, ou retornar 0.0, dependendo da política de erro
             System.err.println("Erro: Datas de devolução nulas para cálculo de multa.");
             return 0.0;
         }
 
         if (actualReturnDate.isAfter(returnDate)) {
             long daysLate = ChronoUnit.DAYS.between(returnDate, actualReturnDate);
-            double feePerDay = 0.50; // Exemplo da taxa por dia de atraso
+            double feePerDay = 0.50;
             return daysLate * feePerDay;
         }
         return 0.0;
@@ -198,8 +195,7 @@ public class LoanService {
      * @throws SQLException Se ocorrer um erro de acesso ao banco de dados.
      */
     public List<Loan> getAllLoansWithBookAndUser() throws SQLException {
-        // Este método parece duplicar getAllLoansWithDetails.
-        // Se a intenção é a mesma, um deles pode ser removido ou este pode chamar o outro.
-        return loanDAO.getAllLoansWithBookAndUser(); // Assumindo que o DAO tem este método específico
+        // Este método já estava correto, pois chamava o método do DAO com o mesmo nome.
+        return loanDAO.findAllLoansWithBookAndUser();
     }
 }
