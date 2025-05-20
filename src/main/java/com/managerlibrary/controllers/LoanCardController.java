@@ -3,7 +3,7 @@ package com.managerlibrary.controllers;
 import com.managerlibrary.entities.Loan;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
+// import javafx.scene.Parent; // Removido: Não utilizado diretamente.
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -28,7 +28,7 @@ import java.util.Optional;
 public class LoanCardController {
 
     @FXML
-    private VBox loanCard;
+    private VBox loanCard; // Mantido, pode ser útil para estilos ou layout
     @FXML
     private Label userNameLabel;
     @FXML
@@ -56,7 +56,7 @@ public class LoanCardController {
 
     private Loan loan;
     private LoanController loanController;
-    private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     /**
      * Define o empréstimo a ser exibido neste card e atualiza as informações visuais.
@@ -89,29 +89,62 @@ public class LoanCardController {
             displayUserInfo();
             displayDatesAndFine();
             updateReturnButtonVisibility();
+        } else {
+            // Limpa os campos se o empréstimo for nulo
+            bookCoverImageView.setImage(null);
+            bookTitleLabel.setText("N/A");
+            userNameLabel.setText("N/A");
+            userCpfLabel.setText("N/A");
+            loanDateLabel.setText("N/A");
+            returnDateLabel.setText("N/A");
+            actualReturnDateLabel.setVisible(false);
+            fineLabel.setVisible(false);
+            returnButton.setVisible(false);
         }
     }
 
     /**
      * Carrega a capa do livro, se disponível, e exibe no ImageView.
-     * Se o arquivo não for encontrado ou ocorrer um erro, o ImageView é limpo
-     * e uma mensagem de erro é impressa no console.
+     * Se o arquivo não for encontrado ou ocorrer um erro, uma imagem padrão é exibida.
      */
     private void loadBookCover() {
-        bookCoverImageView.setImage(null); // Limpa a imagem anterior
+        Image imageToSet = null;
+
+        // Limpa a imagem anterior
+        bookCoverImageView.setImage(null);
+
+        // Tenta carregar a imagem do caminho do livro
         if (loan.getBook() != null && loan.getBook().getCoverImagePath() != null && !loan.getBook().getCoverImagePath().isEmpty()) {
             try {
                 File file = new File(loan.getBook().getCoverImagePath());
                 if (file.exists()) {
-                    bookCoverImageView.setImage(new Image(file.toURI().toString()));
+                    imageToSet = new Image(file.toURI().toString());
+                    if (!imageToSet.isError()) {
+                        bookCoverImageView.setImage(imageToSet);
+                        return; // Imagem carregada com sucesso, sai do método
+                    } else {
+                        logError("Erro ao carregar imagem do livro do arquivo (Image.isError()): " + loan.getBook().getCoverImagePath(), null);
+                    }
                 } else {
-                    System.err.println("Arquivo de imagem não encontrado: " + loan.getBook().getCoverImagePath());
+                    // logError("Arquivo de imagem não encontrado: " + loan.getBook().getCoverImagePath(), null); // Para debug
                 }
             } catch (Exception e) {
-                System.err.println("Erro ao carregar imagem do livro: " + loan.getBook().getCoverImagePath() + " - " + e.getMessage());
-                e.printStackTrace();
+                logError("Erro ao carregar imagem do livro do arquivo: " + loan.getBook().getCoverImagePath(), e);
             }
         }
+
+        // Se a imagem do livro não foi carregada ou houve erro, tenta uma imagem padrão
+        try {
+            // Certifique-se de que o caminho para a imagem padrão está correto no seu projeto
+            imageToSet = new Image(getClass().getResourceAsStream("/images/default_book_icon.png"));
+            if (imageToSet.isError()) {
+                throw new IOException("Erro ao carregar default_book_icon.png");
+            }
+        } catch (IOException e) {
+            logError("Erro ao carregar imagem padrão /images/default_book_icon.png", e);
+            imageToSet = null; // Não foi possível carregar nenhuma imagem
+        }
+        bookCoverImageView.setImage(imageToSet);
     }
 
     /**
@@ -126,11 +159,11 @@ public class LoanCardController {
      */
     private void displayUserInfo() {
         if (loan.getUser() != null) {
-            userNameLabel.setText("Nome do Usuário: " + loan.getUser().getName() + " (ID: " + loan.getUser().getId() + ")");
-            userCpfLabel.setText(loan.getUser().getCpf() != null && !loan.getUser().getCpf().isEmpty() ? "CPF do Usuário: " + loan.getUser().getCpf() : "CPF do Usuário: N/A");
+            userNameLabel.setText("Nome do Usuário: " + loan.getUser().getName());
+            userCpfLabel.setText(loan.getUser().getCpf() != null && !loan.getUser().getCpf().isEmpty() ? "CPF: " + loan.getUser().getCpf() : "CPF: N/A");
         } else {
-            userNameLabel.setText("Nome do Usuário: N/A (ID: N/A)");
-            userCpfLabel.setText("CPF do Usuário: N/A");
+            userNameLabel.setText("Usuário: N/A");
+            userCpfLabel.setText("CPF: N/A");
         }
     }
 
@@ -138,8 +171,8 @@ public class LoanCardController {
      * Exibe as datas de empréstimo e devolução, e a multa (se houver).
      */
     private void displayDatesAndFine() {
-        loanDateLabel.setText(loan.getLoanDate() != null ? loan.getLoanDate().format(dateFormatter) : "N/A");
-        returnDateLabel.setText(loan.getReturnDate() != null ? loan.getReturnDate().format(dateFormatter) : "N/A");
+        loanDateLabel.setText("Empréstimo: " + (loan.getLoanDate() != null ? loan.getLoanDate().format(dateFormatter) : "N/A"));
+        returnDateLabel.setText("Devolução Prevista: " + (loan.getReturnDate() != null ? loan.getReturnDate().format(dateFormatter) : "N/A"));
 
         if (loan.getActualReturnDate() != null) {
             actualReturnDateLabel.setText("Devolvido em: " + loan.getActualReturnDate().format(dateFormatter));
@@ -151,6 +184,8 @@ public class LoanCardController {
         fineLabel.setVisible(loan.getFine() > 0);
         if (loan.getFine() > 0) {
             fineLabel.setText(String.format("Multa: R$ %.2f", loan.getFine()));
+        } else {
+            fineLabel.setText(""); // Limpa o texto se não houver multa
         }
     }
 
@@ -158,7 +193,12 @@ public class LoanCardController {
      * Atualiza a visibilidade do botão de devolver com base na data de devolução real.
      */
     private void updateReturnButtonVisibility() {
+        // O botão de "Devolver" só deve ser visível se o livro ainda não foi devolvido
         returnButton.setVisible(loan.getActualReturnDate() == null);
+        // Opcional: Desabilitar botões de edição/remoção para empréstimos já devolvidos
+        boolean isReturned = loan.getActualReturnDate() != null;
+        editButton.setDisable(isReturned);
+        removeButton.setDisable(isReturned);
     }
 
     /**
@@ -168,6 +208,8 @@ public class LoanCardController {
     private void markAsReturned() {
         if (loan != null && loanController != null) {
             loanController.markLoanAsReturned(loan);
+        } else {
+            logError("Não foi possível marcar empréstimo como devolvido. Dependências ausentes.", null);
         }
     }
 
@@ -178,6 +220,8 @@ public class LoanCardController {
     private void showLoanDetails() {
         if (loan != null && loanController != null) {
             loanController.showLoanDetails(loan);
+        } else {
+            logError("Não foi possível mostrar detalhes do empréstimo. Dependências ausentes.", null);
         }
     }
 
@@ -186,28 +230,39 @@ public class LoanCardController {
      */
     @FXML
     private void editLoan() {
-        if (loan != null && loanController != null) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/EditLoanView.fxml"));
-                Parent root = loader.load();
+        if (loan == null || loanController == null) {
+            logError("Não foi possível carregar a tela de edição. Empréstimo ou LoanController é nulo.", null);
+            showAlert("Erro", "Não foi possível carregar a tela de edição do empréstimo.");
+            return;
+        }
 
-                EditLoanViewController controller = loader.getController();
-                controller.setLoan(loan);
-                controller.setLoanService(loanController.getLoanService());
-                controller.setBookService(loanController.getBookService());
-                controller.setUserService(loanController.getUserService());
-                controller.setMainLoanController(loanController);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/EditLoanView.fxml"));
+            VBox root = loader.load(); // loader.load() retorna Object, VBox é mais específico
 
-                Stage stage = new Stage();
-                stage.setTitle("Editar Empréstimo");
-                stage.setScene(new Scene(root));
-                stage.initModality(Modality.APPLICATION_MODAL);
-                stage.showAndWait();
+            EditLoanViewController controller = loader.getController();
+            controller.setLoan(loan);
+            // É crucial que o LoanController tenha esses serviços disponíveis
+            controller.setLoanService(loanController.getLoanService());
+            // Os serviços de livro e usuário não são estritamente necessários para EditLoanView
+            // a menos que você edite informações de livro/usuário diretamente lá.
+            // Se não forem usados, considere removê-los do EditLoanViewController.
+            controller.setBookService(loanController.getBookService()); // Opcional, dependendo da necessidade real
+            controller.setUserService(loanController.getUserService()); // Opcional, dependendo da necessidade real
+            controller.setMainLoanController(loanController);
 
-            } catch (IOException e) {
-                logError("Erro ao carregar tela de edição de empréstimo", e);
-                showAlert("Erro ao Carregar", "Não foi possível carregar a tela de edição do empréstimo.");
-            }
+            Stage stage = new Stage();
+            stage.setTitle("Editar Empréstimo");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            // Definir o proprietário do palco do diálogo, para centralização
+            stage.initOwner(loanCard.getScene().getWindow());
+            controller.setDialogStage(stage); // Passa o stage para o controlador de edição
+            stage.showAndWait();
+
+        } catch (IOException e) {
+            logError("Erro ao carregar tela de edição de empréstimo", e);
+            showAlert("Erro ao Carregar", "Não foi possível carregar a tela de edição do empréstimo.");
         }
     }
 
@@ -216,21 +271,28 @@ public class LoanCardController {
      */
     @FXML
     private void removeLoan() {
-        if (loan != null && loanController != null) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Remover Empréstimo");
-            alert.setHeaderText("Confirmar Remoção");
-            alert.setContentText("Tem certeza que deseja remover este empréstimo?");
+        if (loan == null || loanController == null) {
+            logError("Não foi possível remover o empréstimo. Empréstimo ou LoanController é nulo.", null);
+            showAlert("Erro", "Não foi possível remover o empréstimo.");
+            return;
+        }
 
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
-                loanController.removeLoan(loan);
-            }
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Remover Empréstimo");
+        alert.setHeaderText("Confirmar Remoção");
+        alert.setContentText("Tem certeza que deseja remover o empréstimo do livro \"" + loan.getBook().getTitle() + "\" para o usuário \"" + loan.getUser().getName() + "\"?");
+        // Definir o proprietário do alerta para centralização
+        alert.initOwner(loanCard.getScene().getWindow());
+
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            loanController.removeLoan(loan);
         }
     }
 
     /**
-     * Exibe um diálogo de alerta com a mensagem especificada.
+     * Exibe um diálogo de alerta com o tipo, título e conteúdo especificados.
      *
      * @param title   O título do alerta.
      * @param content O conteúdo da mensagem do alerta.
@@ -247,10 +309,15 @@ public class LoanCardController {
      * Registra uma mensagem de erro no console.
      *
      * @param message A mensagem de erro.
-     * @param e       A exceção ocorrida.
+     * @param e       A exceção ocorrida, pode ser nula.
      */
     private void logError(String message, Exception e) {
-        System.err.println(message + ": " + e.getMessage());
-        e.printStackTrace();
+        System.err.print(message);
+        if (e != null) {
+            System.err.println(": " + e.getMessage());
+            e.printStackTrace();
+        } else {
+            System.err.println();
+        }
     }
 }

@@ -36,9 +36,9 @@
         <Label fx:id="fineLabel" text="Multa: R$ 0,00" GridPane.columnIndex="1" GridPane.rowIndex="2" style="-fx-font-size: 0.9em;" visible="false" styleClass="label error-text"/>
     </GridPane>
     <HBox alignment="CENTER_RIGHT" spacing="10" style="-fx-padding: 10 0 0 0;">
-        <Button text="Detalhes" onAction="#showLoanDetails" styleClass="book-card-action-button rounded-corners"/>
-        <Button text="Editar" onAction="#editLoan" styleClass="book-card-action-button rounded-corners"/>
-        <Button text="Remover" onAction="#removeLoan" styleClass="book-card-action-button rounded-corners overdue-button"/>
+        <Button fx:id="detailsButton" text="Detalhes" onAction="#showLoanDetails" styleClass="book-card-action-button rounded-corners"/>
+        <Button fx:id="editButton" text="Editar" onAction="#editLoan" styleClass="book-card-action-button rounded-corners"/>
+        <Button fx:id="removeButton" text="Remover" onAction="#removeLoan" styleClass="book-card-action-button rounded-corners overdue-button"/>
         <Button fx:id="returnButton" text="Devolver" onAction="#markAsReturned" styleClass="book-card-action-button rounded-corners primary-button"/>
     </HBox>
 </VBox>

@@ -8,25 +8,19 @@
 <VBox xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.managerlibrary.controllers.UserCardController"
-      styleClass="book-card"
-      spacing="8.0"
-      fx:id="userCard"> <padding>
-    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-</padding>
+      styleClass="user-card rounded-corners shadow-effect" spacing="8.0"
+      fx:id="userCard">
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+    </padding>
     <HBox alignment="CENTER_LEFT" spacing="10.0">
-        <StackPane styleClass="book-card-image-container">
-            <ImageView fx:id="profileImageView" fitHeight="80.0" fitWidth="80.0" preserveRatio="true" styleClass="book-card-image circular-image"/>
-        </StackPane>
-        <VBox spacing="4.0" styleClass="book-card-details">
-            <Label fx:id="nameLabel" styleClass="book-card-title"/>
-            <Label fx:id="emailLabel" styleClass="book-card-author"/>
-            <Label fx:id="cpfLabel" styleClass="book-card-info"/>
-            <Label fx:id="phoneLabel" styleClass="book-card-info"/>
-            <Label fx:id="addressLabel" styleClass="book-card-info"/>
+        <StackPane styleClass="user-card-image-container"> <ImageView fx:id="profileImageView" fitHeight="80.0" fitWidth="80.0" preserveRatio="true"
+                                                                      styleClass="user-card-image circular-image"/> </StackPane>
+        <VBox spacing="4.0" styleClass="user-card-details"> <Label fx:id="nameLabel" styleClass="user-card-title"/> <Label fx:id="emailLabel" styleClass="user-card-email"/> <Label fx:id="cpfLabel" styleClass="user-card-info"/>
+            <Label fx:id="phoneLabel" styleClass="user-card-info"/>
+            <Label fx:id="addressLabel" styleClass="user-card-info"/>
         </VBox>
     </HBox>
-    <HBox alignment="CENTER_RIGHT" spacing="5.0" styleClass="book-card-actions">
-        <Button text="Editar" onAction="#handleEditUser" styleClass="default-action-button rounded-corners"/>
-        <Button text="Remover" onAction="#handleDeleteUser" styleClass="default-action-button rounded-corners overdue-button"/>
-    </HBox>
+    <HBox alignment="CENTER_RIGHT" spacing="5.0" styleClass="user-card-actions"> <Button text="Editar" onAction="#handleEditUser" styleClass="default-action-button rounded-corners"/>
+        <Button text="Remover" onAction="#handleDeleteUser" styleClass="default-action-button rounded-corners danger-button"/> </HBox>
 </VBox>

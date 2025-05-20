@@ -1,5 +1,8 @@
 package com.managerlibrary.controllers;
 
+import com.managerlibrary.services.BookService;
+import com.managerlibrary.services.LoanService;
+import com.managerlibrary.services.UserService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,62 +12,35 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Controlador para o layout raiz da aplicação. Gerencia a exibição das diferentes
  * views (livros, usuários, empréstimos) na área central do BorderPane.
+ * Este controlador é responsável por carregar as views e seus controladores,
+ * injetando as dependências (serviços) necessárias.
  */
 public class RootLayoutController {
 
     @FXML
     private BorderPane rootLayout;
 
-    private BookController bookController;
-    private UserController userController;
-    private LoanController loanController;
-    private Pane loanView; // Referência para a view de empréstimos carregada
     private Stage primaryStage; // Palco principal da aplicação
 
-    /**
-     * Define o controlador de livros.
-     *
-     * @param bookController O controlador de livros.
-     */
-    public void setBookController(BookController bookController) {
-        this.bookController = bookController;
-    }
+    // Instâncias dos serviços (serão injetadas pela classe App)
+    private BookService bookService;
+    private UserService userService;
+    private LoanService loanService;
 
-    /**
-     * Define o controlador de usuários.
-     *
-     * @param userController O controlador de usuários.
-     */
-    public void setUserController(UserController userController) {
-        this.userController = userController;
-    }
+    // Cache para os Panes das views e seus respectivos controladores
+    private Pane bookViewCache;
+    private BookController bookControllerCache;
 
-    /**
-     * Define o controlador de empréstimos e carrega a view de empréstimos.
-     *
-     * @param loanController O controlador de empréstimos.
-     */
-    public void setLoanController(LoanController loanController) {
-        this.loanController = loanController;
-        this.loanView = loadContent("/views/LoanView.fxml");
-        if (loanView != null) {
-            // Não define a view central aqui, pois pode não ser a view inicial
-            // A view de empréstimos será definida quando o menu for clicado.
-        }
-    }
+    private Pane userViewCache;
+    private UserController userControllerCache;
 
-    /**
-     * Define a view de empréstimos já carregada.
-     *
-     * @param loanView A view de empréstimos.
-     */
-    public void setLoanView(Pane loanView) {
-        this.loanView = loanView;
-    }
+    private Pane loanViewCache;
+    private LoanController loanControllerCache;
 
     /**
      * Define o palco principal da aplicação.
@@ -85,6 +61,16 @@ public class RootLayoutController {
     }
 
     /**
+     * **NOVO MÉTODO:** Injeta todos os serviços neste controlador.
+     * Chamado pela classe App após a inicialização.
+     */
+    public void setServices(BookService bookService, UserService userService, LoanService loanService) {
+        this.bookService = Objects.requireNonNull(bookService, "BookService não pode ser nulo.");
+        this.userService = Objects.requireNonNull(userService, "UserService não pode ser nulo.");
+        this.loanService = Objects.requireNonNull(loanService, "LoanService não pode ser nulo.");
+    }
+
+    /**
      * Ação para o menu "Sair". Encerra a aplicação.
      *
      * @param event O evento de ação.
@@ -95,51 +81,93 @@ public class RootLayoutController {
     }
 
     /**
-     * Ação para exibir a view de livros. Carrega a view e define o controlador.
+     * Ação para exibir a view de livros.
+     * Carrega a view e seu controlador se não estiverem em cache, injeta os serviços,
+     * e os exibe no centro do layout.
      *
-     * @param event O evento de ação.
+     * @param event O evento de ação (pode ser nulo se chamado programaticamente).
      */
     @FXML
     public void showBookView(ActionEvent event) {
-        loadView("/views/BookView.fxml", (loader) -> {
-            bookController = loader.getController();
-            bookController.setRootLayoutController(this);
-        });
+        showBookView(); // Chama a versão sem ActionEvent
+    }
+
+    // Versão sem ActionEvent para ser chamada programaticamente (ex: da App na inicialização)
+    public void showBookView() {
+        if (bookViewCache == null) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/BookView.fxml"));
+                bookViewCache = loader.load(); // Carrega o FXML
+                bookControllerCache = loader.getController(); // Obtém o controlador AUTOMATICAMENTE
+
+                // *** INJEÇÃO DE DEPENDÊNCIA NO BookController ***
+                bookControllerCache.setBookService(this.bookService);
+                bookControllerCache.setRootLayoutController(this); // Passa a si mesmo para o BookController
+
+                logInfo("BookView e BookController carregados e serviços injetados.");
+            } catch (IOException e) {
+                logError("Erro ao carregar BookView.fxml ou injetar serviços: " + e.getMessage(), e);
+                return; // Impede a continuação se a view não carregou
+            }
+        }
+        setCenterView(bookViewCache);
+        bookControllerCache.loadAllBooks(); // Chama o método para carregar os dados
     }
 
     /**
-     * Ação para exibir a view de empréstimos. Se a view já estiver carregada, apenas a exibe.
-     * Caso contrário, carrega a view e define o controlador.
+     * Ação para exibir a view de empréstimos.
      *
      * @param event O evento de ação.
      */
     @FXML
     public void showLoanView(ActionEvent event) {
-        if (loanView != null) {
-            rootLayout.setCenter(loanView);
-            if (loanController != null) {
-                loanController.loadAllLoans(); // Garante que os empréstimos sejam carregados ao exibir a tela
+        if (loanViewCache == null) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/LoanView.fxml"));
+                loanViewCache = loader.load();
+                loanControllerCache = loader.getController();
+
+                // *** INJEÇÃO DE DEPENDÊNCIA NO LoanController ***
+                loanControllerCache.setLoanService(this.loanService);
+                loanControllerCache.setBookService(this.bookService); // LoanController precisa de BookService
+                loanControllerCache.setUserService(this.userService); // LoanController precisa de UserService
+                loanControllerCache.setRootLayoutController(this);
+
+                logInfo("LoanView e LoanController carregados e serviços injetados.");
+            } catch (IOException e) {
+                logError("Erro ao carregar LoanView.fxml ou injetar serviços: " + e.getMessage(), e);
+                return;
             }
-        } else {
-            loadView("/views/LoanView.fxml", (loader) -> {
-                loanController = loader.getController();
-                loanController.setRootLayoutController(this);
-                loanView = (Pane) loader.getRoot(); // Garante que a referência da view seja mantida
-            });
         }
+        setCenterView(loanViewCache);
+        loanControllerCache.loadAllLoans(); // Chama o método para carregar os dados
     }
 
     /**
-     * Ação para exibir a view de usuários. Carrega a view e define o controlador.
+     * Ação para exibir a view de usuários.
      *
      * @param event O evento de ação.
      */
     @FXML
     public void showUserView(ActionEvent event) {
-        loadView("/views/UserView.fxml", (loader) -> {
-            userController = loader.getController();
-            userController.setRootLayoutController(this);
-        });
+        if (userViewCache == null) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/UserView.fxml"));
+                userViewCache = loader.load();
+                userControllerCache = loader.getController();
+
+                // *** INJEÇÃO DE DEPENDÊNCIA NO UserController ***
+                userControllerCache.setUserService(this.userService);
+                userControllerCache.setRootLayoutController(this);
+
+                logInfo("UserView e UserController carregados e serviços injetados.");
+            } catch (IOException e) {
+                logError("Erro ao carregar UserView.fxml ou injetar serviços: " + e.getMessage(), e);
+                return;
+            }
+        }
+        setCenterView(userViewCache);
+        userControllerCache.loadAllUsers(); // Assumindo que você tem um loadAllUsers no UserController
     }
 
     /**
@@ -149,10 +177,10 @@ public class RootLayoutController {
      */
     @FXML
     public void handleAddBookClick(ActionEvent event) {
-        if (bookController != null) {
-            bookController.showAddBookView();
+        if (bookControllerCache != null) {
+            bookControllerCache.showAddBookView();
         } else {
-            logError("BookController não foi injetado", new IllegalStateException("BookController não foi injetado no RootLayoutController."));
+            logError("BookController não foi carregado. Não é possível adicionar livro.", null);
         }
     }
 
@@ -163,100 +191,64 @@ public class RootLayoutController {
      */
     @FXML
     public void handleAddUserClick(ActionEvent event) {
-        if (userController != null) {
-            userController.showAddUserView();
+        if (userControllerCache != null) {
+            userControllerCache.showAddUserView();
         } else {
-            logError("UserController não foi injetado", new IllegalStateException("UserController não foi injetado no RootLayoutController."));
+            logError("UserController não foi carregado. Não é possível adicionar usuário.", null);
         }
     }
 
     /**
-     * Método genérico para carregar views e executar uma ação no controller (opcional).
+     * Define o nó (geralmente um Pane) a ser exibido no centro do BorderPane.
      *
-     * @param fxmlPath O caminho para o arquivo FXML da view.
-     * @param callback Uma interface funcional para processar o loader e o controller.
-     */
-    private void loadView(String fxmlPath, ControllerCallback callback) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Pane view = loader.load();
-            rootLayout.setCenter(view);
-            if (callback != null) {
-                callback.process(loader);
-            }
-        } catch (IOException e) {
-            logError("Erro ao carregar view: " + fxmlPath, e);
-        }
-    }
-
-    /**
-     * Novo método para definir a view central diretamente.
-     *
-     * @param node O nó (geralmente um Pane) a ser exibido no centro.
+     * @param node O nó a ser exibido.
      */
     public void setCenterView(Node node) {
-        rootLayout.setCenter(node);
-    }
-
-    /**
-     * Método auxiliar para carregar o conteúdo FXML e retornar o Pane carregado.
-     *
-     * @param fxmlPath O caminho para o arquivo FXML.
-     * @return O Pane carregado ou null em caso de erro.
-     */
-    private Pane loadContent(String fxmlPath) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            return loader.load();
-        } catch (IOException e) {
-            logError("Erro ao carregar conteúdo: " + fxmlPath, e);
-            return null;
+        if (rootLayout != null && node != null) {
+            rootLayout.setCenter(node);
+        } else {
+            logError("rootLayout ou o nó a ser definido no centro é nulo.", null);
         }
     }
 
     /**
-     * Interface funcional para o callback do controller. Permite executar código após o carregamento da view.
-     */
-    @FunctionalInterface
-    private interface ControllerCallback {
-        void process(FXMLLoader loader);
-    }
-
-    /**
-     * Obtém o controlador de empréstimos.
+     * Obtém o controlador de empréstimos (para outros controladores, se necessário).
      *
      * @return O controlador de empréstimos.
      */
     public LoanController getLoanController() {
-        return loanController;
+        return loanControllerCache;
     }
 
     /**
-     * Obtém o controlador de livros.
+     * Obtém o controlador de livros (para outros controladores, se necessário).
      *
      * @return O controlador de livros.
      */
     public BookController getBookController() {
-        return bookController;
+        return bookControllerCache;
     }
 
     /**
-     * Obtém o controlador de usuários.
+     * Obtém o controlador de usuários (para outros controladores, se necessário).
      *
      * @return O controlador de usuários.
      */
     public UserController getUserController() {
-        return userController;
+        return userControllerCache;
     }
 
-    /**
-     * Registra uma mensagem de erro no console.
-     *
-     * @param message A mensagem de erro.
-     * @param e       A exceção ocorrida.
-     */
     private void logError(String message, Exception e) {
-        System.err.println(message + ": " + e.getMessage());
-        e.printStackTrace();
+        System.err.print("ERRO: " + message);
+        if (e != null) {
+            System.err.println(": " + e.getMessage());
+            e.printStackTrace();
+        } else {
+            System.err.println();
+        }
+    }
+
+    private void logInfo(String message) {
+        System.out.println("INFO: " + message);
     }
 }

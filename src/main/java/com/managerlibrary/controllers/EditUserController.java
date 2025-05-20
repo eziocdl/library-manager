@@ -13,7 +13,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException; // Adicionado para tratamento de erros de IO em imagens
 import java.sql.SQLException;
+import java.util.Objects; // Adicionado para Objects.requireNonNull
 
 /**
  * Controlador para a tela de edição de um usuário existente. Permite modificar
@@ -44,16 +46,17 @@ public class EditUserController {
 
     private User currentUser; // O usuário atualmente sendo editado
     private UserController userController; // Controlador da tela principal de usuários
-    private UserService userService;
+    private UserService userService; // Injetado via setUserService
     private File selectedProfileImageFile; // Arquivo de imagem de perfil selecionado
+    private Stage dialogStage; // Palco (Stage) do diálogo modal
 
     /**
-     * Construtor padrão da classe. Inicializa o UserService.
-     *
-     * @throws SQLException Se ocorrer um erro ao conectar ao banco de dados.
+     * Construtor padrão da classe.
+     * O UserService será definido via setUserService.
+     * Removida a inicialização direta do UserService para permitir injeção de dependência.
      */
-    public EditUserController() throws SQLException {
-        this.userService = new UserService();
+    public EditUserController() {
+        // O UserService será injetado através do método setUserService().
     }
 
     /**
@@ -78,24 +81,38 @@ public class EditUserController {
     }
 
     /**
-     * Define o serviço de usuários.
+     * **CORRIGIDO:** Renomeado de 'setService' para 'setUserService' para corresponder à chamada.
+     * Define o serviço de usuários. Este é o ponto de injeção preferencial para o UserService.
      *
      * @param userService O serviço de usuários a ser utilizado.
      */
-    public void setService(UserService userService) {
-        this.userService = userService;
+    public void setUserService(UserService userService) { // Renomeado de setService para setUserService
+        this.userService = Objects.requireNonNull(userService, "UserService não pode ser nulo.");
+    }
+
+    /**
+     * Define o palco (Stage) deste diálogo modal.
+     *
+     * @param dialogStage O palco do diálogo.
+     */
+    public void setDialogStage(Stage dialogStage) {
+        this.dialogStage = dialogStage;
     }
 
     /**
      * Preenche os campos do formulário com os dados do usuário a ser editado e carrega sua foto de perfil.
      */
     private void populateFields() {
-        nameTextField.setText(currentUser.getName());
-        emailTextField.setText(currentUser.getEmail());
-        cpfTextField.setText(currentUser.getCpf());
-        phoneTextField.setText(currentUser.getPhone());
-        addressTextField.setText(currentUser.getAddress());
-        profileImagePathTextField.setText(currentUser.getProfileImagePath());
+        if (currentUser == null) {
+            logError("Erro: currentUser é nulo ao tentar popular campos.", null);
+            return;
+        }
+        nameTextField.setText(currentUser.getName() != null ? currentUser.getName() : "");
+        emailTextField.setText(currentUser.getEmail() != null ? currentUser.getEmail() : "");
+        cpfTextField.setText(currentUser.getCpf() != null ? currentUser.getCpf() : "");
+        phoneTextField.setText(currentUser.getPhone() != null ? currentUser.getPhone() : "");
+        addressTextField.setText(currentUser.getAddress() != null ? currentUser.getAddress() : "");
+        profileImagePathTextField.setText(currentUser.getProfileImagePath() != null ? currentUser.getProfileImagePath() : "");
         loadProfileImage();
     }
 
@@ -103,21 +120,52 @@ public class EditUserController {
      * Carrega a imagem de perfil do usuário, exibindo uma imagem padrão em caso de erro ou se não houver imagem.
      */
     private void loadProfileImage() {
-        if (currentUser.getProfileImagePath() != null && !currentUser.getProfileImagePath().isEmpty()) {
+        Image imageToSet = null;
+
+        // Limpa a imagem anterior
+        profileImageView.setImage(null);
+
+        // Tenta carregar a imagem do caminho do perfil se existir
+        if (currentUser != null && currentUser.getProfileImagePath() != null && !currentUser.getProfileImagePath().isEmpty()) {
             try {
                 File file = new File(currentUser.getProfileImagePath());
                 if (file.exists()) {
-                    profileImageView.setImage(new Image(file.toURI().toString()));
+                    imageToSet = new Image(file.toURI().toString());
+                    if (!imageToSet.isError()) {
+                        profileImageView.setImage(imageToSet);
+                        return; // Imagem carregada com sucesso, sai do método
+                    } else {
+                        logError("Erro ao carregar imagem de perfil do arquivo (Image.isError()): " + currentUser.getProfileImagePath(), null);
+                    }
                 } else {
-                    profileImageView.setImage(new Image(getClass().getResourceAsStream("/images/default_user.png")));
+                    // logError("Arquivo de imagem de perfil não encontrado: " + currentUser.getProfileImagePath(), null); // Para debug
                 }
             } catch (Exception e) {
-                logError("Erro ao carregar imagem de perfil", e);
-                profileImageView.setImage(new Image(getClass().getResourceAsStream("/images/default_user_error.png")));
+                logError("Erro ao carregar imagem de perfil do arquivo: " + currentUser.getProfileImagePath(), e);
             }
-        } else {
-            profileImageView.setImage(new Image(getClass().getResourceAsStream("/images/default_user_icon.png")));
         }
+
+        // Se a imagem do perfil não foi carregada ou houve erro, tenta a imagem padrão
+        try {
+            // Usar o ícone de usuário mais genérico
+            imageToSet = new Image(getClass().getResourceAsStream("/images/default_user_icon.png"));
+            if (imageToSet.isError()) { // Verificação extra para a imagem padrão
+                throw new IOException("Erro ao carregar default_user_icon.png");
+            }
+        } catch (IOException e) {
+            logError("Erro ao carregar imagem padrão /images/default_user_icon.png", e);
+            // Em último caso, tenta outra imagem padrão ou deixa nulo
+            try {
+                imageToSet = new Image(getClass().getResourceAsStream("/images/default_user.png")); // Outra opção de padrão
+                if (imageToSet.isError()) {
+                    throw new IOException("Erro ao carregar default_user.png");
+                }
+            } catch (IOException ex) {
+                logError("Erro ao carregar imagem padrão /images/default_user.png", ex);
+                imageToSet = null; // Não foi possível carregar nenhuma imagem
+            }
+        }
+        profileImageView.setImage(imageToSet);
     }
 
     /**
@@ -139,9 +187,19 @@ public class EditUserController {
         if (selectedProfileImageFile != null) {
             profileImagePathTextField.setText(selectedProfileImageFile.getAbsolutePath());
             try {
-                profileImageView.setImage(new Image(selectedProfileImageFile.toURI().toString()));
+                // Tenta carregar a imagem selecionada na ImageView
+                Image selectedImage = new Image(selectedProfileImageFile.toURI().toString());
+                if (!selectedImage.isError()) {
+                    profileImageView.setImage(selectedImage);
+                } else {
+                    logError("Erro ao carregar a imagem de perfil selecionada (Image.isError()): " + selectedProfileImageFile.getAbsolutePath(), null);
+                    // Se a imagem selecionada tiver erro, volta para a imagem padrão
+                    loadProfileImage();
+                }
             } catch (Exception e) {
-                logError("Erro ao carregar nova imagem de perfil", e);
+                logError("Erro ao carregar nova imagem de perfil: " + selectedProfileImageFile.getAbsolutePath(), e);
+                // Em caso de erro, carrega a imagem padrão
+                loadProfileImage();
             }
         }
     }
@@ -154,29 +212,79 @@ public class EditUserController {
      */
     @FXML
     private void saveEditedUser(ActionEvent event) {
-        if (currentUser != null) {
-            currentUser.setName(nameTextField.getText());
-            currentUser.setEmail(emailTextField.getText());
-            currentUser.setCpf(cpfTextField.getText());
-            currentUser.setPhone(phoneTextField.getText());
-            currentUser.setAddress(addressTextField.getText());
-            if (selectedProfileImageFile != null) {
-                currentUser.setProfileImagePath(selectedProfileImageFile.getAbsolutePath());
-            }
+        if (currentUser == null) {
+            showAlert(Alert.AlertType.ERROR, "Erro", "Nenhum usuário selecionado para salvar.");
+            return;
+        }
+        if (userService == null) {
+            showAlert(Alert.AlertType.ERROR, "Erro", "Serviço de usuário não inicializado. Por favor, reinicie a aplicação.");
+            logError("UserService é nulo em saveEditedUser", new IllegalStateException("UserService não injetado."));
+            return;
+        }
 
-            try {
-                userService.updateUser(currentUser);
-                showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Usuário atualizado com sucesso!");
-                if (userController != null) {
-                    userController.showUserCardsView(); // Atualiza a visualização
-                }
-                closeDialog();
-            } catch (SQLException e) {
-                logError("Erro ao atualizar o usuário", e);
-                showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao atualizar o usuário: " + e.getMessage());
-            } catch (IllegalArgumentException e) {
-                showAlert(Alert.AlertType.ERROR, "Erro de Validação", e.getMessage());
+        // Validação básica dos campos
+        String name = nameTextField.getText().trim();
+        String email = emailTextField.getText().trim();
+        String cpf = cpfTextField.getText().trim();
+        String phone = phoneTextField.getText().trim();
+        String address = addressTextField.getText().trim();
+
+        if (name.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Campo Obrigatório", "O nome do usuário é obrigatório.");
+            return;
+        }
+        if (email.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Campo Obrigatório", "O email do usuário é obrigatório.");
+            return;
+        }
+        // Validação de formato de email mais robusta
+        if (!email.matches("^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$")) {
+            showAlert(Alert.AlertType.WARNING, "Formato Inválido", "Por favor, insira um email válido.");
+            return;
+        }
+        if (cpf.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Campo Obrigatório", "O CPF do usuário é obrigatório.");
+            return;
+        }
+        // Validação de formato de CPF (apenas números ou com máscara padrão XXX.XXX.XXX-XX)
+        if (!cpf.matches("^\\d{3}\\.?\\d{3}\\.?\\d{3}-?\\d{2}$")) {
+            showAlert(Alert.AlertType.WARNING, "Formato Inválido", "Por favor, insira um CPF válido (somente números ou formato XXX.XXX.XXX-XX).");
+            return;
+        }
+        // Você pode adicionar mais validações para telefone, endereço, etc.
+
+        currentUser.setName(name);
+        currentUser.setEmail(email);
+        currentUser.setCpf(cpf);
+        currentUser.setPhone(phone);
+        currentUser.setAddress(address);
+
+        if (selectedProfileImageFile != null) {
+            currentUser.setProfileImagePath(selectedProfileImageFile.getAbsolutePath());
+        } else if (profileImagePathTextField.getText().trim().isEmpty()) {
+            // Se o campo de texto foi limpo e nenhuma nova imagem foi selecionada,
+            // significa que o usuário quer remover a imagem de perfil.
+            currentUser.setProfileImagePath(null);
+        }
+        // Se selectedProfileImageFile for nulo e profileImagePathTextField não foi alterado,
+        // mantém o valor existente de currentUser.getProfileImagePath(), que é o comportamento desejado.
+
+
+        try {
+            userService.updateUser(currentUser);
+            showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Usuário atualizado com sucesso!");
+            if (userController != null) {
+                userController.showUserCardsView(); // Atualiza a visualização
             }
+            closeDialog();
+        } catch (SQLException e) {
+            logError("Erro ao atualizar o usuário no banco de dados", e);
+            showAlert(Alert.AlertType.ERROR, "Erro no Banco de Dados", "Erro ao atualizar o usuário: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            showAlert(Alert.AlertType.ERROR, "Erro de Validação", e.getMessage());
+        } catch (Exception e) {
+            logError("Erro inesperado ao salvar edição do usuário", e);
+            showAlert(Alert.AlertType.ERROR, "Erro Inesperado", "Ocorreu um erro inesperado ao salvar o usuário.");
         }
     }
 
@@ -209,18 +317,31 @@ public class EditUserController {
      * Registra uma mensagem de erro no console.
      *
      * @param message A mensagem de erro.
-     * @param e       A exceção ocorrida.
+     * @param e       A exceção ocorrida, pode ser nula.
      */
     private void logError(String message, Exception e) {
-        System.err.println(message + ": " + e.getMessage());
-        e.printStackTrace();
+        System.err.print(message);
+        if (e != null) {
+            System.err.println(": " + e.getMessage());
+            e.printStackTrace();
+        } else {
+            System.err.println();
+        }
     }
 
     /**
      * Fecha a janela (Stage) atual.
+     * Usa o `dialogStage` se estiver definido, caso contrário, usa a cena de um dos elementos FXML.
      */
     private void closeDialog() {
-        Stage stage = (Stage) cancelEditUser.getScene().getWindow();
-        stage.close();
+        if (dialogStage != null) {
+            dialogStage.close();
+        } else {
+            // Fallback: se dialogStage não foi definido (e.g., se não for um modal),
+            // tenta obter o Stage de um elemento FXML.
+            // Escolhemos saveEditedUser, mas qualquer um dos elementos FXML serviria.
+            Stage stage = (Stage) saveEditedUser.getScene().getWindow();
+            stage.close();
+        }
     }
 }

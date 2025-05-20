@@ -13,16 +13,17 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
+import javafx.scene.Parent; // Necessário para loader.load()
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.net.URL;
+// import java.net.URL; // Removido: Não utilizado diretamente após refatoração
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -48,13 +49,14 @@ public class LoanController {
     private RootLayoutController rootLayoutController;
 
     /**
-     * Define o serviço de empréstimos e carrega todos os empréstimos.
+     * Define o serviço de empréstimos.
+     * Chama loadAllLoans() para carregar os dados iniciais.
      *
      * @param loanService O serviço de empréstimos a ser utilizado.
      */
     public void setLoanService(LoanService loanService) {
         this.loanService = loanService;
-        loadAllLoans();
+        loadAllLoans(); // Carrega os empréstimos assim que o serviço é definido
     }
 
     /**
@@ -105,20 +107,31 @@ public class LoanController {
     /**
      * Define o controlador principal da aplicação (RootLayoutController) e inicializa os serviços.
      * Carrega todos os empréstimos ao inicializar o controlador principal.
+     * <p>
+     * Nota: A inicialização dos serviços aqui duplica a responsabilidade de setLoanService.
+     * Se os serviços são injetados separadamente, esta parte pode ser removida
+     * ou ajustada para apenas carregar os empréstimos se os serviços já estiverem definidos.
+     * Considerando o fluxo, esta é a inicialização primária.
      *
      * @param rootLayoutController O controlador principal.
      */
     public void setRootLayoutController(RootLayoutController rootLayoutController) {
         this.rootLayoutController = rootLayoutController;
-        try {
-            Connection connection = DataBaseConnection.getConnection();
-            this.bookService = new BookService(new BookDAOImpl(connection));
-            this.userService = new UserService(new UserDAOImpl(connection));
-            this.loanService = new LoanService(new LoanDAOImpl(connection));
+        // Verifica se os serviços já foram inicializados (por injeção externa, por exemplo)
+        if (this.loanService == null || this.bookService == null || this.userService == null) {
+            try {
+                Connection connection = DataBaseConnection.getConnection();
+                this.bookService = new BookService(new BookDAOImpl(connection));
+                this.userService = new UserService(new UserDAOImpl(connection));
+                this.loanService = new LoanService(new LoanDAOImpl(connection));
+                loadAllLoans(); // Carrega os empréstimos após a inicialização bem-sucedida dos serviços
+            } catch (SQLException e) {
+                logError("Erro ao inicializar serviços no setRootLayoutController", e);
+                showAlert(Alert.AlertType.ERROR, "Erro de Inicialização", "Não foi possível inicializar os serviços de empréstimo. Por favor, verifique a conexão com o banco de dados.");
+            }
+        } else {
+            // Se os serviços já foram setados (ex: via injeção externa), apenas garante que os empréstimos sejam carregados.
             loadAllLoans();
-        } catch (SQLException e) {
-            logError("Erro ao inicializar serviços", e);
-            showAlert("Erro ao inicializar serviços", "Não foi possível inicializar os serviços de empréstimo.");
         }
     }
 
@@ -133,11 +146,12 @@ public class LoanController {
 
     /**
      * Método de inicialização do controlador. Chamado após o FXML ser carregado.
-     * (Atualmente vazio, a lógica de inicialização está em setRootLayoutController).
+     * Pode ser usado para configurações de UI que não dependem de dados carregados.
      */
     @FXML
     public void initialize() {
-        // Qualquer inicialização adicional para o LoanController
+        // Ex: Configurar listeners para o searchTextField aqui, se necessário.
+        searchTextField.textProperty().addListener((observable, oldValue, newValue) -> handleSearchLoans());
     }
 
     /**
@@ -146,12 +160,17 @@ public class LoanController {
      */
     public void loadAllLoans() {
         try {
+            if (loanService == null) {
+                logError("LoanService é nulo ao tentar carregar empréstimos.", null);
+                showAlert(Alert.AlertType.ERROR, "Erro de Serviço", "O serviço de empréstimos não está disponível.");
+                return;
+            }
             List<Loan> loans = loanService.getAllLoansWithDetails();
             allLoans.setAll(loans);
             displayLoans(allLoans);
         } catch (SQLException e) {
-            logError("Erro ao carregar empréstimos", e);
-            showAlert("Erro ao carregar empréstimos", "Não foi possível carregar os empréstimos do banco de dados.");
+            logError("Erro ao carregar empréstimos do banco de dados", e);
+            showAlert(Alert.AlertType.ERROR, "Erro ao Carregar Empréstimos", "Não foi possível carregar os empréstimos do banco de dados.");
         }
     }
 
@@ -163,18 +182,25 @@ public class LoanController {
      */
     private void displayLoans(ObservableList<Loan> loans) {
         loansVBox.getChildren().clear();
+        if (loans.isEmpty()) {
+            // Opcional: Adicionar uma mensagem informando que não há empréstimos para exibir
+            Label noLoansLabel = new Label("Nenhum empréstimo encontrado.");
+            loansVBox.getChildren().add(noLoansLabel);
+            return;
+        }
+
         for (Loan loan : loans) {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/LoanCardView.fxml"));
                 VBox loanCard = loader.load();
-                loanCard.getStyleClass().add("loan-card");
+                loanCard.getStyleClass().add("loan-card"); // Adiciona classe CSS
                 LoanCardController controller = loader.getController();
                 controller.setLoan(loan);
-                controller.setLoanController(this);
+                controller.setLoanController(this); // Permite que o card se comunique de volta com este controlador
                 loansVBox.getChildren().add(loanCard);
             } catch (IOException e) {
-                logError("Erro ao carregar LoanCardView.fxml", e);
-                showAlert("Erro ao carregar card de empréstimo", "Não foi possível carregar o card de empréstimo.");
+                logError("Erro ao carregar LoanCardView.fxml para empréstimo " + loan.getId(), e);
+                showAlert(Alert.AlertType.ERROR, "Erro de Exibição", "Não foi possível carregar o card para um empréstimo.");
             }
         }
     }
@@ -185,62 +211,68 @@ public class LoanController {
     @FXML
     public void showAddLoanView() {
         try {
-            URL location = getClass().getResource("/views/AddLoanView.fxml");
-            System.out.println("LoanController.showAddLoanView: URL do FXML: " + location);
-            if (location == null) {
-                System.err.println("Erro: Não foi possível encontrar o arquivo FXML em /views/AddLoanView.fxml");
-                return;
-            }
-            FXMLLoader loader = new FXMLLoader(location);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/AddLoanView.fxml"));
             Parent root = loader.load();
 
             AddLoanViewController addLoanController = loader.getController();
-            System.out.println("LoanController.showAddLoanView: Controlador AddLoanViewController obtido: " + addLoanController);
-            System.out.println("LoanController.showAddLoanView: bookService em LoanController: " + bookService);
-            System.out.println("LoanController.showAddLoanView: userService em LoanController: " + userService);
-            System.out.println("LoanController.showAddLoanView: loanService em LoanController: " + loanService);
 
-            if (addLoanController != null) {
-                addLoanController.setBookService(bookService);
-                addLoanController.setUserService(userService);
-                addLoanController.setLoanService(loanService);
-                addLoanController.setMainLoanController(this);
-                Stage stage = new Stage();
-                addLoanController.setDialogStage(stage);
-                System.out.println("LoanController.showAddLoanView: Serviços e Stage setados no AddLoanViewController.");
-                stage.setTitle("Novo Empréstimo");
-                stage.setScene(new Scene(root));
-                stage.show();
-            } else {
-                System.err.println("LoanController.showAddLoanView: Erro ao obter o controlador AddLoanViewController!");
+            // Verificar se os serviços estão inicializados antes de passá-los
+            if (bookService == null || userService == null || loanService == null) {
+                logError("Serviços (BookService, UserService, LoanService) não inicializados em LoanController.", null);
+                showAlert(Alert.AlertType.ERROR, "Erro de Inicialização", "Os serviços necessários não estão disponíveis para adicionar um empréstimo.");
+                return;
             }
+
+            addLoanController.setBookService(bookService);
+            addLoanController.setUserService(userService);
+            addLoanController.setLoanService(loanService);
+            addLoanController.setMainLoanController(this); // Permite que AddLoanController chame loadAllLoans()
+
+            Stage stage = new Stage();
+            stage.setTitle("Novo Empréstimo");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            // Definir o proprietário do palco do diálogo, para centralização
+            stage.initOwner(loansVBox.getScene().getWindow());
+            addLoanController.setDialogStage(stage); // Passa o stage para o controlador de adição
+            stage.showAndWait(); // showAndWait para bloquear a tela principal até o diálogo fechar
+
         } catch (IOException e) {
             logError("Erro ao carregar AddLoanView.fxml", e);
-            showAlert("Erro ao carregar tela de adicionar empréstimo", "Não foi possível carregar a tela de adicionar empréstimo.");
+            showAlert(Alert.AlertType.ERROR, "Erro ao Abrir Tela", "Não foi possível carregar a tela para adicionar empréstimo.");
         }
     }
 
     /**
      * Manipula a ação de buscar empréstimos. Filtra a lista de empréstimos com base no termo de busca
      * em título do livro, nome do usuário ou CPF do usuário.
-     *
-     * @param event O evento de ação (geralmente do botão de busca).
+     * Pode ser chamado por um botão ou por um listener de texto.
      */
     @FXML
-    public void handleSearchLoans(ActionEvent event) {
+    public void handleSearchLoans() { // Removido ActionEvent event pois pode ser chamado por listener
         String searchTerm = searchTextField.getText().trim().toLowerCase();
-        if (!searchTerm.isEmpty()) {
+
+        if (allLoans.isEmpty() && loanService != null) {
+            // Tenta carregar novamente se a lista estiver vazia (caso a inicialização tenha falhado antes)
+            loadAllLoans();
+        }
+
+        if (searchTerm.isEmpty()) {
+            displayLoans(allLoans); // Exibe todos os empréstimos se a busca estiver vazia
+        } else {
             ObservableList<Loan> searchResults = allLoans.stream()
                     .filter(loan -> {
-                        String bookTitle = loan.getBook().getTitle().toLowerCase();
-                        String userName = loan.getUser().getName().toLowerCase();
-                        String userCPF = loan.getUser().getCpf().toLowerCase();
-                        return bookTitle.contains(searchTerm) || userName.contains(searchTerm) || userCPF.contains(searchTerm);
+                        // Evita NullPointerException se book ou user for nulo
+                        boolean matchesBook = loan.getBook() != null && loan.getBook().getTitle().toLowerCase().contains(searchTerm);
+                        boolean matchesUser = false;
+                        if (loan.getUser() != null) {
+                            matchesUser = loan.getUser().getName().toLowerCase().contains(searchTerm) ||
+                                    (loan.getUser().getCpf() != null && loan.getUser().getCpf().toLowerCase().contains(searchTerm));
+                        }
+                        return matchesBook || matchesUser;
                     })
                     .collect(Collectors.toCollection(FXCollections::observableArrayList));
             displayLoans(searchResults);
-        } else {
-            displayLoans(allLoans);
         }
     }
 
@@ -289,7 +321,7 @@ public class LoanController {
     void filterLoansByOverdue(ActionEvent event) {
         LocalDate today = LocalDate.now();
         ObservableList<Loan> overdueLoans = allLoans.stream()
-                .filter(loan -> loan.getActualReturnDate() == null && today.isAfter(loan.getReturnDate()))
+                .filter(loan -> loan.getActualReturnDate() == null && loan.getReturnDate() != null && today.isAfter(loan.getReturnDate()))
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
         displayLoans(overdueLoans);
     }
@@ -300,22 +332,33 @@ public class LoanController {
      *
      * @param loan O empréstimo a ser marcado como devolvido.
      */
-    @FXML
     public void markLoanAsReturned(Loan loan) {
-        if (loan != null && loan.getActualReturnDate() == null) {
-            loan.setActualReturnDate(LocalDate.now());
-            try {
-                loanService.updateLoan(loan);
-                loadAllLoans();
-                showAlert("Sucesso", "Empréstimo marcado como devolvido.");
-            } catch (SQLException e) {
-                logError("Erro ao marcar devolução", e);
-                showAlert("Erro ao marcar devolução", "Não foi possível atualizar a informação de devolução no banco de dados.");
+        if (loan == null) {
+            showAlert(Alert.AlertType.ERROR, "Erro", "Empréstimo inválido para devolução.");
+            return;
+        }
+
+        if (loan.getActualReturnDate() != null) {
+            showAlert(Alert.AlertType.INFORMATION, "Informação", "Este empréstimo já foi devolvido em " + loan.getActualReturnDate().toString() + ".");
+            return;
+        }
+
+        loan.setActualReturnDate(LocalDate.now());
+        // Se houver lógica de cálculo de multa, ela deve ser feita aqui ou no LoanService
+        // loan.setFine(calcularMulta(loan)); // Exemplo
+
+        try {
+            if (loanService == null) {
+                logError("LoanService é nulo ao tentar marcar empréstimo como devolvido.", null);
+                showAlert(Alert.AlertType.ERROR, "Erro de Serviço", "O serviço de empréstimos não está disponível.");
+                return;
             }
-        } else if (loan != null && loan.getActualReturnDate() != null) {
-            showAlert("Informação", "Este empréstimo já foi devolvido em " + loan.getActualReturnDate().toString() + ".");
-        } else {
-            showAlert("Erro", "Não foi possível processar a devolução. Informação do empréstimo inválida.");
+            loanService.updateLoan(loan);
+            loadAllLoans(); // Recarrega a lista para refletir a mudança
+            showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Empréstimo marcado como devolvido com sucesso!");
+        } catch (SQLException e) {
+            logError("Erro ao marcar empréstimo como devolvido no banco de dados", e);
+            showAlert(Alert.AlertType.ERROR, "Erro de Atualização", "Não foi possível atualizar a informação de devolução no banco de dados: " + e.getMessage());
         }
     }
 
@@ -324,25 +367,37 @@ public class LoanController {
      *
      * @param loan O empréstimo a ser exibido.
      */
-    @FXML
     public void showLoanDetails(Loan loan) {
-        if (loan != null) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/LoanDetailsView.fxml"));
-                Parent root = loader.load();
-                LoanDetailsController controller = loader.getController();
-                controller.setLoan(loan);
-                controller.setBookService(bookService);
-                controller.setUserService(userService);
-                Stage stage = new Stage();
-                stage.setTitle("Detalhes do Empréstimo");
-                stage.setScene(new Scene(root));
-                stage.initModality(Modality.APPLICATION_MODAL);
-                stage.showAndWait();
-            } catch (IOException e) {
-                logError("Erro ao exibir detalhes", e);
-                showAlert("Erro ao exibir detalhes", "Não foi possível carregar a tela de detalhes do empréstimo.");
+        if (loan == null) {
+            showAlert(Alert.AlertType.ERROR, "Erro", "Empréstimo inválido para exibir detalhes.");
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/LoanDetailsView.fxml"));
+            Parent root = loader.load();
+            LoanDetailsController controller = loader.getController();
+
+            // Verificar se os serviços estão inicializados antes de passá-los
+            if (bookService == null || userService == null) {
+                logError("Serviços (BookService, UserService) não inicializados em LoanController para detalhes.", null);
+                showAlert(Alert.AlertType.ERROR, "Erro de Inicialização", "Os serviços necessários não estão disponíveis para exibir detalhes.");
+                return;
             }
+
+            controller.setLoan(loan);
+            controller.setBookService(bookService);
+            controller.setUserService(userService); // Pode ser necessário para mostrar detalhes do usuário no LoanDetailsView
+
+            Stage stage = new Stage();
+            stage.setTitle("Detalhes do Empréstimo: " + loan.getId());
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            // Definir o proprietário do palco do diálogo, para centralização
+            stage.initOwner(loansVBox.getScene().getWindow());
+            stage.showAndWait();
+        } catch (IOException e) {
+            logError("Erro ao carregar LoanDetailsView.fxml", e);
+            showAlert(Alert.AlertType.ERROR, "Erro ao Abrir Tela", "Não foi possível carregar a tela de detalhes do empréstimo.");
         }
     }
 
@@ -352,26 +407,34 @@ public class LoanController {
      * @param loan O empréstimo a ser removido.
      */
     public void removeLoan(Loan loan) {
-        if (loan != null) {
-            try {
-                loanService.deleteLoan(loan.getId());
-                loadAllLoans();
-                showAlert("Sucesso", "Empréstimo removido com sucesso.");
-            } catch (SQLException e) {
-                logError("Erro ao remover empréstimo", e);
-                showAlert("Erro ao remover empréstimo", "Não foi possível remover o empréstimo do banco de dados.");
+        if (loan == null) {
+            showAlert(Alert.AlertType.ERROR, "Erro", "Empréstimo inválido para remoção.");
+            return;
+        }
+        try {
+            if (loanService == null) {
+                logError("LoanService é nulo ao tentar remover empréstimo.", null);
+                showAlert(Alert.AlertType.ERROR, "Erro de Serviço", "O serviço de empréstimos não está disponível.");
+                return;
             }
+            loanService.deleteLoan(loan.getId());
+            loadAllLoans(); // Recarrega a lista
+            showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Empréstimo removido com sucesso!");
+        } catch (SQLException e) {
+            logError("Erro ao remover empréstimo do banco de dados", e);
+            showAlert(Alert.AlertType.ERROR, "Erro de Exclusão", "Não foi possível remover o empréstimo do banco de dados: " + e.getMessage());
         }
     }
 
     /**
-     * Exibe um diálogo de alerta com a mensagem especificada.
+     * Exibe um diálogo de alerta com o tipo, título e conteúdo especificados.
      *
-     * @param title   O título do alerta.
-     * @param content O conteúdo da mensagem do alerta.
+     * @param alertType O tipo do alerta (INFORMATION, ERROR, WARNING, etc.).
+     * @param title     O título do alerta.
+     * @param content   O conteúdo da mensagem do alerta.
      */
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+    private void showAlert(Alert.AlertType alertType, String title, String content) {
+        Alert alert = new Alert(alertType);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
@@ -382,10 +445,15 @@ public class LoanController {
      * Registra uma mensagem de erro no console.
      *
      * @param message A mensagem de erro.
-     * @param e       A exceção ocorrida.
+     * @param e       A exceção ocorrida, pode ser nula.
      */
     private void logError(String message, Exception e) {
-        System.err.println(message + ": " + e.getMessage());
-        e.printStackTrace();
+        System.err.print(message);
+        if (e != null) {
+            System.err.println(": " + e.getMessage());
+            e.printStackTrace();
+        } else {
+            System.err.println();
+        }
     }
 }

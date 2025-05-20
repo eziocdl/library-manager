@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Objects;
 
 /**
  * Controlador para o card individual de um usuário exibido na lista de usuários.
@@ -42,17 +43,46 @@ public class UserCardController {
     private Button removeButton;
 
     private User currentUser; // O usuário associado a este card
-    private UserController userListController; // Referência ao UserController para ações na lista
-    private UserService userService;
+    private UserController userController; // RENOMEADO para clareza e consistência (era userListController)
+    private UserService userService; // Instância do UserService injetada
+    private RootLayoutController rootLayoutController; // NOVO: Referência ao RootLayoutController
     private File selectedProfileImageFileForEdit; // Arquivo de imagem de perfil selecionado para edição
 
     /**
-     * Construtor padrão da classe. Inicializa o UserService.
-     *
-     * @throws SQLException Se ocorrer um erro ao conectar ao banco de dados.
+     * Construtor padrão da classe.
      */
-    public UserCardController() throws SQLException {
-        this.userService = new UserService();
+    public UserCardController() {
+        // O UserService, UserController e RootLayoutController serão injetados via setters.
+    }
+
+    /**
+     * Define o serviço de usuários.
+     * Este método deve ser chamado por quem instancia o UserCardController (ex: UserController).
+     *
+     * @param userService O serviço de usuários a ser utilizado.
+     */
+    public void setUserService(UserService userService) {
+        this.userService = Objects.requireNonNull(userService, "UserService não pode ser nulo.");
+    }
+
+    /**
+     * Define o controlador da tela principal de usuários para permitir ações na lista.
+     * **RENOMEADO:** De setUserListController para setUserController para maior clareza.
+     *
+     * @param userController O controlador da tela principal de usuários.
+     */
+    public void setUserController(UserController userController) {
+        this.userController = Objects.requireNonNull(userController, "UserController não pode ser nulo.");
+    }
+
+    /**
+     * **NOVO MÉTODO:** Define o controlador do layout raiz da aplicação.
+     * Usado para acessar o Stage principal para diálogos modais, por exemplo.
+     *
+     * @param rootLayoutController O controlador do layout raiz.
+     */
+    public void setRootLayoutController(RootLayoutController rootLayoutController) {
+        this.rootLayoutController = Objects.requireNonNull(rootLayoutController, "RootLayoutController não pode ser nulo.");
     }
 
     /**
@@ -63,15 +93,6 @@ public class UserCardController {
     public void setUser(User user) {
         this.currentUser = user;
         updateCard(user);
-    }
-
-    /**
-     * Define o controlador da tela principal de usuários para permitir ações na lista.
-     *
-     * @param userListController O controlador da tela principal de usuários.
-     */
-    public void setUserListController(UserController userListController) {
-        this.userListController = userListController;
     }
 
     /**
@@ -99,12 +120,9 @@ public class UserCardController {
         profileImageView.setImage(null); // Limpa a imagem anterior
         if (imagePath != null && !imagePath.isEmpty()) {
             File file = new File(imagePath);
-            System.out.println("Caminho da imagem para " + userName + ": [" + imagePath + "]");
-            System.out.println("Arquivo existe para " + userName + "? " + file.exists());
-            System.out.println("Caminho absoluto do arquivo: " + file.getAbsolutePath());
+            // Removidos os System.out.println para um ambiente de produção
             try {
                 String uriString = file.toURI().toString();
-                System.out.println("URI para " + userName + ": [" + uriString + "]");
                 profileImageView.setImage(new Image(uriString));
             } catch (Exception e) {
                 System.err.println("Erro ao carregar imagem para " + userName + ": " + e.getMessage());
@@ -136,18 +154,50 @@ public class UserCardController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/EditUserView.fxml"));
             VBox editUserView = loader.load();
             EditUserController editUserController = loader.getController();
+
+            // 1. Injetar o usuário a ser editado
             editUserController.setUser(userToEdit);
-            editUserController.setUserController(userListController); // Passa a referência para atualizar a lista
+
+            // 2. Injetar o UserService (EditUserController provavelmente precisará dele para salvar as alterações)
+            if (userService != null) {
+                editUserController.setUserService(userService);
+            } else {
+                logError("UserService é nulo ao tentar passar para EditUserController.", new IllegalStateException("UserService é nulo."));
+                showAlert("Erro de Inicialização", "O serviço de usuários não está disponível para edição.");
+                return; // Impede a abertura da janela se o serviço for nulo
+            }
+
+            // 3. Injetar a referência de volta para o UserController pai (para atualizar a lista)
+            if (userController != null) {
+                editUserController.setUserController(userController);
+            } else {
+                logError("UserController é nulo ao tentar passar para EditUserController.", new IllegalStateException("UserController é nulo."));
+            }
 
             Stage stage = new Stage();
             stage.initModality(javafx.stage.Modality.WINDOW_MODAL);
-            stage.initOwner(userCard.getScene().getWindow());
+            // **CORREÇÃO CRUCIAL:** Usar RootLayoutController para obter o primaryStage como owner
+            if (rootLayoutController != null && rootLayoutController.getPrimaryStage() != null) {
+                stage.initOwner(rootLayoutController.getPrimaryStage());
+            } else if (userCard.getScene() != null && userCard.getScene().getWindow() != null) { // Fallback
+                stage.initOwner(userCard.getScene().getWindow());
+            } else {
+                logError("Não foi possível definir o owner para o diálogo EditUserView.", null);
+            }
+
+
             stage.setTitle("Editar Usuário");
             stage.setScene(new javafx.scene.Scene(editUserView));
             stage.showAndWait();
 
             // Após a janela de edição ser fechada, a lista de usuários será atualizada
-            userListController.showUserCardsView();
+            // Chama loadAllUsers() no UserController, que já tem a lógica de recarregar.
+            if (userController != null) {
+                userController.loadAllUsers();
+            } else {
+                logError("UserController é nulo. Não foi possível atualizar a lista de usuários após edição.", null);
+            }
+
 
         } catch (IOException e) {
             logError("Erro ao carregar tela de edição", e);
@@ -161,15 +211,21 @@ public class UserCardController {
      */
     @FXML
     private void handleDeleteUser() {
-        if (currentUser != null && userListController != null) {
+        if (currentUser != null && userController != null) {
             Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
             confirmation.setTitle("Confirmar Remoção");
             confirmation.setHeaderText(null);
             confirmation.setContentText("Tem certeza que deseja remover o usuário: " + currentUser.getName() + "?");
+            // Definir o owner do alerta
+            if (rootLayoutController != null && rootLayoutController.getPrimaryStage() != null) {
+                confirmation.initOwner(rootLayoutController.getPrimaryStage());
+            } else if (userCard.getScene() != null && userCard.getScene().getWindow() != null) { // Fallback
+                confirmation.initOwner(userCard.getScene().getWindow());
+            }
 
             confirmation.showAndWait().ifPresent(response -> {
                 if (response == javafx.scene.control.ButtonType.OK) {
-                    userListController.handleDeleteUser(currentUser.getId());
+                    userController.handleDeleteUser(currentUser.getId());
                 }
             });
         }
@@ -216,6 +272,12 @@ public class UserCardController {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
+        // Tentar definir o owner do alerta para o palco principal, se disponível.
+        if (rootLayoutController != null && rootLayoutController.getPrimaryStage() != null) {
+            alert.initOwner(rootLayoutController.getPrimaryStage());
+        } else if (userCard.getScene() != null && userCard.getScene().getWindow() != null) { // Fallback
+            alert.initOwner(userCard.getScene().getWindow());
+        }
         alert.showAndWait();
     }
 
@@ -226,7 +288,12 @@ public class UserCardController {
      * @param e       A exceção ocorrida.
      */
     private void logError(String message, Exception e) {
-        System.err.println(message + ": " + e.getMessage());
-        e.printStackTrace();
+        System.err.print("ERRO: " + message);
+        if (e != null) {
+            System.err.println(": " + e.getMessage());
+            e.printStackTrace();
+        } else {
+            System.err.println();
+        }
     }
 }

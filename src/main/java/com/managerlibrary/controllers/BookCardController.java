@@ -6,6 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.Window; // Importe Window
 
 import java.io.File;
 
@@ -33,41 +34,37 @@ public class BookCardController {
     @FXML
     private Label genreLabel;
     @FXML
-    private Button editButton; // Botão para editar o livro
+    private Button editButton;
     @FXML
-    private Button detailsButton; // Botão para exibir detalhes do livro
+    private Button detailsButton;
     @FXML
-    private Button removeButton; // Botão para remover o livro
+    private Button removeButton;
 
     private Book book;
-    private BookController bookListController; // Referência ao BookController para interagir com a lista de livros
+    private BookController bookListController;
 
-    /**
-     * Define o livro a ser exibido neste card e atualiza as informações visuais.
-     *
-     * @param book O livro a ser exibido.
-     */
     public void setBook(Book book) {
         this.book = book;
-        updateCard(book);
+        updateCard();
     }
 
-    /**
-     * Define o controlador da tela principal de livros para permitir ações na lista.
-     *
-     * @param bookListController O controlador da tela principal de livros.
-     */
     public void setBookListController(BookController bookListController) {
         this.bookListController = bookListController;
     }
 
-    /**
-     * Atualiza os elementos visuais do card com as informações do livro fornecido.
-     * Carrega a capa do livro do arquivo local ou da URL, se disponível.
-     *
-     * @param book O livro cujas informações serão exibidas.
-     */
-    private void updateCard(Book book) {
+    private void updateCard() {
+        if (book == null) {
+            titleLabel.setText("");
+            authorLabel.setText("");
+            availableLabel.setText("");
+            isbnLabel.setText("");
+            publisherLabel.setText("");
+            yearLabel.setText("");
+            genreLabel.setText("");
+            coverImageView.setImage(null);
+            return;
+        }
+
         titleLabel.setText(book.getTitle());
         authorLabel.setText("Autor: " + book.getAuthor());
         availableLabel.setText("Disponíveis: " + book.getAvailableCopies() + "/" + book.getTotalCopies());
@@ -78,72 +75,85 @@ public class BookCardController {
         loadBookCover();
     }
 
-    /**
-     * Carrega a imagem da capa do livro, primeiro tentando a URL e depois o caminho do arquivo local.
-     * Se nenhum for válido, a ImageView ficará com a imagem padrão (ou vazia).
-     */
     private void loadBookCover() {
         Image imageToSet = null;
 
-        if (book.getImageUrl() != null && !book.getImageUrl().isEmpty()) {
-            imageToSet = loadImageFromPathOrUrl(book.getImageUrl(), "URL");
-        } else if (book.getCoverImagePath() != null && !book.getCoverImagePath().isEmpty()) {
-            imageToSet = loadImageFromPathOrUrl(book.getCoverImagePath(), "Path");
-        }
-
-        coverImageView.setImage(imageToSet);
-    }
-
-    /**
-     * Tenta carregar uma imagem de um determinado caminho (URL ou arquivo local).
-     * Registra erros no console se a imagem não puder ser carregada.
-     *
-     * @param pathOrUrl O caminho da imagem (URL ou arquivo local).
-     * @param sourceType Uma string indicando a origem do caminho ("URL" ou "Path").
-     * @return A imagem carregada, ou null se ocorrer um erro.
-     */
-    private Image loadImageFromPathOrUrl(String pathOrUrl, String sourceType) {
-        try {
-            File file = new File(pathOrUrl);
+        if (book.getCoverImagePath() != null && !book.getCoverImagePath().isEmpty()) {
+            File file = new File(book.getCoverImagePath());
             if (file.exists()) {
-                return new Image(file.toURI().toString());
-            } else {
-                System.err.println("Arquivo de imagem não encontrado (" + sourceType + "): " + pathOrUrl);
-                return null;
+                try {
+                    imageToSet = new Image(file.toURI().toString());
+                    if (!imageToSet.isError()) {
+                        coverImageView.setImage(imageToSet);
+                        return;
+                    } else {
+                        logError("Erro ao carregar imagem do arquivo local (isError): " + book.getCoverImagePath(), null);
+                    }
+                } catch (Exception e) {
+                    logError("Erro ao carregar imagem do arquivo local: " + book.getCoverImagePath(), e);
+                }
             }
+        }
+
+        if (book.getImageUrl() != null && !book.getImageUrl().isEmpty()) {
+            try {
+                imageToSet = new Image(book.getImageUrl());
+                if (!imageToSet.isError()) {
+                    coverImageView.setImage(imageToSet);
+                    return;
+                } else {
+                    logError("Erro ao carregar imagem da URL (isError): " + book.getImageUrl(), null);
+                }
+            } catch (Exception e) {
+                logError("Erro ao carregar imagem da URL: " + book.getImageUrl(), e);
+            }
+        }
+
+        try {
+            imageToSet = new Image(getClass().getResourceAsStream("/images/default_book_icon.png"));
+            coverImageView.setImage(imageToSet);
         } catch (Exception e) {
-            System.err.println("Erro ao carregar imagem da " + sourceType + ": " + pathOrUrl + " - " + e.getMessage());
-            return null;
+            logError("Erro ao carregar imagem padrão '/images/default_book_icon.png'", e);
+            coverImageView.setImage(null);
         }
     }
 
-    /**
-     * Manipula o evento de clique no botão de detalhes, exibindo as informações detalhadas do livro.
-     */
     @FXML
     private void handleDetails() {
         if (bookListController != null && book != null && detailsButton != null && detailsButton.getScene() != null) {
             bookListController.showBookDetails(book, detailsButton.getScene().getWindow());
+        } else {
+            logError("Não foi possível mostrar detalhes do livro. Dependências ausentes ou cena indisponível.", null);
         }
     }
 
-    /**
-     * Manipula o evento de clique no botão de editar, carregando a tela de edição do livro.
-     */
     @FXML
     private void handleEdit() {
         if (bookListController != null && book != null && editButton != null) {
-            bookListController.loadEditBookView(book, editButton);
+            // CORREÇÃO: Obter o Stage (Window) do botão para passar como owner
+            Window ownerWindow = editButton.getScene().getWindow();
+            bookListController.loadEditBookView(book, ownerWindow); // Passa a Window
+        } else {
+            logError("Não foi possível carregar a tela de edição. Dependências ausentes.", null);
         }
     }
 
-    /**
-     * Manipula o evento de clique no botão de remover, solicitando confirmação e removendo o livro.
-     */
     @FXML
     private void handleRemove() {
         if (bookListController != null && book != null && removeButton != null && removeButton.getScene() != null) {
             bookListController.confirmRemoveBook(book, removeButton.getScene().getWindow());
+        } else {
+            logError("Não foi possível remover o livro. Dependências ausentes ou cena indisponível.", null);
+        }
+    }
+
+    private void logError(String message, Exception e) {
+        System.err.print(message);
+        if (e != null) {
+            System.err.println(": " + e.getMessage());
+            e.printStackTrace();
+        } else {
+            System.err.println();
         }
     }
 }

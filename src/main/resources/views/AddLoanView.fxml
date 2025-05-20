@@ -36,7 +36,6 @@
         <VBox spacing="5.0">
             <HBox spacing="10.0">
                 <Label text="Buscar Usuário por:" styleClass="label-header"/>
-                <ComboBox fx:id="userSearchCriteria" promptText="Selecione" items="$userSearchOptions"/>
                 <TextField fx:id="userSearchTextField" promptText="Digite o termo de busca"/>
                 <Button text="Buscar" onAction="#searchUser"/>
             </HBox>

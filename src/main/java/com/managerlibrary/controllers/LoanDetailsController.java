@@ -16,9 +16,9 @@ import java.time.format.DateTimeFormatter;
 public class LoanDetailsController {
 
     private Loan loan;
-    private BookService bookService;
-    private UserService userService;
-    private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private BookService bookService; // Mantido para injeção de dependência, mesmo se não usado diretamente agora.
+    private UserService userService; // Mantido para injeção de dependência, mesmo se não usado diretamente agora.
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); // Tornar final para imutabilidade
 
     @FXML
     private Label loanIdLabel;
@@ -50,7 +50,13 @@ public class LoanDetailsController {
      */
     public void setLoan(Loan loan) {
         this.loan = loan;
-        displayLoanDetails();
+        // Chama displayLoanDetails apenas se o empréstimo for válido para evitar NPE
+        if (loan != null) {
+            displayLoanDetails();
+        } else {
+            // Opcional: Limpar campos ou exibir mensagem de erro se o empréstimo for nulo
+            clearFields();
+        }
     }
 
     /**
@@ -77,30 +83,52 @@ public class LoanDetailsController {
      * Formata as datas usando o padrão definido.
      */
     public void displayLoanDetails() {
-        if (loan != null) {
-            loanIdLabel.setText(String.valueOf(loan.getId()));
-            if (loan.getBook() != null) {
-                bookIdLabel.setText(String.valueOf(loan.getBook().getId()));
-                bookTitleLabel.setText(loan.getBook().getTitle());
-            } else {
-                bookIdLabel.setText("N/A");
-                bookTitleLabel.setText("N/A");
-            }
-            if (loan.getUser() != null) {
-                userIdLabel.setText(String.valueOf(loan.getUser().getId()));
-                userNameLabel.setText(loan.getUser().getName());
-                userCPFLabel.setText(loan.getUser().getCpf());
-            } else {
-                userIdLabel.setText("N/A");
-                userNameLabel.setText("N/A");
-                userCPFLabel.setText("N/A");
-            }
-            loanDateLabel.setText(loan.getLoanDate() != null ? loan.getLoanDate().format(dateFormatter) : "N/A");
-            returnDateLabel.setText(loan.getReturnDate() != null ? loan.getReturnDate().format(dateFormatter) : "N/A");
-            actualReturnDateLabel.setText(loan.getActualReturnDate() != null ? loan.getActualReturnDate().format(dateFormatter) : "Não Devolvido");
-            statusLabel.setText(loan.getStatus());
-            fineLabel.setText(String.format("%.2f", loan.getFine()));
+        // Assume que loan não é nulo aqui, pois setLoan já faz a verificação.
+        loanIdLabel.setText(String.valueOf(loan.getId()));
+
+        if (loan.getBook() != null) {
+            bookIdLabel.setText(String.valueOf(loan.getBook().getId()));
+            bookTitleLabel.setText(loan.getBook().getTitle());
+        } else {
+            bookIdLabel.setText("N/A");
+            bookTitleLabel.setText("N/A");
         }
+
+        if (loan.getUser() != null) {
+            userIdLabel.setText(String.valueOf(loan.getUser().getId()));
+            userNameLabel.setText(loan.getUser().getName());
+            userCPFLabel.setText(loan.getUser().getCpf());
+        } else {
+            userIdLabel.setText("N/A");
+            userNameLabel.setText("N/A");
+            userCPFLabel.setText("N/A");
+        }
+
+        loanDateLabel.setText(loan.getLoanDate() != null ? loan.getLoanDate().format(dateFormatter) : "N/A");
+        returnDateLabel.setText(loan.getReturnDate() != null ? loan.getReturnDate().format(dateFormatter) : "N/A");
+        actualReturnDateLabel.setText(loan.getActualReturnDate() != null ? loan.getActualReturnDate().format(dateFormatter) : "Não Devolvido");
+
+        statusLabel.setText(loan.getStatus() != null ? loan.getStatus() : "N/A"); // Garantir que status não seja nulo
+
+        // Tratamento para fine, caso seja nulo (embora idealmente deveria ser 0.0)
+        fineLabel.setText(String.format("%.2f", loan.getFine()));
+    }
+
+    /**
+     * Limpa todos os campos de exibição. Útil se o empréstimo for definido como nulo.
+     */
+    private void clearFields() {
+        loanIdLabel.setText("");
+        bookIdLabel.setText("");
+        bookTitleLabel.setText("");
+        userIdLabel.setText("");
+        userNameLabel.setText("");
+        userCPFLabel.setText("");
+        loanDateLabel.setText("");
+        returnDateLabel.setText("");
+        actualReturnDateLabel.setText("");
+        statusLabel.setText("");
+        fineLabel.setText("");
     }
 
     /**
@@ -113,10 +141,13 @@ public class LoanDetailsController {
     }
 
     /**
-     * Método de inicialização do controlador. (Atualmente vazio, pode ser usado para inicializações específicas da tela).
+     * Método de inicialização do controlador. Chamado após o FXML ser carregado.
+     * Pode ser usado para inicializações de UI que não dependem dos dados do empréstimo.
      */
     @FXML
     public void initialize() {
-        // Inicializações da tela de detalhes, se necessário
+        // Nenhuma inicialização específica da tela de detalhes necessária aqui no momento.
+        // Se houvesse algum listener ou configuração de componentes FXML que não dependem do 'loan'
+        // eles iriam aqui.
     }
 }

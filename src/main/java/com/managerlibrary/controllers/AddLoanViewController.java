@@ -36,8 +36,9 @@ public class AddLoanViewController {
     @FXML
     private ImageView selectedBookImageView; // Exibe a capa do livro selecionado
 
-    @FXML
-    private ComboBox<String> userSearchCriteria;
+    // Removendo userSearchCriteria do FXML e, portanto, do Java.
+    // @FXML
+    // private ComboBox<String> userSearchCriteria;
     @FXML
     private TextField userSearchTextField;
     @FXML
@@ -65,15 +66,16 @@ public class AddLoanViewController {
 
     /**
      * Opções para o critério de busca de livros no ComboBox.
+     * Necessita da anotação @FXML para ser acessível via a ligação $ no FXML.
      */
-    @FXML
+    @FXML // <--- ADICIONADO @FXML AQUI
     private ObservableList<String> bookSearchOptions = FXCollections.observableArrayList("Título", "Autor", "ISBN");
 
     /**
      * Opções para o critério de busca de usuários no ComboBox.
+     * REMOVIDO: Conforme decisão de simplificar a busca de usuário.
      */
-    @FXML
-    private ObservableList<String> userSearchOptions = FXCollections.observableArrayList("Nome", "CPF", "Email");
+    // private ObservableList<String> userSearchOptions = FXCollections.observableArrayList("Nome", "CPF", "Email");
 
     /**
      * Define o serviço de empréstimos.
@@ -126,8 +128,9 @@ public class AddLoanViewController {
      */
     @FXML
     public void initialize() {
-        bookSearchCriteria.setItems(bookSearchOptions);
-        userSearchCriteria.setItems(userSearchOptions);
+        // Removido: bookSearchCriteria.setItems(bookSearchOptions);
+        // A ligação '$bookSearchOptions' no FXML já cuida disso.
+        // userSearchCriteria.setItems(userSearchOptions); // Removido, pois userSearchCriteria não está mais no FXML
         configureBookListView();
         configureUserListView();
     }
@@ -173,35 +176,36 @@ public class AddLoanViewController {
     @FXML
     private void searchBook() {
         String criteria = bookSearchCriteria.getValue();
-        String searchTerm = bookSearchTextField.getText();
+        String searchTerm = bookSearchTextField.getText().trim();
         ObservableList<Book> results = FXCollections.observableArrayList();
 
-        if (criteria != null && !searchTerm.isEmpty()) {
-            try {
-                switch (criteria.toLowerCase()) {
-                    case "título":
-                        results.addAll(bookService.findBooksByTitle(searchTerm));
-                        break;
-                    case "autor":
-                        results.addAll(bookService.findBooksByAuthor(searchTerm));
-                        break;
-                    case "isbn":
-                        Book book = bookService.findBookByISBN(searchTerm);
-                        if (book != null) {
-                            results.add(book);
-                        }
-                        break;
-                    default:
-                        showAlert("Critério Inválido", "Por favor, selecione um critério de busca válido para livros.");
-                        return;
-                }
-                bookResultsListView.setItems(results);
-            } catch (SQLException e) {
-                logError("Erro ao buscar livros", e);
-                showAlert("Erro na Busca", "Ocorreu um erro ao buscar livros.");
-            }
-        } else {
+        if (criteria == null || searchTerm.isEmpty()) {
             showAlert("Campos Vazios", "Por favor, selecione um critério e digite um termo para buscar livros.");
+            return;
+        }
+
+        try {
+            switch (criteria.toLowerCase()) {
+                case "título":
+                    results.addAll(bookService.findBooksByTitle(searchTerm));
+                    break;
+                case "autor":
+                    results.addAll(bookService.findBooksByAuthor(searchTerm));
+                    break;
+                case "isbn":
+                    Book book = bookService.findBookByISBN(searchTerm);
+                    if (book != null) {
+                        results.add(book);
+                    }
+                    break;
+                default:
+                    showAlert("Critério Inválido", "Por favor, selecione um critério de busca válido para livros.");
+                    return;
+            }
+            bookResultsListView.setItems(results);
+        } catch (SQLException e) {
+            logError("Erro ao buscar livros", e);
+            showAlert("Erro na Busca", "Ocorreu um erro ao buscar livros.");
         }
     }
 
@@ -230,18 +234,33 @@ public class AddLoanViewController {
      * @param book O livro cuja capa será exibida.
      */
     private void displayBookCover(Book book) {
+        // Verifica se há um caminho de capa e se o arquivo existe
         if (book.getCoverImagePath() != null && !book.getCoverImagePath().isEmpty()) {
             try {
+                // Tenta carregar a imagem do caminho do arquivo local
                 Image image = new Image("file:" + book.getCoverImagePath());
+                if (image.isError()) { // Verifica se houve erro no carregamento da imagem
+                    throw new Exception("Erro ao carregar imagem do caminho local: " + book.getCoverImagePath());
+                }
                 selectedBookImageView.setImage(image);
+                return; // Imagem carregada com sucesso, sai do método
             } catch (Exception e) {
-                logError("Erro ao carregar capa do livro", e);
-                selectedBookImageView.setImage(new Image(getClass().getResourceAsStream("/images/default_book.png")));
+                logError("Tentativa de carregar capa do livro por caminho local falhou", e);
+                // Se falhar, tenta carregar do recurso padrão
             }
-        } else {
+        }
+
+        // Se não tem caminho de capa, ou se o carregamento do caminho falhou, tenta imagem padrão
+        // Usar getResourceAsStream é mais robusto para recursos internos do JAR
+        try {
             selectedBookImageView.setImage(new Image(getClass().getResourceAsStream("/images/default_book_icon.png")));
+        } catch (Exception e) {
+            logError("Erro ao carregar imagem padrão de capa do livro", e);
+            // Em último caso, não exibe imagem
+            selectedBookImageView.setImage(null);
         }
     }
+
 
     /**
      * Realiza a busca de usuários com base no termo de busca fornecido.
@@ -249,18 +268,19 @@ public class AddLoanViewController {
      */
     @FXML
     private void searchUser() {
-        String searchTerm = userSearchTextField.getText();
+        String searchTerm = userSearchTextField.getText().trim();
 
-        if (!searchTerm.isEmpty()) {
-            try {
-                List<User> results = userService.findUsersByNameOrCPFOrEmail(searchTerm);
-                userResultsListView.setItems(FXCollections.observableArrayList(results));
-            } catch (SQLException e) {
-                logError("Erro ao buscar usuários", e);
-                showAlert("Erro na Busca", "Ocorreu um erro ao buscar usuários.");
-            }
-        } else {
+        if (searchTerm.isEmpty()) {
             showAlert("Campo Vazio", "Por favor, digite um termo para buscar usuários.");
+            return;
+        }
+
+        try {
+            List<User> results = userService.findUsersByNameOrCPFOrEmail(searchTerm);
+            userResultsListView.setItems(FXCollections.observableArrayList(results));
+        } catch (SQLException e) {
+            logError("Erro ao buscar usuários", e);
+            showAlert("Erro na Busca", "Ocorreu um erro ao buscar usuários.");
         }
     }
 
@@ -289,26 +309,47 @@ public class AddLoanViewController {
         LocalDate loanDate = loanDatePicker.getValue();
         LocalDate returnDate = returnDatePicker.getValue();
 
-        if (selectedBook != null && selectedUser != null && loanDate != null && returnDate != null) {
-            Loan newLoan = new Loan();
-            newLoan.setBook(selectedBook);
-            newLoan.setUser(selectedUser);
-            newLoan.setLoanDate(loanDate);
-            newLoan.setReturnDate(returnDate);
-            newLoan.setStatus("Ativo");
+        if (selectedBook == null) {
+            showAlert("Campos Obrigatórios", "Por favor, selecione um livro.");
+            return;
+        }
+        if (selectedUser == null) {
+            showAlert("Campos Obrigatórios", "Por favor, selecione um usuário.");
+            return;
+        }
+        if (loanDate == null) {
+            showAlert("Campos Obrigatórios", "Por favor, selecione a data de empréstimo.");
+            return;
+        }
+        if (returnDate == null) {
+            showAlert("Campos Obrigatórios", "Por favor, selecione a data de devolução.");
+            return;
+        }
+        if (returnDate.isBefore(loanDate)) {
+            showAlert("Datas Inválidas", "A data de devolução não pode ser anterior à data de empréstimo.");
+            return;
+        }
 
-            try {
-                loanService.addLoan(newLoan);
-                if (mainLoanController != null) {
-                    mainLoanController.loadAllLoans(); // Atualiza a lista na tela principal
-                }
-                closeDialog();
-            } catch (SQLException e) {
-                logError("Erro ao salvar empréstimo", e);
-                showAlert("Erro ao Salvar", "Ocorreu um erro ao salvar o empréstimo: " + e.getMessage());
+        Loan newLoan = new Loan();
+        newLoan.setBook(selectedBook);
+        newLoan.setUser(selectedUser);
+        newLoan.setLoanDate(loanDate);
+        newLoan.setReturnDate(returnDate);
+        newLoan.setStatus("Ativo");
+
+        try {
+            loanService.addLoan(newLoan);
+            showAlert("Sucesso", "Empréstimo salvo com sucesso!");
+            if (mainLoanController != null) {
+                mainLoanController.loadAllLoans();
             }
-        } else {
-            showAlert("Campos Obrigatórios", "Por favor, selecione um livro, um usuário e as datas de empréstimo e devolução.");
+            closeDialog();
+        } catch (SQLException e) {
+            logError("Erro ao salvar empréstimo", e);
+            showAlert("Erro ao Salvar", "Ocorreu um erro ao salvar o empréstimo: " + e.getMessage());
+        } catch (IllegalArgumentException e) { // Captura exceções de validação do serviço
+            logError("Validação de empréstimo falhou", e);
+            showAlert("Erro de Validação", "Falha na validação: " + e.getMessage());
         }
     }
 
@@ -331,6 +372,10 @@ public class AddLoanViewController {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
+        // CORREÇÃO: Define o proprietário do alerta para que ele apareça centralizado sobre a janela correta
+        if (dialogStage != null) {
+            alert.initOwner(dialogStage);
+        }
         alert.showAndWait();
     }
 
