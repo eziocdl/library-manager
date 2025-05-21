@@ -1,125 +1,156 @@
+/* Paleta de Cores Sugerida:
+   Primária (Azul): #2979ff (Intenso), #64b5f6 (Médio), #e3f2fd (Claro)
+   Secundária (Verde): #4caf50 (Intenso), #81c784 (Médio), #e8f5e9 (Claro)
+   Neutros: #f8fafd (Fundo Principal), #f0f4f7 (Fundo Secundário), #ffffff (Elementos específicos como barra superior e campos de texto), #bdbdbd (Bordas/Divisores), #757575 (Texto Secundário), #212121 (Texto Primário)
+   Aviso/Erro: #ffc107 (Amarelo), #f44336 (Vermelho)
+*/
+
 /* Estilos Globais */
 .root {
-    -fx-background-color: #f0f8ff; /* Azul bem claro (AliceBlue) */
-    -fx-font-family: "Roboto", "Segoe UI", sans-serif; /* Fontes mais modernas */
+    -fx-background-color: #f8fafd; /* Fundo principal, azul muito claro, quase branco */
+    -fx-font-family: "Segoe UI", "Roboto", sans-serif; /* Prioriza Segoe UI, mais nítido */
+    -fx-font-size: 14px; /* Tamanho base da fonte */
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-padding: 10px;
+
 }
+
+
 
 .label {
-    -fx-text-fill: #555; /* Cinza um pouco mais escuro */
-}
-
-/* Barra Superior (Top Bar) */
-.top-bar {
-    -fx-padding: 16px;
-    -fx-background-color: #e0f2f7; /* Azul bem claro (Light Cyan) */
-    -fx-border-bottom: 1px solid #b2ebf2; /* Borda azul mais clara */
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 8, 0, 2, 2);
-    -fx-alignment: CENTER_LEFT;
-    -fx-spacing: 16px;
-}
-
-.top-search-field {
-    -fx-padding: 10px 16px;
-    -fx-border-color: #b2ebf2; /* Borda azul mais clara para a borda */
-    -fx-border-radius: 4px;
-    -fx-background-color: #fff;
-    -fx-prompt-text-fill: #9e9e9e; /* Cor do texto de dica */
+    -fx-text-fill: #333333; /* Cinza escuro para texto principal */
     -fx-font-size: 1.0em;
-}
-
-.top .primary-button { /* Botão "Adicionar Livro" na barra superior */
-    -fx-background-color: #4caf50; /* Verde mais vivo */
-    -fx-text-fill: #fff;
-    -fx-padding: 10px 16px;
-    -fx-border-radius: 4px;
-    -fx-font-size: 1.0em;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 4, 0, 2, 2);
-}
-
-.top .primary-button:hover {
-    -fx-background-color: #388e3c;
-}
-
-/* Barra Lateral (Sidebar) */
-.left {
-    -fx-background-color: #f5f5f5; /* Fundo claro */
-    -fx-padding: 16px;
-    -fx-alignment: TOP_LEFT;
-    -fx-spacing: 8px;
-    -fx-border-right: 1px solid #e0e0e0; /* Borda sutil à direita */
-}
-
-.sidebar-label-title {
-    -fx-text-fill: #2c3e50;
-    -fx-font-size: 1.4em;
-    -fx-font-weight: bold;
-    -fx-padding: 16px 0;
-    -fx-alignment: CENTER_LEFT;
-    -fx-font-family: "Segoe UI", sans-serif;
-}
-
-.sidebar-button {
-    -fx-background-color: transparent;
-    -fx-text-fill: #333;
-    -fx-border-color: transparent;
-    -fx-padding: 10px 16px;
-    -fx-font-size: 1.0em;
-    -fx-cursor: hand;
-    -fx-pref-width: infinity;
-    -fx-alignment: CENTER_LEFT;
-}
-
-.sidebar-button:hover {
-    -fx-background-color: #b2ebf2; /* Azul mais claro ao passar o mouse */
-}
-
-.sidebar-button:selected {
-    -fx-background-color: #e0f7fa; /* Azul bem claro para o item selecionado */
-    -fx-text-fill: #00838f; /* Azul mais escuro para texto selecionado */
-    -fx-font-weight: bold;
-}
-
-.logo-image {
-    -fx-pref-width: 80px;
-    -fx-pref-height: 80px;
-    -fx-background-color: #e0e0e0;
-    -fx-border-radius: 50%; /* Círculo */
-    -fx-background-radius: 50%;
-    -fx-padding: 8px;
-    -fx-image: url("assets/logo.jpeg");
-    -fx-image-preserve-ratio: true;
-    -fx-image-repeat: no-repeat;
-    -fx-image-position: center;
-    -fx-image-size: contain;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 6, 0, 2, 2);
-    -fx-margin-bottom: 16px;
 }
 
 /* Títulos */
 .label-title {
-    -fx-font-size: 1.8em;
-    -fx-font-weight: 500;
-    -fx-padding: 16px 0;
-    -fx-text-fill: #2979ff; /* Azul mais intenso */
+    -fx-font-size: 2.0em; /* Título maior e mais impactante */
+    -fx-font-weight: bold; /* Negrito padrão */
+    -fx-padding: 20px 0 15px 0; /* Mais padding superior e inferior */
+    -fx-text-fill: #2979ff; /* Azul primário intenso */
 }
 
 .app-title {
-    -fx-font-size: 1.2em;
+    -fx-font-size: 1.3em; /* Levemente maior */
     -fx-font-weight: bold;
-    -fx-text-fill: #2563EB; /* Azul primária */
+    -fx-text-fill: #212121; /* Texto mais escuro para maior contraste */
 }
+
+/* Barra Superior (Top Bar) */
+.top-bar {
+    -fx-padding: 15px 25px; /* Mais padding nas laterais */
+    -fx-background-color: #ffffff; /* Fundo branco para dar um ar mais leve */
+    -fx-border-bottom: 1px solid #e0e0e0; /* Borda mais suave */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 10, 0, 2, 4); /* Sombra mais difusa */
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 20px; /* Mais espaçamento entre elementos */
+}
+
+.top-search-field {
+    -fx-padding: 10px 15px;
+    -fx-border-color: #bdbdbd; /* Borda cinza suave */
+    -fx-border-radius: 6px; /* Cantos mais arredondados */
+    -fx-background-color: #f5f5f5; /* Fundo levemente cinza para destacar */
+    -fx-prompt-text-fill: #9e9e9e;
+    -fx-font-size: 1.0em;
+    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.05), 3, 0, 0, 1); /* Sombra interna sutil */
+}
+
+.top .primary-button { /* Botão "Adicionar Livro" na barra superior */
+    -fx-background-color: #2979ff; /* Azul primário intenso */
+    -fx-text-fill: #fff;
+    -fx-padding: 10px 20px; /* Padding maior */
+    -fx-border-radius: 6px;
+    -fx-font-size: 1.05em; /* Levemente maior */
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 6, 0, 2, 2);
+}
+
+.top .primary-button:hover {
+    -fx-background-color: #1a62cc; /* Azul mais escuro no hover */
+}
+
+/* Barra Lateral (Sidebar) - AGORA COM FUNDO TRANSPARENTE E ESTILO DE CARD */
+.left {
+    -fx-background-color: transparent; /* Fundo transparente */
+    -fx-border-color: #e0e0e0; /* Borda suave */
+    -fx-border-width: 1px;
+    -fx-border-radius: 10px; /* Cantos arredondados, igual aos cards */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 4, 4); /* Sombra, igual aos cards */
+    -fx-padding: 25px 15px 25px 15px; /* Ajuste o padding para centralizar melhor o conteúdo */
+    -fx-alignment: TOP_CENTER; /* Centraliza o conteúdo, incluindo a logo */
+    -fx-spacing: 12px;
+}
+
+.sidebar-label-title {
+    -fx-text-fill: #212121;
+    -fx-font-size: 1.7em;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 20px 0;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.sidebar-button {
+    -fx-background-color: transparent; /* Fundo transparente para o botão */
+    -fx-text-fill: #424242; /* Cor normal do texto */
+    -fx-border-color: transparent; /* Sem borda inicial */
+    -fx-padding: 12px 20px;
+    -fx-font-size: 1.0em;
+    -fx-cursor: hand;
+    -fx-pref-width: infinity;
+    -fx-alignment: CENTER_LEFT;
+    -fx-background-radius: 4px;
+    /* Adicionando uma sombra sutil para dar um toque mais sofisticado */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.03), 3, 0, 1, 1);
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #e3f2fd; /* Azul muito claro ao passar o mouse */
+    -fx-text-fill: #2979ff; /* Mudar texto para o azul primário no hover */
+    -fx-font-weight: bold; /* Negrito no hover */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 5, 0, 2, 2); /* Sombra mais pronunciada no hover */
+}
+
+.sidebar-button:selected {
+    -fx-background-color: #e3f2fd; /* Azul muito claro para o item selecionado */
+    -fx-text-fill: #2979ff; /* Azul primário para texto selecionado */
+    -fx-font-weight: bold;
+    -fx-border-left: 5px solid #2979ff; /* Borda esquerda para indicar seleção */
+    -fx-padding: 12px 20px 12px 15px; /* Ajusta padding para compensar a borda */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 6, 0, 2, 2); /* Sombra ainda mais forte para o selecionado */
+}
+
+.logo-image {
+    -fx-pref-width: 80px; /* Largura preferencial */
+    -fx-pref-height: 80px; /* Altura preferencial */
+    -fx-background-color: transparent;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-padding: 0;
+    -fx-image: url("assets/logo.png"); /* CORRIGIDO AQUI: Certifique-se que é logo.png (minúsculas) */
+    -fx-image-preserve-ratio: true;
+    -fx-image-repeat: no-repeat;
+    -fx-image-position: center;
+    -fx-image-size: contain; /* Garante que a imagem se ajuste ao contêiner, mantendo a proporção */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 5, 0, 1, 1);
+    -fx-margin-bottom: 20px;
+
+}
+
 
 /* Botões - Estilo Geral */
 .primary-button {
-    -fx-background-color: #4caf50; /* Verde mais vivo */
+    -fx-background-color: #4caf50;
     -fx-text-fill: #fff;
-    -fx-padding: 10px 16px;
+    -fx-padding: 10px 20px;
     -fx-border-color: transparent;
-    -fx-border-radius: 4px;
-    -fx-background-radius: 4px;
-    -fx-font-size: 1.0em;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-font-size: 1.05em;
+    -fx-font-weight: 500;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 4, 0, 2, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 6, 0, 2, 2);
 }
 
 .primary-button:hover {
@@ -127,353 +158,353 @@
 }
 
 .button-action {
-    -fx-background-color:  #e1f5fe;
-    -fx-text-fill: #2979ff; /* Azul mais intenso */
-    -fx-padding: 8px 12px;
-    -fx-font-size: 0.9em;
+    -fx-background-color: transparent;
+    -fx-text-fill: #2979ff;
+    -fx-padding: 8px 15px;
+    -fx-font-size: 0.95em;
+    -fx-font-weight: 500;
     -fx-cursor: hand;
     -fx-border-color: #2979ff;
-    -fx-border-radius: 4px;
-    -fx-background-radius: 4px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 5, 0, 1, 1);
 }
 
 .button-action:hover {
-    -fx-background-color: #e1f5fe; /* Azul bem claro ao passar o mouse */
+    -fx-background-color: #e3f2fd;
+    -fx-text-fill: #1a62cc;
 }
 
 .overdue-button {
-    -fx-background-color: #f44336; /* Vermelho */
+    -fx-background-color: #f44336;
     -fx-text-fill: #fff;
-    -fx-border-radius: 4px;
-    -fx-background-radius: 4px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 8px 15px;
+    -fx-font-weight: bold;
 }
 
 .overdue-button:hover {
     -fx-background-color: #d32f2f;
 }
 
-.default-action-button { /* Estilo para botões acinzentados (Editar/Remover em Usuários) */
-    -fx-background-color: #f0f0f0; /* Cinza claro */
-    -fx-text-fill: #000; /* Preto */
-    -fx-border-color: #ccc; /* Borda cinza clara */
+.default-action-button {
+    -fx-background-color: #e0e0e0;
+    -fx-text-fill: #333;
+    -fx-border-color: #c0c0c0;
     -fx-border-width: 1px;
-    -fx-border-radius: 4px;
-    -fx-padding: 8px 12px;
-    -fx-font-size: 0.9em;
+    -fx-border-radius: 6px;
+    -fx-padding: 8px 15px;
+    -fx-font-size: 0.95em;
     -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 4, 0, 1, 1);
 }
 
 .default-action-button:hover {
-    -fx-background-color: #e0e0e0; /* Cinza um pouco mais escuro no hover */
+    -fx-background-color: #d0d0d0;
 }
 
 .default-action-button:pressed {
-    -fx-background-color: #d0d0d0; /* Cinza ainda mais escuro ao pressionar */
+    -fx-background-color: #c0c0c0;
 }
 
 /* Tabelas */
 .table-view {
-    -fx-column-header-background: linear-gradient(#e0f2f7, #b2ebf2);
-    -fx-fixed-cell-size: 32px;
-    -fx-border-color: #b2ebf2;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e0e0e0;
     -fx-border-width: 1px;
-    -fx-background-color: #fff;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 6, 0, 2, 2);
-    -fx-background-radius: 4px;
-    -fx-border-radius: 4px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 8, 0, 2, 2);
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-padding: 0;
 }
 
-.table-column {
-    -fx-alignment: CENTER-LEFT;
-    -fx-padding: 8px;
+.table-view .column-header-background {
+    -fx-background-color: linear-gradient(to bottom, #e3f2fd, #bbdefb);
+    -fx-background-radius: 8px 8px 0 0;
 }
 
-.table-header-row {
-    -fx-background-color: #b2ebf2;
-    -fx-padding: 8px;
+.table-view .column-header {
+    -fx-font-size: 1.0em;
+    -fx-font-weight: bold;
+    -fx-text-fill: #212121;
+    -fx-padding: 10px 8px;
 }
 
-.table-cell {
-    -fx-padding: 8px;
-    -fx-text-fill: #333;
+.table-view .table-cell {
+    -fx-padding: 10px 8px;
+    -fx-text-fill: #424242;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: -fx-table-cell-border-color, #ffffff;
+    -fx-background-insets: 0, 0 0 1 0;
+}
+
+.table-view .table-row-cell:odd {
+    -fx-background-color: -fx-table-cell-border-color, #fdfdfd;
+    -fx-background-insets: 0, 0 0 1 0;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: #cbe6fa;
+    -fx-text-fill: #212121;
 }
 
 /* Estilos de Texto */
-.bold-text { -fx-font-weight: 500; }
-.light-text { -fx-text-fill: #777; }
-.success-text { -fx-text-fill: #43a047; }
-.error-text { -fx-text-fill: #e53935; }
+.bold-text { -fx-font-weight: bold; }
+.light-text { -fx-text-fill: #757575; }
+.success-text { -fx-text-fill: #4caf50; }
+.error-text { -fx-text-fill: #f44336; }
+.warning-text { -fx-text-fill: #ffc107; }
+
 
 /* Campos de Texto */
 .text-field {
-    -fx-padding: 10px 12px;
-    -fx-border-color: #b2ebf2;
-    -fx-border-radius: 4px;
-    -fx-background-color: #fff;
+    -fx-padding: 10px 15px;
+    -fx-border-color: #bdbdbd;
+    -fx-border-radius: 6px;
+    -fx-background-color: #ffffff;
     -fx-prompt-text-fill: #9e9e9e;
     -fx-font-size: 1.0em;
+    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.05), 3, 0, 0, 1);
 }
+
+.text-field:focused {
+    -fx-border-color: #2979ff;
+    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.08), 3, 0, 0, 1);
+}
+
 
 /* ComboBox */
 .combo-box {
-    -fx-background-color: #fff;
-    -fx-border-color: #b2ebf2;
-    -fx-border-radius: 4px;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #bdbdbd;
+    -fx-border-radius: 6px;
     -fx-padding: 8px 12px;
     -fx-text-fill: #333;
     -fx-font-size: 1.0em;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 5, 0, 1, 1);
 }
 
-.combo-box:focused { -fx-border-color: #2979ff; }
-.combo-box .list-cell { -fx-text-fill: #333; }
-.combo-box .list-cell:filled:hover { -fx-background-color: #e1f5fe; }
+.combo-box:focused {
+    -fx-border-color: #2979ff;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 1, 1);
+}
+.combo-box .list-cell { -fx-text-fill: #333; -fx-padding: 8px 12px;}
+.combo-box .list-cell:filled:hover { -fx-background-color: #e3f2fd; }
 .combo-box .list-cell:filled:selected { -fx-background-color: #2979ff; -fx-text-fill: #fff; }
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 10px 0 0;
+}
+.combo-box .arrow {
+    -fx-background-color: #757575;
+}
+
 
 /* DatePicker */
 .date-picker {
-    -fx-background-color: #fff;
-    -fx-border-color: #b2ebf2;
-    -fx-border-radius: 4px;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #bdbdbd;
+    -fx-border-radius: 6px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 5, 0, 1, 1);
 }
 
 .date-picker:focused { -fx-border-color: #2979ff; }
-.date-picker .text-field { -fx-padding: 8px 12px; -fx-text-fill: #333; -fx-background-color: #fff; -fx-border-color: #b2ebf2; -fx-border-radius: 4px; -fx-font-size: 1.0em; }
-.date-picker .text-field:focused { -fx-border-color: #2979ff; }
+.date-picker .text-field {
+    -fx-padding: 10px 15px;
+    -fx-text-fill: #333;
+    -fx-background-color: #ffffff;
+    -fx-border-color: transparent;
+    -fx-border-radius: 6px;
+    -fx-font-size: 1.0em;
+}
+.date-picker .text-field:focused { -fx-border-color: transparent; }
 .date-picker .date-cell { -fx-text-fill: #333; }
-.date-picker .date-cell:hover { -fx-background-color: #e1f5fe; }
+.date-picker .date-cell:hover { -fx-background-color: #e3f2fd; }
 .date-picker .date-cell.selected { -fx-background-color: #2979ff; -fx-text-fill: #fff; }
 .date-picker .arrow-button { -fx-background-color: transparent; }
-.date-picker .arrow { -fx-fill: #777; }
+.date-picker .arrow { -fx-fill: #757575; }
 
-/* Cards */
-.user-card {
-    -fx-background-color: transparent;
-    -fx-border-color: #ddd;
+/* Cards (Geral) - Aplicado a book-card, user-card, loan-card */
+.user-card, .loan-card, .book-card {
+    -fx-background-color: transparent; /* Fundo transparente para todos os cards */
+    -fx-border-color: #e0e0e0;
     -fx-border-width: 1px;
-    -fx-border-radius: 4px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 6, 0, 2, 2);
-    -fx-padding: 12px;
-    -fx-max-width: 320px;
-}
-
-.loan-card {
-    -fx-background-color: transparent; /* Fundo transparente */
-    -fx-border-color: #ddd;         /* Borda cinza clara para separação (opcional) */
-    -fx-border-width: 1px;           /* Largura da borda (opcional) */
-    -fx-border-radius: 4px;          /* Cantos arredondados */
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 6, 0, 2, 2); /* Efeito de sombra para destacar */
-    -fx-padding: 12px;              /* Espaçamento interno */
-    -fx-margin-bottom: 10px;       /* Espaçamento entre os cards (opcional) */
-
+    -fx-border-radius: 10px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 4, 4);
+    -fx-padding: 15px;
+    -fx-margin-bottom: 15px;
 }
 
 #loansVBox {
-    -fx-background-color: transparent; /* Define o fundo como transparente */
-    -fx-border-color: transparent; /* Remove a cor da borda */
-    -fx-border-width: 0px; /* Define a largura da borda como zero */
-    -fx-border-radius: 4px; /* Mantém os cantos arredondados (se desejado) */
-    -fx-padding: 10px;
-    -fx-spacing: 10px;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0px;
+    -fx-border-radius: 4px;
+    -fx-padding: 15px;
+    -fx-spacing: 15px;
 }
 
 /* Botões dentro de Cards */
 .book-card-action-button {
-    -fx-pref-width: 70px;
-    -fx-min-width: 70px;
-    -fx-max-width: 70px;
-    -fx-font-size: 0.9em;
-    -fx-padding: 6px 8px;
-    -fx-background-color: #e1f5fe; /* Azul bem claro */
-    -fx-text-fill: #2979ff; /* Azul mais intenso */
-    -fx-border-color: #b2ebf2; /* Borda azul mais clara */
-    -fx-border-radius: 4px;
+    -fx-pref-width: 80px;
+    -fx-min-width: 80px;
+    -fx-max-width: 80px;
+    -fx-font-size: 0.95em;
+    -fx-padding: 8px 12px;
+    -fx-background-color: #e3f2fd;
+    -fx-text-fill: #2979ff;
+    -fx-border-color: #bbdefb;
+    -fx-border-radius: 6px;
     -fx-cursor: hand;
     -fx-alignment: center;
+    -fx-font-weight: 500;
 }
 
 .book-card-action-button:hover {
-    -fx-background-color: #bbdefb; /* Azul mais clara ao passar o mouse */
+    -fx-background-color: #bbdefb;
+    -fx-text-fill: #1a62cc;
 }
 
 .book-card-action-button:pressed {
-    -fx-background-color: #90caf9; /* Azul um pouco mais escuro ao pressionar */
+    -fx-background-color: #90caf9;
 }
 
 /* Ícones */
-.search-icon { -fx-fill: #777; -fx-fit-width: 24px; -fx-fit-height: 24px; }
-.add-icon { -fx-fill: #fff; -fx-fit-width: 24px; -fx-fit-height: 24px; } /* Branco para usar em botões primários */
+.search-icon { -fx-fill: #757575; -fx-fit-width: 20px; -fx-fit-height: 20px; }
+.add-icon { -fx-fill: #fff; -fx-fit-width: 20px; -fx-fit-height: 20px; }
 
 /* Classes de Utilidade */
-.rounded-corners { -fx-background-radius: 4px; -fx-border-radius: 4px; }
-.shadow-effect { -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 6, 0, 2, 2); }
-.bottom-margin { -fx-margin-bottom: 8px; }
+.rounded-corners { -fx-background-radius: 6px; -fx-border-radius: 6px; }
+.shadow-effect { -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 8, 0, 2, 2); }
+.bottom-margin { -fx-margin-bottom: 12px; }
 
 /* Estilos Específicos para a Tela de Gerenciar Livros */
-.library-view { /* Container principal da tela */
-    -fx-padding: 20px;
-    -fx-spacing: 15px; /* Espaçamento entre os elementos principais */
+.library-view {
+    -fx-padding: 30px;
+    -fx-spacing: 20px;
+    -fx-background-color: #f8fafd;
 }
 
-.library-header { /* Container para a busca e o botão adicionar */
+.library-header {
     -fx-alignment: CENTER_LEFT;
-    -fx-spacing: 15px;
-    -fx-padding: 0 0 20px 0;
+    -fx-spacing: 20px;
+    -fx-padding: 0 0 25px 0;
 }
 
-.add-book-button { /* Estilo específico para o botão "Adicionar Livro" */
-    -fx-background-color: #4caf50; /* Verde mais vivo */
+.add-book-button {
+    -fx-background-color: #4caf50;
     -fx-text-fill: #fff;
-    -fx-padding: 10px 16px;
-    -fx-border-radius: 4px;
-    -fx-font-size: 1.0em;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 4, 0, 2, 2);
+    -fx-padding: 12px 25px;
+    -fx-border-radius: 6px;
+    -fx-font-size: 1.1em;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 6, 0, 2, 2);
 }
 .add-book-button:hover {
     -fx-background-color: #388e3c;
 }
 
-.book-list-container { /* Container para os cards de livros (provavelmente um FlowPane) */
-    -fx-spacing: 15px; /* Espaçamento entre os cards */
-    -fx-hgap: 15px; /* Espaçamento horizontal entre os cards */
-    -fx-vgap: 15px; /* Espaçamento vertical entre os cards */
+.book-list-container {
+    -fx-spacing: 20px;
+    -fx-hgap: 20px;
+    -fx-vgap: 20px;
 }
 
-.book-card { /* Estilo específico para o card do livro */
+.book-card {
     -fx-background-color: transparent;
-    -fx-border-color: #ddd;
+    -fx-border-color: #e0e0e0;
     -fx-border-width: 1px;
-    -fx-border-radius: 8px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 6, 0, 2, 2);
-    -fx-padding: 12px;
-    -fx-pref-width: 280px; /* Largura preferida do card */
+    -fx-border-radius: 10px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 4, 4);
+    -fx-padding: 15px;
+    -fx-pref-width: 260px;
+    -fx-alignment: TOP_CENTER;
 }
 
-.book-card-image-container { /* Container para a imagem da capa */
+.book-card-image-container {
     -fx-alignment: CENTER;
-    -fx-padding: 0 0 8px 0;
+    -fx-padding: 0 0 10px 0;
 }
 
-.book-card-image { /* Estilo para a imagem da capa */
-    -fx-fit-width: 100px;
-    -fx-fit-height: 150px;
-    -fx-preserve-ratio: true;
-    -fx-border-radius: 4px;
+.book-card-image {
+    -fx-fit-width: 120px;
+    -fx-fit-height: 180px;
+    -fx-border-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 8, 0, 2, 2);
 }
 
-.book-card-details { /* Container para os detalhes do livro (título, autor, etc.) */
-    -fx-spacing: 6px;
+.book-card-details {
+    -fx-spacing: 8px;
+    -fx-alignment: CENTER;
 }
 
-.book-card-title { /* Estilo para o título do livro */
-    -fx-font-size: 1.1em;
+.book-card-title {
+    -fx-font-size: 1.2em;
     -fx-font-weight: bold;
     -fx-text-fill: #212121;
+    -fx-text-alignment: center;
+    -fx-wrap-text: true;
 }
 
-.book-card-author { /* Estilo para o autor do livro */
+.book-card-author {
+    -fx-font-size: 0.95em;
+    -fx-text-fill: #616161;
+    -fx-font-style: italic;
+}
+
+.book-card-info {
     -fx-font-size: 0.9em;
-    -fx-text-fill: #757575;
-}
-
-.book-card-info { /* Estilo para outras informações (ISBN, Editora, Ano, Gênero) */
-    -fx-font-size: 0.85em;
     -fx-text-fill: #424242;
+    -fx-text-alignment: center;
 }
 
-.book-card-availability { /* Estilo para a informação de disponibilidade */
-    -fx-font-size: 0.9em;
+.book-card-availability {
+    -fx-font-size: 1.0em;
     -fx-font-weight: bold;
-    -fx-text-fill: #43a047; /* Verde para disponível */
-    -fx-padding: 8px 0;
+    -fx-text-fill: #4caf50;
+    -fx-padding: 10px 0;
 }
 
-.book-card-actions { /* Container para os botões de ação (Detalhes) */
-    -fx-alignment: CENTER_RIGHT;
-    -fx-padding: 8px 0 0 0;
+.book-card-actions {
+    -fx-alignment: CENTER;
+    -fx-padding: 10px 0 0 0;
 }
 
-.details-button { /* Estilo para o botão "Detalhes" */
+.details-button {
     -fx-background-color: transparent;
-    -fx-text-fill: #2979ff; /* Azul mais intenso */
-    -fx-border-color: #2979ff; /* Borda azul mais intensa */
-    -fx-border-radius: 4px;
+    -fx-text-fill: #2979ff;
+    -fx-border-color: #2979ff;
+    -fx-border-radius: 6px;
     -fx-border-width: 1px;
-    -fx-padding: 6px 10px;
-    -fx-font-size: 0.9em;
+    -fx-padding: 8px 15px;
+    -fx-font-size: 0.95em;
     -fx-cursor: hand;
+    -fx-font-weight: 500;
 }
 
 .details-button:hover {
-    -fx-background-color: #e1f5fe; /* Azul bem claro ao passar o mouse */
-}
-
-/* Estilos para a barra lateral (baseado no mockup) */
-.left {
-    -fx-background-color: #f9f9f9; /* Fundo mais claro */
-    -fx-padding: 20px;
-    -fx-alignment: TOP_LEFT;
-    -fx-spacing: 10px;
-    -fx-border-right: 1px solid #eee;
-}
-
-.sidebar-label-title {
-    -fx-text-fill: #333;
-    -fx-font-size: 1.6em;
-    -fx-font-weight: bold;
-    -fx-padding: 15px 0;
-    -fx-alignment: CENTER_LEFT;
-    -fx-font-family: "Segoe UI", sans-serif;
-}
-
-.sidebar-button {
-    -fx-background-color: transparent;
-    -fx-text-fill: #555;
-    -fx-border-color: transparent;
-    -fx-padding: 10px 15px;
-    -fx-font-size: 1.0em;
-    -fx-cursor: hand;
-    -fx-pref-width: infinity;
-    -fx-alignment: CENTER_LEFT;
-}
-
-.sidebar-button:hover {
-    -fx-background-color: #eee;
-}
-
-.sidebar-button:selected {
-    -fx-background-color: #e0f7fa; /* Azul bem claro para seleção */
-    -fx-text-fill: #00838f; /* Azul mais escuro para texto selecionado */
-    -fx-font-weight: bold;
-}
-
-.logo-image {
-    -fx-pref-width: 70px;
-    -fx-pref-height: 70px;
-    -fx-background-color: #fff;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
-    -fx-padding: 8px;
-    -fx-image: url("assets/logo.jpeg");
-    -fx-image-preserve-ratio: true;
-    -fx-image-repeat: no-repeat;
-    -fx-image-position: center;
-    -fx-image-size: contain;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 6, 0, 2, 2);
-    -fx-margin-bottom: 20px;
+    -fx-background-color: #e3f2fd;
+    -fx-text-fill: #1a62cc;
 }
 
 /* Estilos para a barra inferior (baseado no mockup) */
 .bottom-bar {
-    -fx-padding: 10px 16px;
-    -fx-background-color: #f9f9f9;
-    -fx-border-top: 1px solid #eee;
+    -fx-padding: 12px 25px;
+    -fx-background-color: #ffffff;
+    -fx-border-top: 1px solid #e0e0e0;
     -fx-alignment: CENTER_LEFT;
-    -fx-spacing: 10px;
+    -fx-spacing: 15px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 10, 0, 2, -4);
 }
 
 .admin-info {
-    -fx-font-size: 0.9em;
-    -fx-text-fill: #777;
+    -fx-font-size: 0.95em;
+    -fx-text-fill: #757575;
 }
 
 .admin-username {
@@ -486,10 +517,38 @@
     -fx-background-color: transparent;
     -fx-border-color: transparent;
     -fx-border-width: 0px;
+    -fx-padding: 0;
 }
 
 .scroll-pane > .viewport {
     -fx-background-color: transparent;
 }
 
+.scroll-bar:vertical .increment-button,
+.scroll-bar:vertical .decrement-button,
+.scroll-bar:horizontal .increment-button,
+.scroll-bar:horizontal .decrement-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
 
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-background-color: #bdbdbd;
+}
+
+.scroll-bar .track {
+    -fx-background-color: #f0f0f0;
+    -fx-border-color: transparent;
+    -fx-background-radius: 8px;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #9e9e9e;
+    -fx-background-insets: 2, 0, 0;
+    -fx-background-radius: 8px;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #757575;
+}
