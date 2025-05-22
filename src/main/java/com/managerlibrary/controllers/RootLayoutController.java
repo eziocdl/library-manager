@@ -101,8 +101,9 @@ public class RootLayoutController {
                 bookControllerCache = loader.getController(); // Obtém o controlador AUTOMATICAMENTE
 
                 // *** INJEÇÃO DE DEPENDÊNCIA NO BookController ***
-                bookControllerCache.setBookService(this.bookService);
+                // Garante que o RootLayoutController seja injetado antes dos serviços
                 bookControllerCache.setRootLayoutController(this); // Passa a si mesmo para o BookController
+                bookControllerCache.setBookService(this.bookService);
 
                 logInfo("BookView e BookController carregados e serviços injetados.");
             } catch (IOException e) {
@@ -128,10 +129,11 @@ public class RootLayoutController {
                 loanControllerCache = loader.getController();
 
                 // *** INJEÇÃO DE DEPENDÊNCIA NO LoanController ***
+                // Garante que o RootLayoutController seja injetado antes dos serviços
+                loanControllerCache.setRootLayoutController(this);
                 loanControllerCache.setLoanService(this.loanService);
                 loanControllerCache.setBookService(this.bookService); // LoanController precisa de BookService
                 loanControllerCache.setUserService(this.userService); // LoanController precisa de UserService
-                loanControllerCache.setRootLayoutController(this);
 
                 logInfo("LoanView e LoanController carregados e serviços injetados.");
             } catch (IOException e) {
@@ -157,8 +159,10 @@ public class RootLayoutController {
                 userControllerCache = loader.getController();
 
                 // *** INJEÇÃO DE DEPENDÊNCIA NO UserController ***
-                userControllerCache.setUserService(this.userService);
+                // CORREÇÃO: Garante que o RootLayoutController seja injetado PRIMEIRO
+                // antes que o setUserService chame loadAllUsers e este tente usar o RootLayoutController
                 userControllerCache.setRootLayoutController(this);
+                userControllerCache.setUserService(this.userService); // setUserService agora será chamado DEPOIS que rootLayoutController é definido
 
                 logInfo("UserView e UserController carregados e serviços injetados.");
             } catch (IOException e) {
@@ -167,7 +171,10 @@ public class RootLayoutController {
             }
         }
         setCenterView(userViewCache);
-        userControllerCache.loadAllUsers(); // Assumindo que você tem um loadAllUsers no UserController
+        // Mesmo que loadAllUsers seja chamado em setUserService, chamamos aqui também
+        // para garantir que a lista seja sempre recarregada ao exibir a view,
+        // caso ela já estivesse em cache e precisasse de atualização.
+        userControllerCache.loadAllUsers();
     }
 
     /**
