@@ -1,154 +1,144 @@
-package com.managerlibrary.controllers;
+package com.managerlibrary.controllers; // Certifique-se de que o pacote está correto
 
 import com.managerlibrary.entities.Book;
+import com.managerlibrary.services.BookService; // <--- Importação necessária
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.stage.Window; // Importe Window
+import javafx.scene.layout.VBox; // Ou o tipo de layout raiz do seu BookCardView.fxml
 
-import java.io.File;
+import java.util.Objects; // <--- Importação necessária
 
 /**
- * Controlador para o card individual de um livro exibido na lista de livros.
- * Responsável por exibir as informações do livro e fornecer ações como detalhes,
- * edição e remoção.
+ * Controlador para o card individual de um livro exibido na tela principal.
+ * Permite visualizar informações resumidas e interagir com o livro (detalhes, editar, remover).
  */
 public class BookCardController {
 
     @FXML
-    private ImageView coverImageView;
+    private VBox bookCardVBox; // O elemento raiz do seu BookCardView.fxml
     @FXML
     private Label titleLabel;
     @FXML
     private Label authorLabel;
     @FXML
-    private Label availableLabel;
-    @FXML
     private Label isbnLabel;
     @FXML
-    private Label publisherLabel;
-    @FXML
-    private Label yearLabel;
-    @FXML
-    private Label genreLabel;
-    @FXML
-    private Button editButton;
-    @FXML
-    private Button detailsButton;
-    @FXML
-    private Button removeButton;
+    private Label availableCopiesLabel;
 
-    private Book book;
-    private BookController bookListController;
+    private Book book; // O livro associado a este card
+    private BookController bookListController; // Referência ao BookController principal
+    private RootLayoutController rootLayoutController; // Referência ao RootLayoutController
 
+    private BookService bookService; // <--- NOVO CAMPO PARA O BOOKSERVICE
+
+    /**
+     * Define o livro para este card e atualiza a interface.
+     * @param book O objeto Book a ser exibido no card.
+     */
     public void setBook(Book book) {
         this.book = book;
-        updateCard();
+        updateCardUI();
     }
 
+    /**
+     * Define o BookController principal para este card.
+     * Permite que as ações do card (ex: "Ver Detalhes", "Editar", "Remover")
+     * acionem métodos no controlador principal.
+     * @param bookListController O BookController principal.
+     */
     public void setBookListController(BookController bookListController) {
-        this.bookListController = bookListController;
+        this.bookListController = Objects.requireNonNull(bookListController, "BookListController não pode ser nulo.");
     }
 
-    private void updateCard() {
-        if (book == null) {
-            titleLabel.setText("");
-            authorLabel.setText("");
-            availableLabel.setText("");
-            isbnLabel.setText("");
-            publisherLabel.setText("");
-            yearLabel.setText("");
-            genreLabel.setText("");
-            coverImageView.setImage(null);
-            return;
-        }
-
-        titleLabel.setText(book.getTitle());
-        authorLabel.setText("Autor: " + book.getAuthor());
-        availableLabel.setText("Disponíveis: " + book.getAvailableCopies() + "/" + book.getTotalCopies());
-        isbnLabel.setText("ISBN: " + book.getIsbn());
-        publisherLabel.setText("Editora: " + book.getPublisher());
-        yearLabel.setText("Ano: " + book.getYear());
-        genreLabel.setText("Gênero: " + book.getGenre());
-        loadBookCover();
+    /**
+     * Define o RootLayoutController.
+     * Útil para exibir alertas com base no palco principal ou para navegação.
+     * @param rootLayoutController O RootLayoutController.
+     */
+    public void setRootLayoutController(RootLayoutController rootLayoutController) {
+        this.rootLayoutController = Objects.requireNonNull(rootLayoutController, "RootLayoutController não pode ser nulo.");
     }
 
-    private void loadBookCover() {
-        Image imageToSet = null;
-
-        if (book.getCoverImagePath() != null && !book.getCoverImagePath().isEmpty()) {
-            File file = new File(book.getCoverImagePath());
-            if (file.exists()) {
-                try {
-                    imageToSet = new Image(file.toURI().toString());
-                    if (!imageToSet.isError()) {
-                        coverImageView.setImage(imageToSet);
-                        return;
-                    } else {
-                        logError("Erro ao carregar imagem do arquivo local (isError): " + book.getCoverImagePath(), null);
-                    }
-                } catch (Exception e) {
-                    logError("Erro ao carregar imagem do arquivo local: " + book.getCoverImagePath(), e);
-                }
-            }
-        }
-
-        if (book.getImageUrl() != null && !book.getImageUrl().isEmpty()) {
-            try {
-                imageToSet = new Image(book.getImageUrl());
-                if (!imageToSet.isError()) {
-                    coverImageView.setImage(imageToSet);
-                    return;
-                } else {
-                    logError("Erro ao carregar imagem da URL (isError): " + book.getImageUrl(), null);
-                }
-            } catch (Exception e) {
-                logError("Erro ao carregar imagem da URL: " + book.getImageUrl(), e);
-            }
-        }
-
-        try {
-            imageToSet = new Image(getClass().getResourceAsStream("/images/default_book_icon.png"));
-            coverImageView.setImage(imageToSet);
-        } catch (Exception e) {
-            logError("Erro ao carregar imagem padrão '/images/default_book_icon.png'", e);
-            coverImageView.setImage(null);
-        }
+    /**
+     * Define o serviço de livros.
+     * Este método deve ser chamado para injetar a dependência, permitindo
+     * que o card realize operações de serviço (ex: deletar/editar).
+     * @param bookService O serviço de livros a ser utilizado.
+     */
+    public void setBookService(BookService bookService) { // <--- NOVO MÉTODO SETTER
+        this.bookService = Objects.requireNonNull(bookService, "BookService não pode ser nulo em BookCardController.");
     }
 
+    /**
+     * Método de inicialização do controlador. Chamado automaticamente pelo FXMLLoader.
+     */
     @FXML
-    private void handleDetails() {
-        if (bookListController != null && book != null && detailsButton != null && detailsButton.getScene() != null) {
-            bookListController.showBookDetails(book, detailsButton.getScene().getWindow());
+    private void initialize() {
+        // Inicializações que não dependem do objeto 'book' podem vir aqui.
+        // Os dados do livro são setados por setBook().
+    }
+
+    /**
+     * Atualiza os Labels do card com as informações do livro.
+     */
+    private void updateCardUI() {
+        if (book != null) {
+            titleLabel.setText(book.getTitle());
+            authorLabel.setText("Autor: " + book.getAuthor());
+            isbnLabel.setText("ISBN: " + book.getIsbn());
+            availableCopiesLabel.setText("Disponíveis: " + book.getAvailableCopies() + "/" + book.getTotalCopies());
         } else {
-            logError("Não foi possível mostrar detalhes do livro. Dependências ausentes ou cena indisponível.", null);
+            // Limpa ou exibe uma mensagem padrão se o livro for nulo
+            titleLabel.setText("Livro Desconhecido");
+            authorLabel.setText("Autor: N/A");
+            isbnLabel.setText("ISBN: N/A");
+            availableCopiesLabel.setText("Disponíveis: N/A");
         }
     }
 
+    /**
+     * Manipula o clique no card (ou um botão "Ver Detalhes").
+     * Abre a tela de detalhes do livro.
+     */
     @FXML
-    private void handleEdit() {
-        if (bookListController != null && book != null && editButton != null) {
-            // CORREÇÃO: Obter o Stage (Window) do botão para passar como owner
-            Window ownerWindow = editButton.getScene().getWindow();
-            bookListController.loadEditBookView(book, ownerWindow); // Passa a Window
+    private void handleViewDetails() {
+        if (bookListController != null && book != null) {
+            // Passa a janela proprietária (Stage) do card para o diálogo de detalhes
+            bookListController.showBookDetails(book, bookCardVBox.getScene().getWindow());
         } else {
-            logError("Não foi possível carregar a tela de edição. Dependências ausentes.", null);
+            logError("Erro: BookListController ou Book não definidos para ver detalhes.", null);
         }
     }
 
+    /**
+     * Manipula o clique no botão de editar.
+     * Abre a tela de edição do livro.
+     */
     @FXML
-    private void handleRemove() {
-        if (bookListController != null && book != null && removeButton != null && removeButton.getScene() != null) {
-            bookListController.confirmRemoveBook(book, removeButton.getScene().getWindow());
+    private void handleEditBook() {
+        if (bookListController != null && book != null) {
+            bookListController.loadEditBookView(book, bookCardVBox.getScene().getWindow());
         } else {
-            logError("Não foi possível remover o livro. Dependências ausentes ou cena indisponível.", null);
+            logError("Erro: BookListController ou Book não definidos para editar.", null);
         }
     }
 
+    /**
+     * Manipula o clique no botão de remover.
+     * Chama o método de confirmação de remoção no BookController principal.
+     */
+    @FXML
+    private void handleRemoveBook() {
+        if (bookListController != null && book != null) {
+            bookListController.confirmRemoveBook(book, bookCardVBox.getScene().getWindow());
+        } else {
+            logError("Erro: BookListController ou Book não definidos para remover.", null);
+        }
+    }
+
+    // Método de log de erro, como em outras classes.
     private void logError(String message, Exception e) {
-        System.err.print(message);
+        System.err.print("ERRO no BookCardController: " + message);
         if (e != null) {
             System.err.println(": " + e.getMessage());
             e.printStackTrace();

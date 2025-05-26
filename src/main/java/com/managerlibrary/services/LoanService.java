@@ -10,6 +10,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Serviço responsável por gerenciar as operações de negócio relacionadas a empréstimos.
@@ -51,11 +52,13 @@ public class LoanService {
         if (loan.getLoanDate() == null) {
             throw new IllegalArgumentException("A data de empréstimo não pode ser nula.");
         }
-        if (loan.getReturnDate() == null) {
+        // CORREÇÃO AQUI: Usar getExpectedReturnDate()
+        if (loan.getExpectedReturnDate() == null) {
             throw new IllegalArgumentException("A data de devolução prevista não pode ser nula.");
         }
-        if (loan.getReturnDate().isBefore(loan.getLoanDate())) {
-            throw new IllegalArgumentException("A data de devolução não pode ser anterior à data de empréstimo.");
+        // CORREÇÃO AQUI: Usar getExpectedReturnDate()
+        if (loan.getExpectedReturnDate().isBefore(loan.getLoanDate())) {
+            throw new IllegalArgumentException("A data de devolução prevista não pode ser anterior à data de empréstimo.");
         }
 
         loan.setStatus("Ativo");
@@ -78,7 +81,6 @@ public class LoanService {
         if (id <= 0) {
             throw new IllegalArgumentException("ID do empréstimo inválido.");
         }
-        // CORRIGIDO: Método renomeado no DAO
         return loanDAO.findLoanByIdWithDetails(id);
     }
 
@@ -89,8 +91,7 @@ public class LoanService {
      * @throws SQLException Se ocorrer um erro de acesso ao banco de dados.
      */
     public List<Loan> getAllLoans() throws SQLException {
-        // CORRIGIDO: Método renomeado no DAO
-        List<Loan> loans = loanDAO.findAllLoans();
+        List<Loan> loans = loanDAO.findAllLoans(); // Se findAllLoans() não trouxer detalhes, use findAllLoansWithBookAndUser()
         return loans != null ? loans : new ArrayList<>();
     }
 
@@ -120,8 +121,8 @@ public class LoanService {
         if (id <= 0) {
             throw new IllegalArgumentException("ID do empréstimo para exclusão inválido.");
         }
-        // Usando o método correto do DAO para buscar o empréstimo para validação
         Loan loanToDelete = loanDAO.findLoanByIdWithDetails(id);
+        // Só permite remover se o empréstimo já foi devolvido ou se não for encontrado (neste caso, delete silenciosamente)
         if (loanToDelete != null && loanToDelete.getActualReturnDate() == null) {
             throw new IllegalStateException("Não é possível remover um empréstimo ativo. Marque-o como devolvido primeiro.");
         }
@@ -135,7 +136,6 @@ public class LoanService {
      * @throws SQLException Se ocorrer um erro de acesso ao banco de dados.
      */
     public List<Loan> getAllLoansWithDetails() throws SQLException {
-        // CORRIGIDO: Método renomeado no DAO
         List<Loan> loans = loanDAO.findAllLoansWithBookAndUser();
         return loans != null ? loans : new ArrayList<>();
     }
@@ -159,7 +159,8 @@ public class LoanService {
 
         loan.setActualReturnDate(LocalDate.now());
         loan.setStatus("Devolvido");
-        double multa = calculateLateFee(loan.getReturnDate(), loan.getActualReturnDate());
+        // CORREÇÃO AQUI: Usar getExpectedReturnDate()
+        double multa = calculateLateFee(loan.getExpectedReturnDate(), loan.getActualReturnDate());
         loan.setFine(multa);
         loanDAO.updateLoan(loan);
     }
@@ -168,18 +169,19 @@ public class LoanService {
      * Calcula a multa por atraso na devolução de um livro.
      * A multa é calculada com base nos dias de atraso e uma taxa fixa por dia (R$ 0.50).
      *
-     * @param returnDate       A data prevista de devolução.
-     * @param actualReturnDate A data real da devolução.
+     * @param expectedReturnDate A data prevista de devolução.
+     * @param actualReturnDate   A data real da devolução.
      * @return O valor da multa, ou 0.0 se não houver atraso ou datas inválidas.
      */
-    private double calculateLateFee(LocalDate returnDate, LocalDate actualReturnDate) {
-        if (returnDate == null || actualReturnDate == null) {
+    public double calculateLateFee(LocalDate expectedReturnDate, LocalDate actualReturnDate) {
+        if (expectedReturnDate == null || actualReturnDate == null) {
             System.err.println("Erro: Datas de devolução nulas para cálculo de multa.");
             return 0.0;
         }
 
-        if (actualReturnDate.isAfter(returnDate)) {
-            long daysLate = ChronoUnit.DAYS.between(returnDate, actualReturnDate);
+        // Se a data de devolução real for DEPOIS da data prevista, há atraso
+        if (actualReturnDate.isAfter(expectedReturnDate)) {
+            long daysLate = ChronoUnit.DAYS.between(expectedReturnDate, actualReturnDate);
             double feePerDay = 0.50;
             return daysLate * feePerDay;
         }
@@ -187,15 +189,79 @@ public class LoanService {
     }
 
     /**
-     * Retorna todos os empréstimos com os detalhes completos do livro e do usuário associados.
-     * Este método é funcionalmente idêntico a `getAllLoansWithDetails()`.
-     * Poderia ser um alias ou um deles ser removido se a funcionalidade for a mesma.
+     * Este método busca empréstimos com base em um termo de pesquisa que pode ser parte
+     * do título do livro, nome do usuário ou CPF do usuário.
      *
-     * @return Uma lista de empréstimos com seus detalhes completos. Retorna uma lista vazia se não houver empréstimos.
+     * @param searchTerm O termo de pesquisa.
+     * @return Uma lista de empréstimos que correspondem ao termo de pesquisa.
      * @throws SQLException Se ocorrer um erro de acesso ao banco de dados.
      */
-    public List<Loan> getAllLoansWithBookAndUser() throws SQLException {
-        // Este método já estava correto, pois chamava o método do DAO com o mesmo nome.
-        return loanDAO.findAllLoansWithBookAndUser();
+    public List<Loan> searchLoans(String searchTerm) throws SQLException {
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            return getAllLoansWithDetails(); // Se a busca está vazia, retorna todos
+        }
+        // Este método precisa ser implementado no seu LoanDAOImpl
+        // Exemplo:
+        // return loanDAO.searchLoansByBookTitleOrUserNameOrUserCpf(searchTerm);
+        // Por enquanto, podemos fazer a filtragem em memória se o DAO ainda não tiver esse método otimizado.
+        // No entanto, para grandes volumes de dados, a busca no DAO é mais eficiente.
+
+        // IMPLEMENTAÇÃO TEMPORÁRIA EM MEMÓRIA (se o DAO não tem searchLoans):
+        List<Loan> all = getAllLoansWithDetails();
+        String lowerCaseSearchTerm = searchTerm.toLowerCase();
+        return all.stream()
+                .filter(loan -> {
+                    boolean matchesBook = loan.getBook() != null && loan.getBook().getTitle().toLowerCase().contains(lowerCaseSearchTerm);
+                    boolean matchesUser = false;
+                    if (loan.getUser() != null) {
+                        matchesUser = loan.getUser().getName().toLowerCase().contains(lowerCaseSearchTerm) ||
+                                (loan.getUser().getCpf() != null && loan.getUser().getCpf().toLowerCase().contains(lowerCaseSearchTerm));
+                    }
+                    return matchesBook || matchesUser;
+                })
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Retorna todos os empréstimos com um status específico.
+     *
+     * @param status O status do empréstimo (ex: "Ativo", "Devolvido").
+     * @return Uma lista de empréstimos com o status especificado.
+     * @throws SQLException Se ocorrer um erro de acesso ao banco de dados.
+     */
+    public List<Loan> getLoansByStatus(String status) throws SQLException {
+        if (status == null || status.trim().isEmpty()) {
+            throw new IllegalArgumentException("Status não pode ser nulo ou vazio.");
+        }
+        // Este método precisa ser implementado no seu LoanDAOImpl
+        // Exemplo:
+        // return loanDAO.findLoansByStatusWithDetails(status);
+
+        // IMPLEMENTAÇÃO TEMPORÁRIA EM MEMÓRIA (se o DAO não tem getLoansByStatus):
+        List<Loan> all = getAllLoansWithDetails();
+        String lowerCaseStatus = status.toLowerCase();
+        return all.stream()
+                .filter(loan -> loan.getStatus() != null && loan.getStatus().toLowerCase().equals(lowerCaseStatus))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Retorna todos os empréstimos que estão atrasados.
+     *
+     * @return Uma lista de empréstimos atrasados.
+     * @throws SQLException Se ocorrer um erro de acesso ao banco de dados.
+     */
+    public List<Loan> getOverdueLoans() throws SQLException {
+        // Este método precisa ser implementado no seu LoanDAOImpl
+        // Exemplo:
+        // return loanDAO.findOverdueLoansWithDetails();
+
+        // IMPLEMENTAÇÃO TEMPORÁRIA EM MEMÓRIA (se o DAO não tem findOverdueLoans):
+        List<Loan> all = getAllLoansWithDetails();
+        LocalDate today = LocalDate.now();
+        return all.stream()
+                .filter(loan -> loan.getActualReturnDate() == null && "Ativo".equalsIgnoreCase(loan.getStatus()) &&
+                        loan.getExpectedReturnDate() != null && today.isAfter(loan.getExpectedReturnDate()))
+                .collect(Collectors.toList());
     }
 }

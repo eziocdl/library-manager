@@ -38,7 +38,6 @@ public class DataBaseConnection {
 
                 if (inputStream == null) {
                     // Lançar uma exceção mais específica ou relançar SQLException com uma mensagem clara
-                    // Em um cenário real, você pode querer criar uma exceção customizada aqui.
                     throw new SQLException("Erro: Arquivo application.properties não encontrado no classpath.");
                 }
 
@@ -48,9 +47,9 @@ public class DataBaseConnection {
                 String user = properties.getProperty("jdbc.user");
                 String password = properties.getProperty("jdbc.password");
 
-                // O Class.forName geralmente não é estritamente necessário para drivers JDBC 4.0+,
-                // mas mantê-lo não causa dano e pode ser útil em cenários específicos ou com drivers antigos.
-                // Class.forName("org.postgresql.Driver"); // Opcional, o DriverManager já deve encontrar.
+                // Class.forName("org.postgresql.Driver"); // Geralmente não é necessário para drivers JDBC 4.0+,
+                // o DriverManager já deve encontrar o driver automaticamente.
+                // Pode ser útil para compatibilidade com versões muito antigas do JDBC.
 
                 connection = DriverManager.getConnection(url, user, password);
                 System.out.println("Conexão com o banco de dados estabelecida com sucesso.");
@@ -63,21 +62,17 @@ public class DataBaseConnection {
                 System.err.println("Erro ao conectar ao banco de dados: " + e.getMessage());
                 throw e; // Lança a exceção para que o chamador possa lidar com ela
             }
-            // Não precisa mais do ClassNotFoundException, pois o Class.forName é opcional/removido.
-            // Se mantiver Class.forName, adicione catch ClassNotFoundException
         }
         return connection;
     }
 
     /**
      * Fecha a conexão com o banco de dados, se ela estiver aberta.
-     *
-     * @throws SQLException Se ocorrer um erro ao fechar a conexão.
      */
-    public static void closeConnection() { // Mudado para não lançar SQLException diretamente para facilitar chamadas
-        if (connection != null) { // A verificação connection.isClosed() já será feita em getConnection()
+    public static void closeConnection() {
+        if (connection != null) {
             try {
-                if (!connection.isClosed()) { // Adiciona verificação antes de fechar
+                if (!connection.isClosed()) {
                     connection.close();
                     connection = null; // Zera a referência após fechar
                     System.out.println("Conexão com o banco de dados fechada.");

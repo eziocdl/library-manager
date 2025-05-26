@@ -1,9 +1,9 @@
 package com.managerlibrary.controllers;
 
 import com.managerlibrary.entities.Loan;
-import com.managerlibrary.services.BookService; // ADICIONADO
+import com.managerlibrary.services.BookService;
 import com.managerlibrary.services.LoanService;
-import com.managerlibrary.services.UserService; // ADICIONADO
+import com.managerlibrary.services.UserService;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -14,7 +14,8 @@ import javafx.stage.Stage;
 
 import java.time.format.DateTimeFormatter;
 import java.sql.SQLException;
-import java.util.Objects; // Para Objects.requireNonNull
+import java.time.LocalDate;
+import java.util.Objects;
 
 /**
  * Controlador para a tela de edição de um empréstimo existente. Permite modificar
@@ -35,10 +36,11 @@ public class EditLoanViewController {
     @FXML
     private ComboBox<String> statusComboBox;
 
-    private Loan currentLoan; // O empréstimo atualmente sendo editado
+    private Loan currentLoan;     // O empréstimo atualmente sendo editado
+    private Loan originalLoan;    // Para armazenar o estado original do empréstimo para comparação
     private LoanService loanService;
-    private BookService bookService; // RE-ADICIONADO
-    private UserService userService; // RE-ADICIONADO
+    private BookService bookService;
+    private UserService userService;
     private LoanController mainLoanController; // Controlador da tela principal de empréstimos
     private Stage dialogStage; // Palco (Stage) do diálogo modal
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -50,6 +52,11 @@ public class EditLoanViewController {
      */
     public void setLoan(Loan loan) {
         this.currentLoan = Objects.requireNonNull(loan, "Loan não pode ser nulo.");
+        // Criar uma cópia do empréstimo original para comparação posterior
+        // Usa o construtor completo da classe Loan, incluindo o campo 'returned'
+        this.originalLoan = new Loan(loan.getId(), loan.getBook(), loan.getUser(),
+                loan.getLoanDate(), loan.getExpectedReturnDate(),
+                loan.getActualReturnDate(), loan.getStatus(), loan.getFine(), loan.isReturned());
         populateFields();
     }
 
@@ -63,8 +70,7 @@ public class EditLoanViewController {
     }
 
     /**
-     * **ADICIONADO:** Define o serviço de livros.
-     * Necessário para o LoanService interno ou futuras validações.
+     * Define o serviço de livros.
      *
      * @param bookService O serviço de livros a ser utilizado.
      */
@@ -73,8 +79,7 @@ public class EditLoanViewController {
     }
 
     /**
-     * **ADICIONADO:** Define o serviço de usuários.
-     * Necessário para o LoanService interno ou futuras validações.
+     * Define o serviço de usuários.
      *
      * @param userService O serviço de usuários a ser utilizado.
      */
@@ -105,7 +110,10 @@ public class EditLoanViewController {
      */
     @FXML
     public void initialize() {
-        statusComboBox.setItems(FXCollections.observableArrayList("Ativo", "Devolvido", "Atrasado", "Perdido")); // Adicionei "Perdido" como uma opção comum
+        // As opções de status que o usuário pode SETAR diretamente.
+        // "Atrasado" é tipicamente um status calculado, não definido pelo usuário.
+        // "Perdido" pode ter uma lógica de negócio mais complexa.
+        statusComboBox.setItems(FXCollections.observableArrayList("Ativo", "Devolvido"));
     }
 
     /**
@@ -131,16 +139,18 @@ public class EditLoanViewController {
                 loanDateLabel.setText("Data de Empréstimo N/A");
             }
 
-            if (currentLoan.getReturnDate() != null) {
-                returnDatePicker.setValue(currentLoan.getReturnDate());
+            // O DatePicker é para a data de devolução REAL (actualReturnDate)
+            // Se o empréstimo foi devolvido, mostra a data. Caso contrário, deixa vazio.
+            if (currentLoan.getActualReturnDate() != null) {
+                returnDatePicker.setValue(currentLoan.getActualReturnDate());
             } else {
-                returnDatePicker.setValue(null); // Limpa a data se não houver
+                returnDatePicker.setValue(null); // Permite ao usuário definir ou deixar nulo
             }
 
             if (currentLoan.getStatus() != null) {
                 statusComboBox.setValue(currentLoan.getStatus());
             } else {
-                statusComboBox.setValue("Ativo"); // Define um valor padrão se o status for nulo
+                statusComboBox.setValue("Ativo"); // Valor padrão se o status for nulo
             }
         }
     }
@@ -151,50 +161,101 @@ public class EditLoanViewController {
      */
     @FXML
     private void saveEditedLoan() {
-        // Validações para garantir que os serviços estejam injetados
+        // Validações iniciais de serviços
         if (currentLoan == null) {
             showAlert("Erro Interno", "Nenhum empréstimo selecionado para salvar. Por favor, reinicie a operação.");
             return;
         }
-        if (loanService == null) {
-            showAlert("Erro de Inicialização", "LoanService não foi injetado. Impossível salvar.");
-            logError("LoanService é nulo ao tentar salvar o empréstimo.", new IllegalStateException("LoanService é nulo."));
-            return;
-        }
-        // Se BookService e UserService forem usados em validações do LoanService, a verificação neles também seria prudente.
-        // Por agora, assumimos que o LoanService já garante a existência deles.
-
-        if (returnDatePicker.getValue() == null) {
-            showAlert(Alert.AlertType.WARNING, "Campo Obrigatório", "Por favor, selecione a data de devolução.");
-            return;
-        }
-        if (statusComboBox.getValue() == null || statusComboBox.getValue().isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Campo Obrigatório", "Por favor, selecione o status do empréstimo.");
-            return;
-        }
-        if (currentLoan.getLoanDate() != null && returnDatePicker.getValue().isBefore(currentLoan.getLoanDate())) {
-            showAlert(Alert.AlertType.WARNING, "Data Inválida", "A data de devolução não pode ser anterior à data de empréstimo.");
+        if (loanService == null || bookService == null) {
+            showAlert("Erro de Inicialização", "Serviços (LoanService, BookService) não foram injetados. Impossível salvar.");
+            logError("Serviços de empréstimo ou livro são nulos ao tentar salvar o empréstimo.", new IllegalStateException("Serviços nulos."));
             return;
         }
 
-        // Atualiza o objeto Loan com as novas informações
-        currentLoan.setReturnDate(returnDatePicker.getValue());
-        currentLoan.setStatus(statusComboBox.getValue());
+        // Obtém os novos valores dos campos da UI
+        LocalDate newActualReturnDate = returnDatePicker.getValue();
+        String newStatus = statusComboBox.getValue();
+
+        // Validação de consistência entre status e data de devolução real
+        if ("Devolvido".equalsIgnoreCase(newStatus) && newActualReturnDate == null) {
+            showAlert(Alert.AlertType.WARNING, "Dados Inválidos", "Se o status é 'Devolvido', a 'Data de Devolução Real' deve ser preenchida.");
+            return;
+        }
+        if ("Ativo".equalsIgnoreCase(newStatus) && newActualReturnDate != null) {
+            showAlert(Alert.AlertType.WARNING, "Dados Inválidos", "Se o status é 'Ativo', a 'Data de Devolução Real' não pode estar preenchida.");
+            return;
+        }
+
+        // Validação de data de devolução real vs data de empréstimo (se a data real for preenchida)
+        if (newActualReturnDate != null && currentLoan.getLoanDate() != null && newActualReturnDate.isBefore(currentLoan.getLoanDate())) {
+            showAlert(Alert.AlertType.WARNING, "Data Inválida", "A data de devolução real não pode ser anterior à data de empréstimo.");
+            return;
+        }
+
+
+        // Salva o estado original para referência antes de atualizar currentLoan
+        // Usa originalLoan.getActualReturnDate() e originalLoan.getStatus() para verificar o estado anterior
+        boolean wasReturnedOriginally = originalLoan.getActualReturnDate() != null && "Devolvido".equalsIgnoreCase(originalLoan.getStatus());
+        // A flag 'returned' da Loan original também pode ser usada para maior robustez,
+        // mas o 'actualReturnDate != null' combinado com o status já captura o estado.
+        // boolean wasReturnedOriginally = originalLoan.isReturned(); // Alternativa se confiar 100% no campo boolean
+
+        // Determina o estado futuro com base nos novos valores da UI
+        boolean willBeReturnedNow = newActualReturnDate != null && "Devolvido".equalsIgnoreCase(newStatus);
+
+
+        // ATUALIZA O OBJETO currentLoan COM OS NOVOS VALORES DOS CAMPOS DA UI
+        currentLoan.setActualReturnDate(newActualReturnDate);
+        currentLoan.setStatus(newStatus);
+        // O campo 'returned' na entidade Loan deve ser atualizado aqui também.
+        // Ele deve ser true se 'actualReturnDate' não for nula e o status for "Devolvido".
+        currentLoan.setReturned(willBeReturnedNow);
+
 
         try {
-            loanService.updateLoan(currentLoan);
+            // Lógica para ajustar o contador de cópias do livro e a multa
+            if (wasReturnedOriginally && !willBeReturnedNow) {
+                // Cenário 1: Empréstimo estava DEVOLVIDO e agora está sendo REABERTO (ou definido para Ativo)
+                if (currentLoan.getBook() != null) {
+                    int currentAvailable = currentLoan.getBook().getAvailableCopies();
+                    currentLoan.getBook().setAvailableCopies(currentAvailable - 1); // Decrementa a cópia
+                    bookService.updateBook(currentLoan.getBook()); // Salva a alteração no livro
+                }
+                currentLoan.setFine(0.0); // Zera a multa ao reabrir
+            } else if (!wasReturnedOriginally && willBeReturnedNow) {
+                // Cenário 2: Empréstimo estava ATIVO e agora está sendo DEVOLVIDO
+                if (currentLoan.getBook() != null) {
+                    int currentAvailable = currentLoan.getBook().getAvailableCopies();
+                    currentLoan.getBook().setAvailableCopies(currentAvailable + 1); // Incrementa a cópia
+                    bookService.updateBook(currentLoan.getBook()); // Salva a alteração no livro
+                }
+                // Recalcula a multa
+                double multa = loanService.calculateLateFee(currentLoan.getExpectedReturnDate(), currentLoan.getActualReturnDate());
+                currentLoan.setFine(multa);
+            } else if (willBeReturnedNow) {
+                // Cenário 3: Empréstimo já estava DEVOLVIDO e continua DEVOLVIDO
+                // (pode ser que a data real de devolução ou status foi apenas ajustada)
+                // Recalcula a multa para garantir consistência.
+                double multa = loanService.calculateLateFee(currentLoan.getExpectedReturnDate(), currentLoan.getActualReturnDate());
+                currentLoan.setFine(multa);
+            }
+            // Se o empréstimo permaneceu Ativo, não faz nada com as cópias ou multa (a multa já seria 0)
+
+
+            loanService.updateLoan(currentLoan); // Salva as alterações do empréstimo no banco de dados
+
             showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Empréstimo atualizado com sucesso!");
             if (mainLoanController != null) {
-                mainLoanController.loadAllLoans(); // Atualiza a lista principal
+                mainLoanController.loadLoans(); // Atualiza a lista principal após a edição
             }
             closeEditLoanView();
         } catch (SQLException e) {
             logError("Erro ao salvar edição do empréstimo no banco de dados", e);
             showAlert(Alert.AlertType.ERROR, "Erro ao Salvar", "Ocorreu um erro ao salvar as alterações do empréstimo: " + e.getMessage());
-        } catch (IllegalArgumentException e) { // Captura exceções de validação de serviço
+        } catch (IllegalArgumentException e) {
             logError("Erro de validação de negócio ao salvar empréstimo", e);
             showAlert(Alert.AlertType.WARNING, "Erro de Validação", "Falha na validação: " + e.getMessage());
-        } catch (Exception e) { // Captura qualquer outra exceção inesperada
+        } catch (Exception e) {
             logError("Erro inesperado ao salvar edição do empréstimo", e);
             showAlert(Alert.AlertType.ERROR, "Erro ao Salvar", "Ocorreu um erro inesperado ao salvar as alterações do empréstimo.");
         }

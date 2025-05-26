@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="TOP_CENTER" spacing="15.0" style="-fx-background-color: #f4f4f4; -fx-padding: 20;"
+      xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.managerlibrary.controllers.BookDetailsController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+
+    <Label text="Detalhes do Livro" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #333;" />
+    <Separator prefWidth="200.0" />
+
+    <VBox spacing="8.0" alignment="CENTER_LEFT">
+        <Label fx:id="titleLabel" wrapText="true">
+            <font>
+                <Font name="System Bold" size="20.0" />
+            </font>
+        </Label>
+        <Label fx:id="authorLabel" style="-fx-font-size: 14px; -fx-text-fill: #555;" wrapText="true" />
+        <Label fx:id="publisherLabel" style="-fx-font-size: 14px; -fx-text-fill: #555;" wrapText="true" />
+        <Label fx:id="yearLabel" style="-fx-font-size: 14px; -fx-text-fill: #555;" />
+        <Label fx:id="genreLabel" style="-fx-font-size: 14px; -fx-text-fill: #555;" wrapText="true" />
+        <Label fx:id="isbnLabel" style="-fx-font-size: 14px; -fx-text-fill: #555;" />
+        <Label fx:id="copiesLabel" style="-fx-font-size: 14px; -fx-text-fill: #555;" />
+    </VBox>
+
+    <Button text="Fechar" onAction="#handleClose" style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-font-size: 16px; -fx-padding: 8 20;" />
+
+</VBox>

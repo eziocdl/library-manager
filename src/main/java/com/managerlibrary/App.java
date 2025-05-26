@@ -40,6 +40,14 @@ public class App extends Application {
             // A responsabilidade de mostrar a view inicial agora é do RootLayoutController
             rootController.showBookView(); // Define a view inicial ao iniciar a aplicação
             primaryStage.show();
+
+            // Adicionado: Configura o fechamento da conexão com o banco de dados
+            // quando a aplicação é encerrada.
+            primaryStage.setOnCloseRequest(event -> {
+                DataBaseConnection.closeConnection();
+                System.out.println("DEBUG: Aplicação encerrada. Conexão com o banco de dados fechada.");
+            });
+
         } catch (SQLException e) {
             System.err.println("Erro de conexão ou inicialização dos serviços: " + e.getMessage());
             e.printStackTrace();
@@ -78,7 +86,7 @@ public class App extends Application {
         rootController.setPrimaryStage(primaryStage);
 
         // PASSO CRUCIAL: Chamar o método setServices para injetar todos os serviços de uma vez
-        rootController.setServices(bookService, userService, loanService); // CORRIGIDO AQUI!
+        rootController.setServices(bookService, userService, loanService);
 
         Scene scene = new Scene(rootLayout, 800, 600);
         primaryStage.setScene(scene);

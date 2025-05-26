@@ -1,4 +1,3 @@
-// com/managerlibrary/entities/Loan.java
 package com.managerlibrary.entities;
 
 import java.time.LocalDate;
@@ -8,29 +7,31 @@ public class Loan {
     private Book book;
     private User user;
     private LocalDate loanDate;
-    private LocalDate returnDate;
+    private LocalDate expectedReturnDate; // Renomeado de 'returnDate'
     private LocalDate actualReturnDate;
     private String status;
     private double fine;
-    private boolean returned; // Adicionado para consistência com o método markAsReturned
+    private boolean returned; // Novo campo para indicar se foi devolvido
 
-    // Construtores
+    // Construtor padrão (necessário para alguns frameworks como JPA)
     public Loan() {
     }
 
-    public Loan(int id, Book book, User user, LocalDate loanDate, LocalDate returnDate, LocalDate actualReturnDate, String status, double fine, boolean returned) {
+    // CONSTRUTOR COMPLETO - Inclui todos os campos, inclusive 'returned'
+    public Loan(int id, Book book, User user, LocalDate loanDate, LocalDate expectedReturnDate, LocalDate actualReturnDate, String status, double fine, boolean returned) {
         this.id = id;
         this.book = book;
         this.user = user;
         this.loanDate = loanDate;
-        this.returnDate = returnDate;
+        this.expectedReturnDate = expectedReturnDate;
         this.actualReturnDate = actualReturnDate;
         this.status = status;
         this.fine = fine;
-        this.returned = returned;
+        this.returned = returned; // Inicializa o novo campo
     }
 
-    // Getters e Setters
+    // --- Getters e Setters ---
+
     public int getId() {
         return id;
     }
@@ -63,12 +64,12 @@ public class Loan {
         this.loanDate = loanDate;
     }
 
-    public LocalDate getReturnDate() {
-        return returnDate;
+    public LocalDate getExpectedReturnDate() {
+        return expectedReturnDate;
     }
 
-    public void setReturnDate(LocalDate returnDate) {
-        this.returnDate = returnDate;
+    public void setExpectedReturnDate(LocalDate expectedReturnDate) {
+        this.expectedReturnDate = expectedReturnDate;
     }
 
     public LocalDate getActualReturnDate() {
@@ -95,11 +96,28 @@ public class Loan {
         this.fine = fine;
     }
 
+    // Getter e Setter para o novo campo 'returned'
     public boolean isReturned() {
         return returned;
     }
 
     public void setReturned(boolean returned) {
         this.returned = returned;
+    }
+
+    // Opcional: ajustar toString() para incluir 'returned'
+    @Override
+    public String toString() {
+        return "Loan{" +
+                "id=" + id +
+                ", book=" + (book != null ? book.getTitle() : "N/A") +
+                ", user=" + (user != null ? user.getName() : "N/A") +
+                ", loanDate=" + loanDate +
+                ", expectedReturnDate=" + expectedReturnDate +
+                ", actualReturnDate=" + actualReturnDate +
+                ", status='" + status + '\'' +
+                ", fine=" + fine +
+                ", returned=" + returned +
+                '}';
     }
 }

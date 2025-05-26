@@ -105,7 +105,7 @@ public class LoanDetailsController {
         }
 
         loanDateLabel.setText(loan.getLoanDate() != null ? loan.getLoanDate().format(dateFormatter) : "N/A");
-        returnDateLabel.setText(loan.getReturnDate() != null ? loan.getReturnDate().format(dateFormatter) : "N/A");
+        returnDateLabel.setText(loan.getExpectedReturnDate() != null ? loan.getExpectedReturnDate().format(dateFormatter) : "N/A");
         actualReturnDateLabel.setText(loan.getActualReturnDate() != null ? loan.getActualReturnDate().format(dateFormatter) : "Não Devolvido");
 
         statusLabel.setText(loan.getStatus() != null ? loan.getStatus() : "N/A"); // Garantir que status não seja nulo

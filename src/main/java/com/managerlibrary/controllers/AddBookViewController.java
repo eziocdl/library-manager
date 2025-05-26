@@ -1,6 +1,7 @@
 package com.managerlibrary.controllers;
 
 import com.managerlibrary.entities.Book;
+import com.managerlibrary.services.BookService; // Importe o BookService
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -11,6 +12,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.util.Objects; // Importe Objects para requireNonNull
 
 /**
  * Controlador para a tela de adicionar/editar um livro.
@@ -20,6 +22,7 @@ import java.io.File;
 public class AddBookViewController {
 
     private BookController bookController;
+    private BookService bookService; // NOVO: Referência ao BookService
     private Stage dialogStage;
     private Book bookToEdit;
     private boolean saveClicked = false;
@@ -62,6 +65,16 @@ public class AddBookViewController {
      */
     public void setBookController(BookController bookController) {
         this.bookController = bookController;
+    }
+
+    /**
+     * NOVO MÉTODO: Define o serviço de livros para que este controlador possa
+     * realizar operações de negócio (salvar/atualizar).
+     *
+     * @param bookService O serviço de livros a ser utilizado.
+     */
+    public void setBookService(BookService bookService) {
+        this.bookService = Objects.requireNonNull(bookService, "BookService não pode ser nulo em AddBookViewController.");
     }
 
     /**
@@ -131,10 +144,10 @@ public class AddBookViewController {
             Image coverImage = new Image(file.toURI().toString());
             coverImageView.setImage(coverImage);
             coverFileNameLabel.setText(file.getName());
-            selectedCoverFile = file; // Garante que o selectedCoverFile reflita a imagem carregada
+            selectedCoverFile = file;
         } catch (Exception e) {
             logError("Erro ao carregar imagem do arquivo: " + file.getAbsolutePath(), e);
-            clearCoverImageDisplay(); // Limpa a exibição em caso de erro
+            clearCoverImageDisplay();
         }
     }
 
@@ -149,10 +162,10 @@ public class AddBookViewController {
             Image coverImage = new Image(imageUrl);
             coverImageView.setImage(coverImage);
             coverFileNameLabel.setText("URL");
-            selectedCoverFile = null; // Zera o arquivo local se estiver usando URL
+            selectedCoverFile = null;
         } catch (Exception e) {
             logError("Erro ao carregar imagem da URL: " + imageUrl, e);
-            clearCoverImageDisplay(); // Limpa a exibição em caso de erro
+            clearCoverImageDisplay();
         }
     }
 
@@ -183,12 +196,10 @@ public class AddBookViewController {
             book.setPublisher(publisherField.getText());
             book.setYear(year);
             book.setTotalCopies(totalCopies);
-            book.setAvailableCopies(totalCopies); // Inicialmente, todos estão disponíveis
+            book.setAvailableCopies(totalCopies);
             book.setGenre(genreField.getText());
             book.setImageUrl(imageUrlField.getText());
 
-            // Define o caminho da imagem da capa. Prioriza o arquivo selecionado,
-            // caso contrário, mantém o caminho existente se estiver editando.
             if (selectedCoverFile != null) {
                 book.setCoverImagePath(selectedCoverFile.getAbsolutePath());
             } else if (bookToEdit != null) {
@@ -220,16 +231,31 @@ public class AddBookViewController {
         if (isInputValid()) {
             saveClicked = true;
             Book book = getBook();
-            if (book != null) { // getBook() pode retornar null se a entrada numérica for inválida
-                if (bookToEdit == null) {
-                    bookController.insertNewBook(book);
-                } else {
-                    book.setId(bookToEdit.getId()); // Mantém o ID para a edição
-                    bookController.updateBook(book);
+            if (book != null) {
+                if (bookService == null) { // Adiciona verificação de null para bookService
+                    logError("BookService não está injetado em AddBookViewController. Não foi possível salvar o livro.", new IllegalStateException("BookService é nulo."));
+                    showAlert("Erro Interno", "Não foi possível salvar o livro devido a um problema de inicialização.");
+                    return;
                 }
-                dialogStage.close();
+
+                try {
+                    if (bookToEdit == null) {
+                        bookService.insertBook(book); // Usa bookService
+                        showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Livro adicionado com sucesso!");
+                    } else {
+                        book.setId(bookToEdit.getId());
+                        bookService.updateBook(book); // Usa bookService
+                        showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Livro atualizado com sucesso!");
+                    }
+                    dialogStage.close();
+                    if (bookController != null) { // Chama o loadAllBooks no BookController para atualizar a lista
+                        bookController.loadAllBooks();
+                    }
+                } catch (Exception e) { // Captura exceções do serviço (SQL, etc.)
+                    logError("Erro ao salvar/atualizar livro via BookService", e);
+                    showAlert("Erro ao Salvar", "Ocorreu um erro ao salvar o livro: " + e.getMessage());
+                }
             }
-            // A mensagem de erro de validação já é exibida por isInputValid() ou getBook()
         }
     }
 
@@ -255,8 +281,8 @@ public class AddBookViewController {
         if (file != null) {
             selectedCoverFile = file;
             coverFileNameLabel.setText(file.getName());
-            displayCoverImageFromFile(file); // Usa o método refatorado para exibir a imagem
-            imageUrlField.setText(""); // Limpa a URL ao escolher um arquivo local
+            displayCoverImageFromFile(file);
+            imageUrlField.setText("");
         }
     }
 
@@ -330,6 +356,28 @@ public class AddBookViewController {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
+        // Opcional: Se o diálogo de AddBookView precisa de owner para seus próprios alertas
+        if (dialogStage != null) {
+            alert.initOwner(dialogStage);
+        }
+        alert.showAndWait();
+    }
+
+    /**
+     * Exibe um diálogo de alerta com tipo específico.
+     *
+     * @param type    O tipo de alerta (INFORMATION, ERROR, WARNING, etc.).
+     * @param title   O título do alerta.
+     * @param content O conteúdo da mensagem do alerta.
+     */
+    private void showAlert(Alert.AlertType type, String title, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        if (dialogStage != null) {
+            alert.initOwner(dialogStage);
+        }
         alert.showAndWait();
     }
 
@@ -340,7 +388,12 @@ public class AddBookViewController {
      * @param e       A exceção ocorrida.
      */
     private void logError(String message, Exception e) {
-        System.err.println(message + ": " + e.getMessage());
-        e.printStackTrace();
+        System.err.print(message);
+        if (e != null) {
+            System.err.println(": " + e.getMessage());
+            e.printStackTrace();
+        } else {
+            System.err.println();
+        }
     }
 }

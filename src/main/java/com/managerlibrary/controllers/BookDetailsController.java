@@ -1,19 +1,18 @@
 package com.managerlibrary.controllers;
 
 import com.managerlibrary.entities.Book;
+import com.managerlibrary.services.BookService; // <--- Importação necessária para BookService
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image; // Para a imagem da capa, se houver
-import javafx.scene.image.ImageView; // Para exibir a imagem da capa
 import javafx.stage.Stage;
 
-import java.io.IOException; // Para tratamento de erro ao carregar imagem
-import java.io.InputStream; // Para carregar recursos internos
+import java.util.Objects; // <--- Importação necessária para Objects.requireNonNull
 
 /**
  * Controlador para a tela de detalhes de um livro.
  * Exibe as informações completas de um livro selecionado.
  * Esta tela é puramente de visualização e não realiza operações de serviço.
+ * NO ENTANTO, o BookService é injetado para flexibilidade futura.
  */
 public class BookDetailsController {
 
@@ -32,11 +31,12 @@ public class BookDetailsController {
     private Label genreLabel;
     @FXML
     private Label copiesLabel; // Para exibir Cópias Totais / Cópias Disponíveis
-    @FXML
-    private ImageView coverImageView; // Para exibir a capa do livro
 
     // --- Variáveis de suporte ---
     private Stage dialogStage; // Referência para o próprio palco (Stage) do diálogo modal
+    private Book book; // Adicionado para manter a referência do livro
+
+    private BookService bookService; // <--- NOVO CAMPO PARA O BOOKSERVICE
 
     /**
      * Define o palco (Stage) para este controlador.
@@ -54,18 +54,49 @@ public class BookDetailsController {
      * @param book O objeto Book com os detalhes a serem exibidos.
      */
     public void setBook(Book book) {
+        this.book = book; // Armazena o livro
+        updateUI(); // Chama o método para atualizar a interface
+    }
+
+    /**
+     * Define o serviço de livros.
+     * Este método deve ser chamado durante a inicialização da aplicação (geralmente pelo RootLayoutController
+     * ou pelo BookController) para injetar a dependência.
+     * Embora esta tela seja primariamente de visualização, a injeção é útil para flexibilidade futura.
+     *
+     * @param bookService O serviço de livros a ser utilizado.
+     */
+    public void setBookService(BookService bookService) { // <--- NOVO MÉTODO SETTER
+        this.bookService = Objects.requireNonNull(bookService, "BookService não pode ser nulo em BookDetailsController.");
+    }
+
+
+    /**
+     * Atualiza os campos da UI com as informações do livro.
+     */
+    private void updateUI() {
         if (book != null) {
             titleLabel.setText("Título: " + book.getTitle());
             authorLabel.setText("Autor: " + book.getAuthor());
             isbnLabel.setText("ISBN: " + book.getIsbn());
             publisherLabel.setText("Editora: " + book.getPublisher());
-            yearLabel.setText("Ano: " + book.getYear()); // Alterei para 'Ano:' para ser mais conciso
+            yearLabel.setText("Ano: " + book.getYear());
             genreLabel.setText("Gênero: " + book.getGenre());
-            // Exemplo de como exibir cópias: "Disponíveis: X/Y"
             copiesLabel.setText("Cópias: " + book.getAvailableCopies() + "/" + book.getTotalCopies());
 
-            // Carrega e exibe a imagem da capa
-            displayBookCover(book);
+            // Se você tinha registeredAt e lastUpdate e quer exibi-los, adicione a lógica aqui.
+            // Exemplo:
+            // DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+            // if (book.getRegisteredAt() != null) {
+            //     registeredAtLabel.setText("Registrado em: " + book.getRegisteredAt().format(formatter));
+            // } else {
+            //     registeredAtLabel.setText("Registrado em: N/A");
+            // }
+            // if (book.getLastUpdate() != null) {
+            //     lastUpdateLabel.setText("Última Atualização: " + book.getLastUpdate().format(formatter));
+            // } else {
+            //     lastUpdateLabel.setText("Última Atualização: N/A");
+            // }
         } else {
             // Limpa os campos ou exibe uma mensagem padrão se o livro for nulo
             titleLabel.setText("Título: N/A");
@@ -75,51 +106,6 @@ public class BookDetailsController {
             yearLabel.setText("Ano: N/A");
             genreLabel.setText("Gênero: N/A");
             copiesLabel.setText("Cópias: N/A");
-            coverImageView.setImage(null); // Limpa a imagem também
-        }
-    }
-
-    /**
-     * Carrega e exibe a imagem da capa do livro.
-     * Tenta carregar do caminho local e, se falhar, usa uma imagem padrão.
-     * @param book O livro cuja capa será exibida.
-     */
-    private void displayBookCover(Book book) {
-        // Verifica se há um caminho de capa e se o arquivo existe
-        if (book.getCoverImagePath() != null && !book.getCoverImagePath().isEmpty()) {
-            try {
-                Image image = new Image("file:" + book.getCoverImagePath());
-                if (image.isError()) {
-                    System.err.println("Erro ao carregar imagem do caminho local: " + book.getCoverImagePath());
-                    // Tenta carregar a imagem padrão se o caminho local falhar
-                    loadDefaultCoverImage();
-                    return;
-                }
-                coverImageView.setImage(image);
-                return; // Imagem carregada com sucesso
-            } catch (Exception e) {
-                System.err.println("Exceção ao carregar capa do livro por caminho local: " + e.getMessage());
-                // Se ocorrer uma exceção, tenta carregar a imagem padrão
-            }
-        }
-        // Se não tem caminho de capa, ou se o carregamento do caminho falhou, tenta imagem padrão
-        loadDefaultCoverImage();
-    }
-
-    /**
-     * Carrega a imagem padrão de capa do livro a partir dos recursos da aplicação.
-     */
-    private void loadDefaultCoverImage() {
-        try (InputStream is = getClass().getResourceAsStream("/images/default_book_icon.png")) {
-            if (is != null) {
-                coverImageView.setImage(new Image(is));
-            } else {
-                System.err.println("Recurso /images/default_book_icon.png não encontrado.");
-                coverImageView.setImage(null); // Em último caso, não exibe imagem
-            }
-        } catch (IOException e) {
-            System.err.println("Erro de I/O ao carregar imagem padrão: " + e.getMessage());
-            coverImageView.setImage(null);
         }
     }
 
@@ -131,7 +117,6 @@ public class BookDetailsController {
     private void initialize() {
         // Não há necessidade de lógica de inicialização complexa aqui,
         // pois os detalhes do livro são preenchidos por setBook().
-        // Você pode, por exemplo, configurar tooltips ou listeners se precisar.
     }
 
     /**
@@ -142,6 +127,17 @@ public class BookDetailsController {
     private void handleClose() {
         if (dialogStage != null) {
             dialogStage.close();
+        }
+    }
+
+    // Método logError adicionado para depuração, como em outras classes
+    private void logError(String message, Exception e) {
+        System.err.print(message);
+        if (e != null) {
+            System.err.println(": " + e.getMessage());
+            e.printStackTrace();
+        } else {
+            System.err.println();
         }
     }
 }

@@ -142,7 +142,7 @@ public class RootLayoutController {
             }
         }
         setCenterView(loanViewCache);
-        loanControllerCache.loadAllLoans(); // Chama o método para carregar os dados
+        loanControllerCache.loadLoans(); // Chama o método para carregar os dados
     }
 
     /**
