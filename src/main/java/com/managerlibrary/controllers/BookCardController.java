@@ -1,21 +1,23 @@
-package com.managerlibrary.controllers; // Certifique-se de que o pacote está correto
+package com.managerlibrary.controllers;
 
 import com.managerlibrary.entities.Book;
-import com.managerlibrary.services.BookService; // <--- Importação necessária
+import com.managerlibrary.services.BookService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.layout.VBox; // Ou o tipo de layout raiz do seu BookCardView.fxml
+import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 
-import java.util.Objects; // <--- Importação necessária
+import java.io.File; // Importar File
+import java.util.Objects;
 
-/**
- * Controlador para o card individual de um livro exibido na tela principal.
- * Permite visualizar informações resumidas e interagir com o livro (detalhes, editar, remover).
- */
 public class BookCardController {
 
     @FXML
-    private VBox bookCardVBox; // O elemento raiz do seu BookCardView.fxml
+    private VBox bookCardVBox;
+    @FXML
+    private ImageView coverImageView;
     @FXML
     private Label titleLabel;
     @FXML
@@ -23,120 +25,161 @@ public class BookCardController {
     @FXML
     private Label isbnLabel;
     @FXML
+    private Label publisherLabel;
+    @FXML
+    private Label yearLabel;
+    @FXML
+    private Label genreLabel;
+    @FXML
     private Label availableCopiesLabel;
+    @FXML
+    private Button editButton;
 
-    private Book book; // O livro associado a este card
-    private BookController bookListController; // Referência ao BookController principal
-    private RootLayoutController rootLayoutController; // Referência ao RootLayoutController
+    private Book book;
+    private BookController bookListController;
+    private RootLayoutController rootLayoutController;
+    private BookService bookService;
 
-    private BookService bookService; // <--- NOVO CAMPO PARA O BOOKSERVICE
-
-    /**
-     * Define o livro para este card e atualiza a interface.
-     * @param book O objeto Book a ser exibido no card.
-     */
     public void setBook(Book book) {
         this.book = book;
         updateCardUI();
     }
 
-    /**
-     * Define o BookController principal para este card.
-     * Permite que as ações do card (ex: "Ver Detalhes", "Editar", "Remover")
-     * acionem métodos no controlador principal.
-     * @param bookListController O BookController principal.
-     */
     public void setBookListController(BookController bookListController) {
         this.bookListController = Objects.requireNonNull(bookListController, "BookListController não pode ser nulo.");
     }
 
-    /**
-     * Define o RootLayoutController.
-     * Útil para exibir alertas com base no palco principal ou para navegação.
-     * @param rootLayoutController O RootLayoutController.
-     */
     public void setRootLayoutController(RootLayoutController rootLayoutController) {
         this.rootLayoutController = Objects.requireNonNull(rootLayoutController, "RootLayoutController não pode ser nulo.");
     }
 
-    /**
-     * Define o serviço de livros.
-     * Este método deve ser chamado para injetar a dependência, permitindo
-     * que o card realize operações de serviço (ex: deletar/editar).
-     * @param bookService O serviço de livros a ser utilizado.
-     */
-    public void setBookService(BookService bookService) { // <--- NOVO MÉTODO SETTER
+    public void setBookService(BookService bookService) {
         this.bookService = Objects.requireNonNull(bookService, "BookService não pode ser nulo em BookCardController.");
     }
 
-    /**
-     * Método de inicialização do controlador. Chamado automaticamente pelo FXMLLoader.
-     */
     @FXML
     private void initialize() {
-        // Inicializações que não dependem do objeto 'book' podem vir aqui.
-        // Os dados do livro são setados por setBook().
+        // Nenhuma inicialização específica aqui.
     }
 
-    /**
-     * Atualiza os Labels do card com as informações do livro.
-     */
     private void updateCardUI() {
         if (book != null) {
             titleLabel.setText(book.getTitle());
             authorLabel.setText("Autor: " + book.getAuthor());
             isbnLabel.setText("ISBN: " + book.getIsbn());
+            publisherLabel.setText("Editora: " + book.getPublisher());
+            yearLabel.setText("Ano: " + book.getYear());
+            genreLabel.setText("Gênero: " + book.getGenre());
             availableCopiesLabel.setText("Disponíveis: " + book.getAvailableCopies() + "/" + book.getTotalCopies());
+
+            // --- Lógica de carregamento da imagem ---
+            String imagePath = book.getCoverImagePath(); // Use o caminho do arquivo
+            String imageUrl = book.getImageUrl(); // Ou a URL (se houver)
+
+            // Priorize o caminho do arquivo local, se existir
+            if (imagePath != null && !imagePath.isEmpty()) {
+                File imageFile = new File(imagePath);
+                if (imageFile.exists()) {
+                    try {
+                        Image image = new Image(imageFile.toURI().toString());
+                        coverImageView.setImage(image);
+                        if (image.isError()) {
+                            logError("Erro ao carregar a imagem do arquivo para o livro " + book.getTitle() + ". Caminho: " + imagePath + ". Erro: " + image.exceptionProperty().get().getMessage(), null);
+                            coverImageView.setImage(null);
+                        } else if (image.getWidth() == 0 && image.getHeight() == 0) {
+                            logError("Imagem do arquivo carregada para " + book.getTitle() + " mas com dimensões zero. Caminho: " + imagePath, null);
+                        }
+                    } catch (IllegalArgumentException e) {
+                        logError("Caminho de arquivo da imagem inválido para o livro " + book.getTitle() + ": " + imagePath, e);
+                        coverImageView.setImage(null);
+                    } catch (Exception e) {
+                        logError("Erro inesperado ao carregar imagem do arquivo para o livro " + book.getTitle() + ": " + imagePath, e);
+                        coverImageView.setImage(null);
+                    }
+                } else {
+                    // Se o arquivo não existe, tente carregar da URL se houver uma
+                    if (imageUrl != null && !imageUrl.isEmpty()) {
+                        System.out.println("Debug: Arquivo não encontrado. Tentando carregar imagem da URL para '" + book.getTitle() + "': " + imageUrl);
+                        loadImageFromUrl(imageUrl);
+                    } else {
+                        logError("Arquivo de imagem não encontrado e URL de imagem ausente para o livro: " + book.getTitle(), null);
+                        coverImageView.setImage(null);
+                    }
+                }
+            } else if (imageUrl != null && !imageUrl.isEmpty()) { // Se não há coverImagePath, tente a imageUrl
+                System.out.println("Debug: coverImagePath vazio. Tentando carregar imagem da URL para '" + book.getTitle() + "': " + imageUrl);
+                loadImageFromUrl(imageUrl);
+            } else {
+                coverImageView.setImage(null);
+                System.out.println("Debug: Imagem URL e CoverImagePath para " + book.getTitle() + " são nulos ou vazios. Não carregada.");
+            }
+            // --- Fim da lógica de carregamento da imagem ---
+
         } else {
-            // Limpa ou exibe uma mensagem padrão se o livro for nulo
             titleLabel.setText("Livro Desconhecido");
             authorLabel.setText("Autor: N/A");
             isbnLabel.setText("ISBN: N/A");
+            publisherLabel.setText("Editora: N/A");
+            yearLabel.setText("Ano: N/A");
+            genreLabel.setText("Gênero: N/A");
             availableCopiesLabel.setText("Disponíveis: N/A");
+            if (coverImageView != null) {
+                coverImageView.setImage(null);
+            }
         }
     }
 
-    /**
-     * Manipula o clique no card (ou um botão "Ver Detalhes").
-     * Abre a tela de detalhes do livro.
-     */
+    // Novo método para carregar imagem de URL, para evitar duplicação de código
+    private void loadImageFromUrl(String imageUrl) {
+        try {
+            Image image = new Image(imageUrl);
+            coverImageView.setImage(image);
+            if (image.isError()) {
+                logError("Erro ao carregar a imagem da URL para o livro '" + book.getTitle() + "'. URL: " + imageUrl + ". Erro: " + image.exceptionProperty().get().getMessage(), null);
+                coverImageView.setImage(null);
+            } else if (image.getWidth() == 0 && image.getHeight() == 0) {
+                logError("Imagem da URL carregada para " + book.getTitle() + " mas com dimensões zero. URL: " + imageUrl, null);
+            }
+        } catch (IllegalArgumentException e) {
+            logError("URL da imagem inválida para o livro " + book.getTitle() + ": " + imageUrl, e);
+            coverImageView.setImage(null);
+        } catch (Exception e) {
+            logError("Erro inesperado ao carregar imagem da URL para o livro " + book.getTitle() + ": " + imageUrl, e);
+            coverImageView.setImage(null);
+        }
+    }
+
+
     @FXML
     private void handleViewDetails() {
-        if (bookListController != null && book != null) {
-            // Passa a janela proprietária (Stage) do card para o diálogo de detalhes
+        System.out.println("Clicou em Detalhes para: " + (book != null ? book.getTitle() : "N/A"));
+        if (bookListController != null && book != null && bookCardVBox != null) {
             bookListController.showBookDetails(book, bookCardVBox.getScene().getWindow());
         } else {
-            logError("Erro: BookListController ou Book não definidos para ver detalhes.", null);
+            logError("Erro: BookListController, Book ou bookCardVBox não definidos para ver detalhes. (Book: " + (book == null ? "null" : book.getTitle()) + ", BookListController: " + (bookListController == null ? "null" : "ok") + ", bookCardVBox: " + (bookCardVBox == null ? "null" : "ok") + ")", null);
         }
     }
 
-    /**
-     * Manipula o clique no botão de editar.
-     * Abre a tela de edição do livro.
-     */
     @FXML
     private void handleEditBook() {
-        if (bookListController != null && book != null) {
+        System.out.println("Clicou em Editar para: " + (book != null ? book.getTitle() : "N/A"));
+        if (bookListController != null && book != null && bookCardVBox != null) {
             bookListController.loadEditBookView(book, bookCardVBox.getScene().getWindow());
         } else {
-            logError("Erro: BookListController ou Book não definidos para editar.", null);
+            logError("Erro: BookListController, Book ou bookCardVBox não definidos para editar. (Book: " + (book == null ? "null" : book.getTitle()) + ", BookListController: " + (bookListController == null ? "null" : "ok") + ", bookCardVBox: " + (bookCardVBox == null ? "null" : "ok") + ")", null);
         }
     }
 
-    /**
-     * Manipula o clique no botão de remover.
-     * Chama o método de confirmação de remoção no BookController principal.
-     */
     @FXML
     private void handleRemoveBook() {
-        if (bookListController != null && book != null) {
+        System.out.println("Clicou em Remover para: " + (book != null ? book.getTitle() : "N/A"));
+        if (bookListController != null && book != null && bookCardVBox != null) {
             bookListController.confirmRemoveBook(book, bookCardVBox.getScene().getWindow());
         } else {
-            logError("Erro: BookListController ou Book não definidos para remover.", null);
+            logError("Erro: BookListController, Book ou bookCardVBox não definidos para remover. (Book: " + (book == null ? "null" : book.getTitle()) + ", BookListController: " + (bookListController == null ? "null" : "ok") + ", bookCardVBox: " + (bookCardVBox == null ? "null" : "ok") + ")", null);
         }
     }
 
-    // Método de log de erro, como em outras classes.
     private void logError(String message, Exception e) {
         System.err.print("ERRO no BookCardController: " + message);
         if (e != null) {

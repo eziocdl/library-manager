@@ -29,10 +29,14 @@
         <Label fx:id="loanDateLabel" styleClass="label" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
         <Label text="Data de Devolução Prevista:" styleClass="label bold-text" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-        <DatePicker fx:id="returnDatePicker" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+        <DatePicker fx:id="expectedReturnDatePicker" GridPane.rowIndex="4" GridPane.columnIndex="1"/> <Label text="Data de Devolução Real:" styleClass="label bold-text" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+        <HBox alignment="CENTER_LEFT" spacing="5" GridPane.rowIndex="5" GridPane.columnIndex="1">
+            <DatePicker fx:id="actualReturnDatePicker" />
+            <Button onAction="#clearActualReturnDate" text="Limpar" styleClass="secondary-button rounded-corners"/>
+        </HBox>
 
-        <Label text="Status:" styleClass="label bold-text" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-        <ComboBox fx:id="statusComboBox" promptText="Selecione o Status" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+        <Label text="Status:" styleClass="label bold-text" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="statusComboBox" promptText="Selecione o Status" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
     </GridPane>
 
     <HBox spacing="10.0" alignment="CENTER_RIGHT">

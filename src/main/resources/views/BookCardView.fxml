@@ -8,7 +8,8 @@
 <VBox xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.managerlibrary.controllers.BookCardController"
-      styleClass="book-card" spacing="8.0">
+      fx:id="bookCardVBox" styleClass="book-card" spacing="8.0"
+      stylesheets="@/Styles.css">
     <padding>
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
     </padding>
@@ -19,7 +20,7 @@
         <VBox spacing="4.0" styleClass="book-card-details">
             <Label fx:id="titleLabel" styleClass="book-card-title"/>
             <Label fx:id="authorLabel" styleClass="book-card-author"/>
-            <Label fx:id="availableLabel" styleClass="book-card-info"/>
+            <Label fx:id="availableCopiesLabel" styleClass="book-card-info"/>
             <Label fx:id="isbnLabel" styleClass="book-card-info"/>
             <Label fx:id="publisherLabel" styleClass="book-card-info"/>
             <Label fx:id="yearLabel" styleClass="book-card-info"/>
@@ -27,8 +28,8 @@
         </VBox>
     </HBox>
     <HBox alignment="CENTER_RIGHT" spacing="5.0" styleClass="book-card-actions">
-        <Button text="Detalhes" onAction="#handleDetails" styleClass="book-card-action-button rounded-corners"/>
-        <Button fx:id="editButton" text="Editar" onAction="#handleEdit" styleClass="book-card-action-button rounded-corners"/>
-        <Button text="Remover" onAction="#handleRemove" styleClass="book-card-action-button rounded-corners overdue-button"/>
+        <Button text="Detalhes" onAction="#handleViewDetails" styleClass="book-card-action-button rounded-corners"/>
+        <Button fx:id="editButton" text="Editar" onAction="#handleEditBook" styleClass="book-card-action-button rounded-corners"/>
+        <Button text="Remover" onAction="#handleRemoveBook" styleClass="book-card-action-button rounded-corners overdue-button"/>
     </HBox>
 </VBox>
