@@ -175,7 +175,8 @@ gradlew.bat run
 
 ### Gestão de Livros
 
-<img width="1920" alt="Screenshot 2025-05-30 at 15 01 24" src="https://github.com/user-attachments/assets/13cd29d7-d1cb-410b-915a-8ad35cd240a3" />
+
+<img width="1920" alt="Screenshot 2025-05-30 at 15 01 17" src="https://github.com/user-attachments/assets/4e2e4b6b-3666-4f9d-9f7e-848cbd1eef28" />
 
 
 ### Controle de Empréstimos
